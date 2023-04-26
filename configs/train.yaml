@@ -1,13 +1,13 @@
 # @package _global_
 
-# specify here default configuration
+# specify here default figuration
 # order of defaults determines the order in which configs override each other
 defaults:
   - _self_
   - data: mnist.yaml
   - model: mnist.yaml
   - callbacks: default.yaml
-  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - logger: wandb.yaml # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default.yaml
   - paths: default.yaml
   - extras: default.yaml

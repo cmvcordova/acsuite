@@ -5,6 +5,10 @@ from pytorch_lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification.accuracy import Accuracy
 
+#You are entirely right, with "A way to get 
+#around that is to treat lightning modules as something 
+#foreign and only wrap whole models in it"
+
 
 class MNISTLitModule(LightningModule):
     """Example of LightningModule for MNIST classification.
