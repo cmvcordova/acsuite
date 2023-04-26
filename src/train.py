@@ -102,7 +102,15 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
+    
+    wandb.config = omegaconf.OmegaConf.to_container(
+        cfg, resolve=True, throw_on_missing=True
+    )
+    run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
 
+    wandb.log({"loss": loss})
+    model = Model(**wandb.config.model.configs)
+    
     # train the model
     metric_dict, _ = train(cfg)
 
