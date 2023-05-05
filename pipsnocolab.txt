@@ -1,2 +1,1 @@
-pip install molfeat
-pip install MoleculeACE
+pip install --target="/content/colab/pip_packages" molfeat MoleculeACE torch_geometric transformers
