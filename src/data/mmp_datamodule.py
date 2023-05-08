@@ -9,25 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from MoleculeACE import Data
 import molfeat
 
-class SiameseACDataset(Dataset):
-    def __init__(self, csv_file, root_dir, transform=None):
-        self.mols = pd.read_csv(csv_file)
-        self.root_dir = root_dir
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.mols)
-
-    def __getitem__(self, idx):
-        x = self.mols['smiles'][idx]
-        if self.transform:
-            x = self.transform(x)
-        
-        y = self.mols['acd'][idx]
-        y = torch.tensor(y, dtype=torch.float32)
-        return x1, x2, y
-
-class mmp_datamodule(pl.LightningDataModule):
+class aca_datamodule(pl.LightningDataModule):
     """
     PyTorch Lightning data module for MMP AC datasets.
     Args:

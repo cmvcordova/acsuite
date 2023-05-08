@@ -33,6 +33,8 @@ log = utils.get_pylogger(__name__)
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
+    
+    return 
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
@@ -46,6 +48,8 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
+    ""
+    """
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
@@ -99,11 +103,22 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     metric_dict = {**train_metrics, **test_metrics}
 
     return metric_dict, object_dict
+   """
+
 
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    
+    print(cfg)
+    return
+
+
+
+if __name__ == "__main__":
+    main()
+
+
+"""
     wandb.config = omegaconf.OmegaConf.to_container(
         cfg, resolve=True, throw_on_missing=True
     )
@@ -119,10 +134,6 @@ def main(cfg: DictConfig) -> Optional[float]:
     metric_value = utils.get_metric_value(
         metric_dict=metric_dict, metric_name=cfg.get("optimized_metric")
     )
-
+"""
     # return optimized metric
-    return metric_value
-
-
-if __name__ == "__main__":
-    main()
+    #return#metric_value
