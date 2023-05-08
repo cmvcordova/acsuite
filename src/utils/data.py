@@ -1,10 +1,16 @@
-def read_mmp_datset(input_csv: str, targets: int) -> pd.DataFrame:
+import torch
+import JSON
+import pandas as pd
+
+def read_ACNet_single_line_JSON_datset(path_to_file: str, targets: int) -> pd.DataFrame:
     """
-    Read MMP dataset from CSV file.
+    Read MMP dataset from JSON file as provided after generating ACNet datasets.
+    as detailed in https://github.com/DrugAI/ACNet#usage
     Args:
-        input_csv (str): Path to the CSV file.
+        input_csv (str): Path to the JSON file.
     Returns:
         pd.DataFrame: MMP dataset.
     """
-    df = pd.read_csv(input_csv)
+    df = print(path_to_file)
+    #df = pd.read_csv(input_csv)
     return df
