@@ -1,0 +1,1016 @@
+tid,target_name,num_compounds
+1,Maltase-glucoamylase,10
+3,Phosphodiesterase 5A,31
+6,Dihydrofolate reductase,169
+8,Tyrosine-protein kinase ABL,611
+9,Epidermal growth factor receptor erbB1,201
+11,Thrombin,1032
+12,Plasminogen,252
+14,Adenosine deaminase,1
+15,Carbonic anhydrase II,3965
+19,Estrogen receptor alpha,237
+23,Plasma kallikrein,153
+24,HMG-CoA reductase,3
+25,Glucocorticoid receptor,536
+28,Thymidylate synthase,145
+30,Aldehyde dehydrogenase,9
+35,Insulin receptor,1
+36,Progesterone receptor,292
+42,Trypsin I,203
+43,Beta-2 adrenergic receptor,448
+47,Muscarinic acetylcholine receptor M2,438
+48,Mineralocorticoid receptor,130
+50,Beta-1 adrenergic receptor,265
+51,Serotonin 1a (5-HT1a) receptor,2734
+52,Alpha-2a adrenergic receptor,445
+54,DNA polymerase alpha subunit,4
+55,Arachidonate 5-lipoxygenase,10
+56,Androgen Receptor,597
+57,Retinoic acid receptor alpha,17
+59,Thyroid hormone receptor alpha,74
+61,Muscarinic acetylcholine receptor M1,432
+63,DNA topoisomerase II alpha,1
+64,Vitamin D receptor,12
+65,Cytochrome P450 19A1,416
+68,Inosine-5'-monophosphate dehydrogenase 2,112
+69,Angiotensin-converting enzyme,65
+71,Farnesyl diphosphate synthase,14
+72,Dopamine D2 receptor,4121
+73,Tyrosinase,3
+74,GABA receptor alpha-1 subunit,18
+77,Pancreatic lipase,4
+79,Steroid 5-alpha-reductase 1,13
+80,FK506-binding protein 1A,160
+84,Inosine-5'-monophosphate dehydrogenase 1,107
+86,Monoamine oxidase A,319
+87,Cannabinoid CB1 receptor,2363
+88,Dopamine D1 receptor,562
+90,Dopamine D4 receptor,1270
+91,Catechol O-methyltransferase,16
+93,Acetylcholinesterase,438
+96,Cyclooxygenase-1,3
+97,Cyclophilin B,1
+98,Ribonucleoside-diphosphate reductase M1 chain,1
+100,Norepinephrine transporter,1078
+102,Histamine H2 receptor,114
+103,Alpha-1d adrenergic receptor,529
+104,Monoamine oxidase B,325
+105,Serotonin 1d (5-HT1d) receptor,426
+106,Serotonin 1b (5-HT1b) receptor,369
+107,Serotonin 2a (5-HT2a) receptor,2397
+108,Serotonin 2c (5-HT2c) receptor,1173
+112,Vasopressin V2 receptor,166
+113,GABA transporter 1,49
+114,Adenosine A1 receptor,3387
+115,Type-1 angiotensin II receptor,69
+116,Oxytocin receptor,276
+117,Somatostatin receptor 2,111
+118,Gonadotropin-releasing hormone receptor,314
+119,Calcitonin receptor,13
+120,Steroid 5-alpha-reductase 2,12
+121,Serotonin transporter,1555
+123,4-hydroxyphenylpyruvate dioxygenase,45
+124,Corticotropin releasing factor receptor 1,613
+125,Alpha-1a adrenergic receptor,731
+126,Cyclooxygenase-2,16
+127,Histamine H1 receptor,550
+128,Alpha-1b adrenergic receptor,540
+129,Mu opioid receptor,2439
+130,Dopamine D3 receptor,2874
+133,Peroxisome proliferator-activated receptor gamma,176
+134,Vasopressin V1a receptor,425
+136,Delta opioid receptor,1922
+137,Kappa opioid receptor,2130
+138,Nociceptin receptor,892
+140,Prostanoid FP receptor,5
+142,Prostanoid EP2 receptor,159
+143,Prostanoid IP receptor,85
+144,Serotonin 3a (5-HT3a) receptor,309
+146,Glucagon receptor,109
+148,Vasopressin V1b receptor,116
+149,Xanthine dehydrogenase,7
+153,Gamma-amino-N-butyrate transaminase,2
+155,Dopamine transporter,987
+157,Dihydroorotate dehydrogenase,34
+160,Parathyroid hormone receptor,25
+162,Synaptic vesicular amine transporter,14
+163,Peroxisome proliferator-activated receptor alpha,53
+165,HERG,1144
+168,Serotonin 4 (5-HT4) receptor,318
+170,Phosphodiesterase 3A,22
+174,Estrogen receptor beta,194
+175,Equilibrative nucleoside transporter 1,148
+176,Purinergic receptor P2Y12,549
+179,Cysteinyl leukotriene receptor 1,2
+180,Cyclophilin A,19
+184,Glutamate carboxypeptidase II,85
+185,TNF-alpha,284
+188,Receptor protein-tyrosine kinase erbB-2,1
+193,Coagulation factor IX,241
+194,Coagulation factor X,1664
+197,Platelet-derived growth factor receptor beta,3
+214,Muscarinic acetylcholine receptor M4,233
+215,Muscarinic acetylcholine receptor M5,261
+216,Alpha-2b adrenergic receptor,282
+218,Alpha-2c adrenergic receptor,355
+219,Muscarinic acetylcholine receptor M3,622
+220,Dopamine D5 receptor,186
+222,Glutamate [NMDA] receptor subunit epsilon 2,87
+226,Beta-3 adrenergic receptor,160
+227,Serotonin 2b (5-HT2b) receptor,724
+234,Insulin-like growth factor I receptor,18
+235,Leukocyte elastase,244
+236,Neprilysin,99
+237,Leukotriene A4 hydrolase,20
+238,Stem cell growth factor receptor,18
+240,Retinoic acid receptor gamma,17
+241,3-beta-hydroxysteroid dehydrogenase/delta 5-->4-isomerase type I,13
+242,Aldose reductase,4
+243,Aminopeptidase N,169
+246,Thromboxane A2 receptor,147
+247,Endothelin receptor ET-B,19
+249,Endothelin receptor ET-A,37
+250,Neurokinin 1 receptor,386
+251,Platelet activating factor receptor,15
+252,Adenosine A2a receptor,3724
+259,Cannabinoid CB2 receptor,3138
+261,Prostanoid EP1 receptor,72
+262,Prostanoid EP4 receptor,252
+266,Retinoid X receptor gamma,23
+270,Retinoic acid receptor beta,13
+271,Thyroid hormone receptor beta-1,78
+275,Retinoid X receptor alpha,57
+276,Phosphodiesterase 4A,88
+277,Retinoid X receptor beta,23
+278,Adenosine A2b receptor,1387
+279,Serotonin 1f (5-HT1f) receptor,31
+280,Adenosine A3 receptor,3067
+321,DNA (cytosine-5)-methyltransferase 1,1
+10003,Cathepsin D,104
+10004,"Carboxypeptidase N, catalytic subunit",1
+10009,Orexin receptor 1,1209
+10016,Phosphodiesterase 7B,4
+10032,Bcl2-antagonist of cell death (BAD),15
+10034,Bradykinin B2 receptor,117
+10044,Casein kinase II alpha,86
+10055,Uridine-cytidine kinase 2,3
+10056,DNA-dependent protein kinase,12
+10068,Kallikrein 2,4
+10069,Kallikrein 7,37
+10074,Chymase,31
+10087,Deoxycytidine kinase,16
+10102,5-lipoxygenase activating protein,1359
+10108,Geranylgeranyl pyrophosphate synthetase,12
+10118,Transcription initiation factor IIA alpha and bTranscription initiation factor IIA alpha and beta chains,22
+10120,MAP kinase p38 beta,2
+10121,Trypsin III,14
+10123,Folate transporter 1,3
+10125,"Thymidine kinase, cytosolic",11
+10131,Caspase-3,102
+10139,Carbonic anhydrase III,135
+10140,Tyrosine-protein kinase LCK,54
+10141,L-lactate dehydrogenase A chain,31
+10142,Melanocortin receptor 4,1348
+10143,Neuropeptide Y receptor type 4,95
+10144,Bone morphogenetic protein 1,2
+10147,Cytochrome P450 1B1,47
+10150,Hypoxanthine-guanine phosphoribosyltransferase,106
+10158,Glutathione S-transferase Mu 1,1
+10167,Metabotropic glutamate receptor 3,45
+10170,Quinone reductase 2,4
+10179,Urokinase plasminogen activator surface receptor,1
+10183,Somatostatin receptor 4,77
+10184,Neurokinin 2 receptor,373
+10185,Adenosine kinase,19
+10186,Carbonic anhydrase VI,234
+10187,Caspase-2,1
+10188,MAP kinase p38 alpha,106
+10189,Fatty acid binding protein adipocyte,63
+10190,Galanin receptor 1,39
+10193,Carbonic anhydrase I,3783
+10194,Carboxypeptidase A2,11
+10197,Glycogen synthase kinase-3 beta,124
+10199,L-lactate dehydrogenase B chain,20
+10200,Macrophage migration inhibitory factor,48
+10201,S-methyl-5-thioadenosine phosphorylase,44
+10206,DNA polymerase beta,5
+10209,Serotonin 7 (5-HT7) receptor,1534
+10218,Subtilisin/kexin type 4,6
+10244,Caspase-8,78
+10250,"Myosin light chain kinase, smooth muscle",1
+10257,FK506-binding protein 1B,1
+10258,T-cell protein-tyrosine phosphatase,63
+10260,Vanilloid receptor,618
+10264,Fibroblast growth factor receptor 2,2
+10266,Fibroblast growth factor receptor 1,34
+10276,"AMP-activated protein kinase, beta-1 subunit",1
+10278,Glyoxalase I,64
+10280,Histamine H3 receptor,2571
+10320,Methionine aminopeptidase 1,18
+10323,Carboxypeptidase B2 isoform A,27
+10329,Prostanoid EP3 receptor,79
+10332,Dual specificity phosphatase Cdc25A,9
+10372,Glutathione S-transferase A1,9
+10373,Prostate specific antigen,15
+10378,Cathepsin B,453
+10410,P2X purinoceptor 4,1
+10417,P2X purinoceptor 7,16
+10429,"Glutamate receptor ionotropic, AMPA 3",1
+10434,Tyrosine-protein kinase SRC,264
+10472,Cholecystokinin A receptor,117
+10473,C-X-C chemokine receptor type 4,2
+10475,Neuropeptide Y receptor type 1,197
+10477,Neuropeptide Y receptor type 2,88
+10486,Neurotensin receptor 2,57
+10493,Cathepsin F,2
+10494,Cathepsin G,38
+10495,Cathepsin K,411
+10498,Cathepsin L,600
+10505,Carboxypeptidase A1,53
+10531,Serine/threonine-protein kinase Chk2,1
+10532,Butyrylcholinesterase,217
+10542,Leukotriene B4 receptor 1,16
+10544,Purinergic receptor P2Y1,252
+10547,C-C chemokine receptor type 1,54
+10548,C-C chemokine receptor type 3,379
+10561,Oligopeptide transporter small intestine isoform,111
+10567,Myeloperoxidase,6
+10579,C-C chemokine receptor type 4,58
+10580,C-C chemokine receptor type 5,4
+10594,Phosphodiesterase 2A,33
+10599,Phosphodiesterase 4B,36
+10612,3-phosphoinositide dependent protein kinase-1,14
+10618,Serotonin 1e (5-HT1e) receptor,29
+10624,Serotonin 5a (5-HT5a) receptor,137
+10627,Serotonin 6 (5-HT6) receptor,2493
+10635,Neuronal acetylcholine receptor protein alpha-7 subunit,366
+10639,Acetylcholine receptor protein epsilon chain,2
+10653,Proteinase-activated receptor 1,72
+10656,Beta amyloid A4 protein,300
+10664,Diamine oxidase,2
+10670,Neuronal acetylcholine receptor protein alpha-4 subunit,80
+10674,Beta secretase 2,72
+10675,Beta-galactosidase,7
+10678,Sialidase 2,14
+10679,Bombesin receptor subtype-3,1
+10684,Complement C1s,60
+10692,Angiotensin II type 2 (AT-2) receptor,36
+10693,Alpha-galactosidase A,3
+10694,Aryl hydrocarbon receptor,20
+10695,Serine/threonine-protein kinase AKT2,2
+10696,Serine/threonine-protein kinase AKT3,3
+10697,Serum albumin,48
+10702,Methionine aminopeptidase 2,103
+10705,Pancreatic alpha-amylase,13
+10706,Salivary alpha-amylase,3
+10711,G-protein coupled receptor kinase 2,64
+10715,Sarcoplasmic/endoplasmic reticulum calcium ATPase 3,1
+10730,Prohormone convertase 2,6
+10732,AICAR transformylase,10
+10733,Beta-glucocerebrosidase,56
+10744,Phenylalanine-4-hydroxylase,1
+10751,Inhibitor of nuclear factor kappa B kinase alpha subunit,37
+10752,Inhibitor of nuclear factor kappa B kinase beta subunit,3
+10754,Chitinase 1,3
+10773,Interleukin-8 receptor B,146
+10775,Fucosyltransferase 9,4
+10777,Uracil-DNA glycosylase,1
+10781,Serine/threonine-protein kinase Aurora-B,45
+10794,Porphobilinogen synthase,1
+10808,Lysophosphatidic acid receptor Edg-2,21
+10809,Sphingosine 1-phosphate receptor Edg-6,1
+10811,Rho-associated protein kinase 1,69
+10814,Lysophosphatidic acid receptor Edg-4,1
+10819,Acetylcholine receptor protein alpha chain,1
+10832,Terminal deoxynucleotidyltransferase,3
+10834,Uridine phosphorylase 1,2
+10839,Serine/threonine-protein kinase PIM1,195
+10842,Protein kinase N2,1
+10849,Tyrosine-protein kinase JAK3,174
+10850,Ribosomal protein S6 kinase alpha 5,2
+10853,Kallikrein 13,1
+10854,Kallikrein 14,9
+10857,Hypoxia-inducible factor prolyl hydroxylase 1,1
+10869,Histone deacetylase 8,48
+10871,Purinergic receptor P2Y11,1
+10878,Protein kinase C epsilon,104
+10880,Protein kinase C gamma,15
+10899,Pyruvate dehydrogenase kinase isoform 2,7
+10900,Sphingosine kinase 2,18
+10903,Protein kinase C mu,11
+10906,Tyrosine-protein kinase SYK,4
+10907,Serine/threonine-protein kinase PLK1,20
+10909,Beta-chymotrypsin,12
+10911,Phenylethanolamine N-methyltransferase,137
+10918,Tyrosine-protein kinase ITK/TSK,113
+10919,Tyrosine-protein kinase JAK1,145
+10925,Kynureninase,2
+10926,Carboxypeptidase B,55
+10927,Urotensin II receptor,282
+10938,Tyrosine-protein kinase JAK2,190
+10945,Histone deacetylase 10,20
+10950,Sphingosine 1-phosphate receptor Edg-3,5
+10979,Vascular endothelial growth factor receptor 1,4
+10980,Vascular endothelial growth factor receptor 2,161
+10982,Neurokinin 3 receptor,280
+11003,Melanocortin receptor 3,423
+11006,Melanocortin receptor 5,305
+11013,Peptide N-myristoyltransferase 2,12
+11016,Carbonic anhydrase VB,256
+11017,Glycogen synthase kinase-3 alpha,2
+11024,Matrix metalloproteinase 13,227
+11037,"Nitric-oxide synthase, brain",103
+11042,Carbonic anhydrase VA,346
+11043,Matrix metalloproteinase 15,3
+11044,Matrix metalloproteinase 16,3
+11046,Dual specificity mitogen-activated protein kinase kinase 2,14
+11054,Metabotropic glutamate receptor 4,3
+11060,Carbonic anhydrase VII,810
+11061,Motilin receptor,68
+11063,Carbonic anhydrase XIV,533
+11082,MAP kinase-activated protein kinase 2,5
+11084,Melatonin receptor 1A,567
+11085,Melatonin receptor 1B,594
+11089,Caspase-4,13
+11090,Caspase-5,15
+11092,Coagulation factor III,48
+11109,Matrix metalloproteinase 3,205
+11110,Matrix metalloproteinase 8,156
+11113,Cytochrome P450 1A1,28
+11114,"Glutamate receptor ionotropic, AMPA 1",14
+11120,Squalene synthetase,1
+11126,Subtilisin/kexin type 7,12
+11130,Aldehyde dehydrogenase 1A1,12
+11131,Aldehyde dehydrogenase dimeric NADP-preferring,3
+11132,Aldehyde dehydrogenase 1A3,2
+11134,Arachidonate 12-lipoxygenase,5
+11140,Dipeptidyl peptidase IV,463
+11149,Rho-associated protein kinase 2,55
+11150,Death-associated protein kinase 1,1
+11154,Matrix metalloproteinase 14,79
+11156,Bradykinin B1 receptor,425
+11165,"3-beta-hydroxysteroid-delta(8),delta(7)-isomerase",39
+11168,Gastrin releasing peptide receptor,1
+11172,Glutathione transferase omega 1,10
+11173,Glucose transporter,6
+11177,PI3-kinase p110-delta subunit,165
+11191,GABA receptor alpha-4 subunit,2
+11192,Endothelin-converting enzyme 1,11
+11201,Muscle glycogen synthase,1
+11206,Histone deacetylase 2,56
+11208,Histone deacetylase 3,41
+11209,Tyrosine-protein kinase ABL2,1
+11213,Heat shock protein HSP 90-alpha,102
+11221,"Glutamate receptor ionotropic, AMPA 2",39
+11223,Glutamate receptor ionotropic kainate 3,4
+11225,Renin,41
+11232,Histone deacetylase 4,28
+11239,Cystinyl aminopeptidase,84
+11241,Legumain,1
+11242,Focal adhesion kinase 1,1
+11243,Muscle glycogen phosphorylase,3
+11261,Somatostatin receptor 3,130
+11265,Somatostatin receptor 5,183
+11267,Steryl-sulfatase,31
+11269,LXR-alpha,52
+11272,Sigma opioid receptor,610
+11275,Malate dehydrogenase cytoplasmic,1
+11277,Matrix metalloproteinase 11,1
+11279,Metabotropic glutamate receptor 1,9
+11280,Metabotropic glutamate receptor 5,363
+11287,Coagulation factor XI,489
+11288,Coagulation factor XII,86
+11290,Histamine H4 receptor,1006
+11291,Anandamide amidohydrolase,128
+11307,Histone deacetylase 6,65
+11316,Peptidyl-glycine alpha-amidating monooxygenase,1
+11336,Neuropeptide Y receptor type 5,308
+11337,Subtilisin/kexin type 5,12
+11356,"Tryptophan 2,3-dioxygenase",28
+11359,Phosphodiesterase 4D,8
+11362,PI3-kinase p110-alpha subunit,978
+11387,Coagulation factor V,4
+11390,Alpha-L-fucosidase I,3
+11395,Phosphodiesterase 3B,7
+11398,P-glycoprotein 1,72
+11399,Tissue-type plasminogen activator,90
+11400,Serine/threonine-protein kinase mTOR,448
+11402,Furin,283
+11407,c-Jun N-terminal kinase 2,1
+11408,c-Jun N-terminal kinase 3,24
+11413,Leukocyte proteinase 3,11
+11414,Receptor-type tyrosine-protein phosphatase alpha,13
+11416,Glutathione S-transferase Pi,4
+11422,Hexokinase type II,1
+11440,GABA receptor alpha-5 subunit,398
+11441,Receptor-type tyrosine-protein phosphatase beta,3
+11442,Liver glycogen phosphorylase,14
+11446,Betaine transporter,2
+11451,Hepatocyte growth factor receptor,236
+11463,GABA receptor alpha-6 subunit,1
+11472,Signal transducer and activator of transcription 3,33
+11473,ADAM17,138
+11489,11-beta-hydroxysteroid dehydrogenase 1,297
+11498,Galanin receptor 2,38
+11504,Kynurenine 3-monooxygenase,3
+11507,Carboxylesterase 2,101
+11512,Estradiol 17-beta-dehydrogenase 1,7
+11514,Prohormone convertase 1,6
+11515,Phosphodiesterase 6A,2
+11522,Cholecystokinin B receptor,216
+11523,Protein-tyrosine phosphatase 2C,19
+11534,Cathepsin S,462
+11535,Fatty acid synthase,5
+11536,Ghrelin receptor,453
+11538,Excitatory amino acid transporter 3,2
+11539,AMP deaminase 3,2
+11540,Cystic fibrosis transmembrane conductance regulator,1
+11546,Lysosomal alpha-mannosidase,2
+11560,Excitatory amino acid transporter 1,7
+11564,Sarcoplasmic/endoplasmic reticulum calcium ATPase 1,4
+11565,Dual specificity phosphatase Cdc25B,33
+11567,Cathepsin H,16
+11570,Sphingomyelin phosphodiesterase,1
+11573,"Nitric-oxide synthase, endothelial",18
+11574,Interleukin-8 receptor A,34
+11575,C-C chemokine receptor type 2,119
+11617,Protein kinase C eta,3
+11624,Caspase-1,85
+11626,Cyclin-dependent kinase 9,5
+11627,Acyl coenzyme A:cholesterol acyltransferase,179
+11631,Sphingosine 1-phosphate receptor Edg-1,97
+11635,Protein kinase C alpha,254
+11636,Protein kinase C beta,198
+11638,MAP kinase ERK2,106
+11652,Sialidase 3,6
+11663,Poly [ADP-ribose] polymerase-1,107
+11666,Asparagine synthetase,1
+11678,Cyclin-dependent kinase 2,93
+11682,Glycine transporter 1,91
+11684,Nischarin,20
+11689,Sarcoplasmic/endoplasmic reticulum calcium ATPase 2,4
+11691,Tyrosine-protein kinase BLK,3
+11694,Calpain 2,6
+11722,Cathepsin E,2
+11723,Thymidine phosphorylase,36
+11726,Aminopeptidase A,5
+11727,Epoxide hydratase,51
+11748,Heat shock protein HSP 90-beta,99
+11751,FK506 binding protein 4,2
+11752,Vascular endothelial growth factor receptor 3,2
+11754,Fucosyltransferase 5,1
+11755,Tyrosine-protein kinase FYN,27
+11758,Glucagon-like peptide 1 receptor,43
+11759,Glutamate receptor ionotropic kainate 5,15
+11785,Tyrosine-protein kinase HCK,7
+11797,Histone deacetylase 9,14
+11815,Beta-glucosidase,1
+11842,Tyrosine-protein kinase Lyn,4
+11843,Ribosomal protein S6 kinase alpha 2,1
+11848,Angiotensin-converting enzyme 2,38
+11854,Sialidase 4,6
+11867,Alpha-mannosidase 2A1,30
+11869,Melanocortin receptor 1,200
+11871,Matrix metalloproteinase 12,136
+11881,GABA receptor beta-3 subunit,13
+11882,Sphingosine kinase 1,20
+11902,Nerve growth factor receptor Trk-A,2
+11907,Purinergic receptor P2Y2,10
+11910,Phosphodiesterase 7A,22
+11912,Pregnane X receptor,1
+11919,Alkaline phosphatase placental-like,13
+11922,Dual specificity phosphatase Cdc25C,4
+11925,Fibroblast growth factor receptor 4,1
+11926,Fibroblast growth factor receptor 3,2
+11939,PI3-kinase p110-gamma subunit,190
+11942,Urokinase-type plasminogen activator,260
+11968,Prolyl endopeptidase,69
+11969,cAMP-dependent protein kinase alpha-catalytic subunit,29
+11989,ADAM9,1
+12000,Coagulation factor VII,194
+12013,Caspase-6,78
+12021,Histone deacetylase 11,19
+12023,Sphingosine 1-phosphate receptor Edg-8,1
+12028,ATP-citrate synthase,11
+12030,Multidrug resistance-associated protein 1,6
+12038,Mitogen-activated protein kinase kinase kinase 9,1
+12054,Arachidonate 15-lipoxygenase,52
+12067,Caspase-7,3
+12071,Cyclin-dependent kinase 1,38
+12088,Leukocyte common antigen,6
+12090,Dual-specificity tyrosine-phosphorylation regulated kinase 1A,9
+12109,Protein-glutamine gamma-glutamyltransferase,104
+12114,Receptor-type tyrosine-protein phosphatase F (LAR),4
+12186,Subtilisin/kexin type 6,152
+12209,Carbonic anhydrase XII,2864
+12214,Tyrosine-protein kinase ZAP-70,3
+12227,Peroxisome proliferator-activated receptor delta,41
+12247,Protein kinase C delta,79
+12252,Beta-secretase 1,546
+12261,c-Jun N-terminal kinase 1,8
+12268,Dipeptidyl peptidase II,12
+12283,Histone deacetylase 5,20
+12291,GAR transformylase,33
+12327,Pepsin A,12
+12376,Glutamate receptor ionotropic kainate 1,33
+12378,Glutamate receptor ionotropic kainate 2,14
+12387,Leucine aminopeptidase,4
+12388,Hematopoietic cell protein-tyrosine phosphatase 70Z-PEP,20
+12396,Dipeptidyl peptidase I,1
+12399,Threonyl-tRNA synthetase,20
+12425,"Nitric oxide synthase, inducible",8
+12443,Histone deacetylase 7,16
+12448,Phosphodiesterase 11A,8
+12538,Thymidylate kinase,12
+12576,PI3-kinase p110-beta subunit,82
+12583,Kallikrein 4,9
+12584,Kallikrein 5,40
+12585,Kallikrein 6,1
+12587,Cathepsin L2,28
+12589,Sodium/hydrogen exchanger 5,3
+12592,Matrix metalloproteinase 9,209
+12593,Matrix metalloproteinase 10,60
+12594,Cytochrome P450 1A2,17
+12615,"Glutamate receptor ionotropic, AMPA 4",13
+12627,Platelet-derived growth factor receptor alpha,3
+12640,Excitatory amino acid transporter 2,13
+12642,Glutathione reductase,22
+12659,Prostanoid DP receptor,167
+12665,Protein kinase C theta,49
+12666,Serine/threonine-protein kinase AKT,34
+12670,Tyrosine-protein kinase receptor FLT3,61
+12678,Spermidine/spermine N(1)-acetyltransferase 1,2
+12679,C5a anaphylatoxin chemotactic receptor,47
+12683,Pyruvate dehydrogenase kinase isoform 1,28
+12684,Pyruvate dehydrogenase kinase isoform 3,4
+12685,Pyruvate dehydrogenase kinase isoform 4,1
+12690,Purine nucleoside phosphorylase,88
+12694,Tyrosine-protein kinase TYK2,172
+12697,Histone deacetylase 1,85
+12703,Tryptase beta-1,95
+12724,Ribosomal protein S6 kinase alpha 3,2
+12725,Matriptase,318
+12735,Phosphorylase kinase gamma subunit 2,1
+12737,6-O-methylguanine-DNA methyltransferase,1
+12738,Matrix metalloproteinase 7,78
+12757,GABA receptor alpha-3 subunit,27
+12769,FK506 binding protein 3,1
+12770,GABA receptor alpha-2 subunit,28
+12780,Casein kinase II alpha (prime),16
+12786,Somatostatin receptor 1,55
+12795,Adenosylhomocysteinase,29
+12804,Sialidase 1,5
+12810,"Endoplasmic reticulum mannosyl-oligosaccharide 1,2-alpha-mannosidase",30
+12825,C-X-C chemokine receptor type 3,129
+12829,Cyclin-dependent kinase 7,1
+12840,Macrophage colony stimulating factor receptor,8
+12847,Vitamin K-dependent protein C,69
+12855,Peptide N-myristoyltransferase 1,56
+12861,ADAMTS4,1
+12862,ADAMTS5,4
+12883,Peptidyl-prolyl cis-trans isomerase NIMA-interacting 1,88
+12886,Galanin receptor 3,25
+12895,Metabotropic glutamate receptor 2,108
+12896,Carbonic anhydrase IV,814
+12909,Ileal bile acid transporter,35
+12910,Neurotensin receptor 1,88
+12923,Carbonic anhydrase XIII,92
+12937,Carboxypeptidase A4,11
+12943,Vesicular acetylcholine transporter,65
+12945,Cytidine deaminase,6
+12946,Cyclin-dependent kinase 4,28
+12949,Cytochrome P450 17A1,22
+12952,Carbonic anhydrase IX,3671
+12954,Carbonic anhydrase-related protein 2,13
+12955,Calpain 1,112
+12956,Metabotropic glutamate receptor 7,1
+12967,Serine/threonine-protein kinase Chk1,89
+12968,Orexin receptor 2,1322
+13000,Matrix metalloproteinase-1,174
+13001,Matrix metalloproteinase-2,159
+13004,TGF-beta receptor type I,54
+13005,Kallikrein 1,62
+13010,Formyl peptide receptor 1,1
+13055,Quinone reductase 1),1
+13061,Protein-tyrosine phosphatase 1B,310
+13074,DNA polymerase gamma subunit 1,1
+18033,Tyrosine-protein kinase YES,4
+18036,Sodium/glucose cotransporter 1,18
+18043,Sodium channel protein type IV alpha subunit,15
+18061,Sodium channel protein type IX alpha subunit,64
+18072,Sodium channel protein type II alpha subunit,12
+19623,Interleukin-1 receptor-associated kinase 1,7
+19639,Interleukin-1 receptor-associated kinase 4,79
+19689,Lysophosphatidic acid receptor Edg-7,53
+19904,Calcitonin gene-related peptide type 1 receptor,422
+19905,Melanin-concentrating hormone receptor 1,1058
+20014,Serine/threonine-protein kinase Aurora-A,92
+20020,Serine/threonine-protein kinase GAK,26
+20035,Phosphodiesterase 9A,3
+20057,Fatty acid binding protein muscle,18
+20073,Cytochrome P450 2A6,61
+20092,Sodium/glucose cotransporter 2,3
+20113,LXR-beta,47
+20130,Inhibitor of apoptosis protein 3,94
+20131,p53-binding protein Mdm-2,332
+20132,Fatty acid binding protein epidermal,41
+20137,Serine-protein kinase ATM,14
+20139,Serine-protein kinase ATR,21
+20143,"Amine oxidase, copper containing",2
+20151,Dipeptidyl peptidase VIII,107
+20154,Dipeptidyl peptidase IX,93
+20162,Melanin-concentrating hormone receptor 2,2
+20171,Serine/threonine-protein kinase Aurora-C,3
+20174,G protein-coupled receptor 44,873
+30000,Adaptor-associated kinase,21
+30001,MAP/microtubule affinity-regulating kinase 2,1
+30003,Serine/threonine-protein kinase PLK4,10
+30004,Serine/threonine-protein kinase 16,21
+30005,Serine/threonine-protein kinase 17B,1
+30008,Ephrin type-A receptor 2,2
+30011,Dual specificity protein kinase TTK,44
+30016,Tyrosine-protein kinase BMX,1
+30023,Tyrosine kinase non-receptor protein 2,1
+30025,Serine/threonine-protein kinase PAK 1,102
+30032,CaM-kinase kinase beta,3
+30033,Tyrosine- and threonine-specific cdc2-inhibitory kinase,10
+30034,Mitogen-activated protein kinase kinase kinase 5,2
+30037,MAP kinase signal-integrating kinase 2,49
+30040,Serine/threonine-protein kinase PAK6,1
+30042,BMP-2-inducible protein kinase,20
+30043,Serine/threonine-protein kinase PIM2,221
+30044,Serine/threonine-protein kinase PAK7,1
+30047,TRAF2- and NCK-interacting kinase,1
+100008,Phosphodiesterase 8A,3
+100010,Phosphodiesterase 10A,358
+100071,Serine/threonine-protein kinase PAK 2,10
+100077,Cell division cycle 7-related protein kinase,17
+100079,Tyrosine-protein kinase receptor RET,3
+100080,Serine/threonine-protein kinase PAK 4,173
+100097,Tyrosine-protein kinase BTK,41
+100098,Serine/threonine-protein kinase WEE1,29
+100101,Voltage-gated T-type calcium channel alpha-1I subunit,1
+100108,RAS guanyl releasing protein 3,47
+100126,Serine/threonine-protein kinase B-raf,3
+100138,C-X3-C chemokine receptor 1,51
+100147,Eukaryotic translation initation factor,2
+100155,ADAM10,1
+100158,Alkaline phosphatase placental type,1
+100166,Kinesin-like protein 1,140
+100186,Fibroblast activation protein alpha,42
+100193,Monoglyceride lipase,5
+100217,Apoptosis regulator Bcl-X,261
+100220,Hydroxyacid oxidase 1,1
+100282,S-100 protein beta chain,4
+100290,Gastric inhibitory polypeptide receptor,3
+100293,"Thymidine kinase, mitochondrial",3
+100304,Apoptosis regulator Bcl-2,455
+100305,dUTP pyrophosphatase,50
+100308,"Beta-1,4-galactosyltransferase 1",8
+100325,Hypoxia-inducible factor 1 alpha,11
+100334,Vasoactive intestinal polypeptide receptor 1,1
+100410,Tyrosine-protein kinase receptor UFO,2
+100411,PDZ-binding kinase,1
+100412,Serine/threonine-protein kinase PLK3,2
+100413,Neurotrophic tyrosine kinase receptor type 2,5
+100415,Serine/threonine-protein kinase D2,4
+100417,ALK tyrosine kinase receptor,45
+100418,Tyrosine-protein kinase TEC,1
+100424,Tyrosine-protein kinase TXK,1
+100431,Free fatty acid receptor 1,99
+100436,C-C chemokine receptor type 8,65
+100445,Serine racemase,8
+100446,NAD-dependent deacetylase sirtuin 3,4
+100447,NAD-dependent deacetylase sirtuin 2,10
+100448,NAD-dependent deacetylase sirtuin 1,4
+100449,High-affinity choline transporter,1
+100450,Glutaminyl-peptide cyclotransferase,204
+100467,Monocarboxylate transporter 1,33
+100468,Induced myeloid leukemia cell differentiation protein Mcl-1,699
+100474,Cytochrome P450 24A1,31
+100476,Apoptosis regulator Bcl-W,53
+100479,ADAMTS1,1
+100481,Aldo-keto-reductase family 1 member C3,32
+100486,Toll-like receptor 2,3
+100571,GABA transporter 2,2
+100579,Hydroxycarboxylic acid receptor 2,21
+100594,Autotaxin,40
+100611,Cytochrome P450 2J2,1
+100613,Proteasome Macropain subunit,7
+100622,Lymphocyte differentiation antigen CD38,4
+100624,Proteasome Macropain subunit MB1,86
+100627,Low molecular weight phosphotyrosine protein phosphatase,5
+100633,Proteasome component C5,26
+100637,UDP-glucuronosyltransferase 2B7,2
+100643,"Indoleamine 2,3-dioxygenase",130
+100670,UDP-glucuronosyltransferase 2B17,1
+100683,Endo-beta-N-acetylglucosaminidase,2
+100787,Betaine--homocysteine S-methyltransferase 1,1
+100790,Dual-specificity tyrosine-phosphorylation regulated kinase 2,1
+100792,Isoprenylcysteine carboxyl methyltransferase,1
+100827,Orphan nuclear receptor LRH-1,6
+100828,Steroidogenic factor 1,6
+100835,MAP kinase-interacting serine/threonine-protein kinase MNK1,31
+100845,Serine/threonine-protein kinase MRCK-A,2
+100848,Purinergic receptor P2Y14,5
+100854,Maternal embryonic leucine zipper kinase,10
+100855,Serine/threonine-protein kinase PIM3,169
+100862,Metastin receptor,82
+100867,Free fatty acid receptor 2,16
+100874,Histone acetyltransferase p300,5
+100875,Histone acetyltransferase PCAF,2
+100876,Histone acetyltransferase GCN5,1
+100877,Histone-lysine N-methyltransferase SETD7,2
+100878,Protein-arginine N-methyltransferase 1,9
+100912,Tyrosine-protein kinase receptor TYRO3,1
+100916,Apoptosis regulator BAX,16
+100932,DNA polymerase kappa,1
+100933,Poly [ADP-ribose] polymerase 2,8
+100944,Calcitonin gene-related peptide 1,39
+100948,Proto-oncogene tyrosine-protein kinase MER,3
+100952,Baculoviral IAP repeat-containing protein 3,43
+100955,Ectonucleoside triphosphate diphosphohydrolase 8,2
+100974,ATP-binding cassette sub-family G member 2,2
+100988,Baculoviral IAP repeat-containing protein 2,46
+100989,Acid ceramidase,3
+100990,Receptor-interacting serine/threonine-protein kinase 1,30
+100995,Protein tyrosine kinase 2 beta,4
+100997,Nuclear receptor subfamily 1 group I member 3,1
+101014,Dual specificity tyrosine-phosphorylation-regulated kinase 1B,1
+101016,Sn1-specific diacylglycerol lipase alpha,1
+101019,Proto-oncogene tyrosine-protein kinase ROS,3
+101036,Prostasin,23
+101044,Endoplasmic reticulum aminopeptidase 2,43
+101050,Ectonucleoside triphosphate diphosphohydrolase 2,10
+101077,Non-secretory ribonuclease,1
+101114,Uridine 5'-monophosphate synthase,9
+101159,Glucose-6-phosphate 1-dehydrogenase,6
+101173,Hepatocyte nuclear factor 4-alpha,25
+101181,Histone-arginine methyltransferase CARM1,1
+101213,D-amino-acid oxidase,10
+101232,ATP-dependent RNA helicase DDX3X,1
+101239,Citron Rho-interacting kinase,3
+101240,Ectonucleotide pyrophosphatase/phosphodiesterase family member 3,1
+101246,Carbonyl reductase [NADPH] 1,7
+101251,Aldo-keto reductase family 1 member C4,4
+101271,Glucose-dependent insulinotropic receptor,44
+101290,Pituitary adenylate cyclase-activating polypeptide,1
+101292,DNA ligase 1,1
+101303,Ectonucleoside triphosphate diphosphohydrolase 1,5
+101310,CREB-binding protein,5
+101324,Mitogen-activated protein kinase kinase kinase 7,10
+101332,NUAK family SNF1-like kinase 1,3
+101333,"Interferon-induced, double-stranded RNA-activated protein kinase",1
+101345,C-C chemokine receptor type 9,64
+101347,Signal transducer and activator of transcription 5B,7
+101351,Aldo-keto reductase family 1 member C2,28
+101355,Baculoviral IAP repeat-containing protein 8,6
+101361,Trace amine-associated receptor 1,47
+101364,D-aspartate oxidase,3
+101365,Mitogen-activated protein kinase kinase kinase 14,63
+101368,Protein arginine N-methyltransferase 3,1
+101373,Lysine-specific demethylase 4A,12
+101379,Ectonucleotide pyrophosphatase/phosphodiesterase family member 1,62
+101392,Proteinase-activated receptor 2,3
+101400,Smoothened homolog,16
+101421,"N(G),N(G)-dimethylarginine dimethylaminohydrolase 1",24
+101477,Proteasome subunit beta type-8,14
+101494,Disks large homolog 4,28
+101499,Protein delta homolog 1,6
+101502,Egl nine homolog 1,2
+101510,Egl nine homolog 3,1
+101512,Solute carrier family 28 member 3,10
+101526,Glucagon,106
+101532,Translocator protein,74
+101589,Catenin beta-1,76
+101591,Nuclear receptor ROR-alpha,6
+101600,Aldo-keto reductase family 1 member C1,32
+101611,Endoplasmic reticulum aminopeptidase 1,28
+102420,G protein-coupled receptor kinase 5,13
+102423,Bcl-2-related protein A1,33
+102439,Lysine-specific histone demethylase 1,133
+102452,Lysine-specific demethylase 4C,4
+102454,NAD kinase,29
+102621,5'-nucleotidase,34
+102631,Aldo-keto reductase family 1 member B10,8
+102637,Bcl-2-like protein 10,1
+102639,Breast cancer type 1 susceptibility protein,3
+102649,Cytohesin-2,6
+102672,"Histone-lysine N-methyltransferase, H3 lysine-9 specific 3",5
+102688,Glycine receptor subunit alpha-1,8
+102690,G-protein coupled estrogen receptor 1,3
+102691,"Solute carrier family 2, facilitated glucose transporter member 2",1
+102693,"Solute carrier family 2, facilitated glucose transporter member 5",1
+102695,Beta-hexosaminidase subunit beta,21
+102696,Histidine triad nucleotide-binding protein 1,6
+102718,Membrane-bound transcription factor site-1 protease,6
+102719,"Malate dehydrogenase, mitochondrial",3
+102728,Bifunctional protein NCOAT,123
+102733,Neuropeptide FF receptor 1,63
+102734,Neuropeptide FF receptor 2,63
+102739,RAS guanyl-releasing protein 1,12
+102740,"Ornithine aminotransferase, mitochondrial",2
+102741,UDP-N-acetylglucosamine--peptide N-acetylglucosaminyltransferase 110 kDa subunit,5
+102744,Protein-arginine deiminase type-4,12
+102767,Solute carrier family 22 member 12,1
+102780,Alpha-synuclein,53
+102782,Threonine aspartase 1,1
+102785,Tripeptidyl-peptidase 2,1
+102788,Tumor susceptibility gene 101 protein,4
+102791,Ubiquitin carboxyl-terminal hydrolase 5,1
+102792,Ubiquitin carboxyl-terminal hydrolase isozyme L1,1
+103060,Endoplasmin,17
+103061,"Heat shock protein 75 kDa, mitochondrial",15
+103079,Transitional endoplasmic reticulum ATPase,19
+103088,Cystine/glutamate transporter,7
+103101,Uracil nucleotide/cysteinyl leukotriene receptor,6
+103104,Phosphatidylinositol 3-kinase catalytic subunit type 3,1
+103105,Beta-adrenergic receptor kinase 2,23
+103114,Serine/threonine-protein kinase WNK1,1
+103125,Pyridoxal kinase,4
+103134,Pyruvate kinase isozymes M1/M2,1
+103147,Arginase-1,7
+103154,Leucine-rich repeat serine/threonine-protein kinase 2,512
+103165,WD repeat-containing protein 5,55
+103454,Bromodomain-containing protein 4,349
+103483,Prolyl 4-hydroxylase subunit alpha-1,3
+103508,NADPH oxidase 4,75
+103512,ELAV-like protein 1,14
+103529,Beta-hexosaminidase subunit alpha,2
+103537,Protein Mdm4,63
+103590,Protein arginine N-methyltransferase 6,8
+103619,UDP-glucuronosyltransferase 1-1,2
+103629,Cytochrome b-245 heavy chain,2
+103630,NADPH oxidase 1,20
+103644,Acidic mammalian chitinase,3
+103657,Microtubule-associated protein tau,52
+103688,15-hydroxyprostaglandin dehydrogenase [NAD+],2
+103700,G-protein coupled receptor 35,59
+103720,Insulin-degrading enzyme,12
+103722,Bromodomain-containing protein 2,18
+103725,ATP-sensitive inward rectifier potassium channel 1,1
+103757,Neutrophil cytosol factor 1,43
+103767,Menin,73
+103791,Relaxin-3 receptor 1,11
+103792,Relaxin-3 receptor 2,6
+103800,Apelin receptor,78
+103829,Solute carrier family 22 member 6,5
+103848,C-C motif chemokine 2,21
+103904,Prolactin-releasing peptide receptor,48
+103924,Acyl-protein thioesterase 1,2
+103936,Peptidyl-prolyl cis-trans isomerase D,10
+103982,Nuclear receptor ROR-gamma,16
+103991,Enteropeptidase,138
+104016,Bromodomain adjacent to zinc finger domain protein 2B,3
+104076,Sulfotransferase 1A1,4
+104084,UDP-glucuronosyltransferase 1-6,3
+104085,UDP-glucuronosyltransferase 1-7,2
+104087,UDP-glucuronosyltransferase 1-9,2
+104088,UDP-glucuronosyltransferase 1-10,2
+104106,Nicotinamide phosphoribosyltransferase,44
+104123,Chromobox protein homolog 7,7
+104141,"Serine hydroxymethyltransferase, cytosolic",1
+104194,CD209 antigen,3
+104196,Protein arginine N-methyltransferase 5,2
+104197,"Histone-lysine N-methyltransferase, H3 lysine-79 specific",54
+104218,Transmembrane protease serine 11D,44
+104219,Transmembrane protease serine 6,89
+104228,"Arginase-2, mitochondrial",4
+104248,CDGSH iron-sulfur domain-containing protein 1,59
+104256,N-lysine methyltransferase SETD8,2
+104264,Protein polybromo-1,1
+104265,Bromodomain testis-specific protein,20
+104266,Bromodomain-containing protein 3,23
+104268,Proton-coupled folate transporter,19
+104320,Mitogen-activated protein kinase kinase kinase 12,627
+104329,Sentrin-specific protease 1,1
+104331,Protein-arginine deiminase type-1,9
+104332,Protein-arginine deiminase type-2,1
+104375,Proton-coupled amino acid transporter 1,50
+104380,Appetite-regulating hormone,43
+104383,Protoporphyrinogen oxidase,94
+104395,Acyl-protein thioesterase 2,4
+104416,Histone acetyltransferase KAT8,5
+104421,Lysine-specific demethylase 2A,1
+104435,Protein phosphatase 1D,2
+104483,Isocitrate dehydrogenase [NADP] cytoplasmic,64
+104486,Tyrosine-protein phosphatase non-receptor type 5,64
+104492,Thioredoxin,1
+104495,Pirin,2
+104499,C-X-C chemokine receptor type 7,68
+104547,DNA repair protein RAD51 homolog 1,5
+104559,Multidrug resistance-associated protein 5,3
+104560,"Kynurenine/alpha-aminoadipate aminotransferase, mitochondrial",15
+104573,Peptidyl-prolyl cis-trans isomerase FKBP5,92
+104583,Heat shock-related 70 kDa protein 2,4
+104589,Biotin--protein ligase,6
+104592,Max-like protein X,8
+104593,Kelch-like ECH-associated protein 1,20
+104670,Serine protease hepsin,96
+105130,"Glutaminase kidney isoform, mitochondrial",1
+105188,ATPase family AAA domain-containing protein 2,1
+105207,S-methylmethionine--homocysteine S-methyltransferase BHMT2,1
+105215,Gamma-butyrobetaine dioxygenase,1
+105223,"NAD-dependent protein deacylase sirtuin-5, mitochondrial",11
+105227,N-lysine methyltransferase SMYD2,2
+105346,Complement factor D,2
+105349,Bromodomain-containing protein 1,1
+105350,ATPase family AAA domain-containing protein 2B,1
+105421,Advanced glycosylation end product-specific receptor,1
+105440,Histone-lysine N-methyltransferase EZH2,25
+105446,Histone-lysine N-methyltransferase EZH1,1
+105447,Polycomb protein EED,51
+105451,GTPase KRas,17
+105457,Monoacylglycerol lipase ABHD6,3
+105483,"Thioredoxin, mitochondrial",1
+105591,Emopamil-binding protein-like,4
+105596,D-3-phosphoglycerate dehydrogenase,2
+105628,Histo-blood group ABO system transferase,4
+105632,Histone-lysine N-methyltransferase SMYD3,8
+105649,"6-phosphofructo-2-kinase/fructose-2,6-bisphosphatase 3",2
+105674,Nicotinamide N-methyltransferase,51
+107617,Dual specificity protein phosphatase 10,3
+107653,Lysine-specific demethylase 5A,1
+107654,Peptidyl-prolyl cis-trans isomerase C,1
+107968,Transcription activator BRG1,1
+107969,Nucleosome-remodeling factor subunit BPTF,2
+107970,Bromodomain-containing protein 7,2
+107999,Cat eye syndrome critical region protein 2,1
+108000,Bromodomain-containing protein 9,1
+108001,Transcription initiation factor TFIID subunit 1-like,2
+108004,Bromodomain and PHD finger-containing protein 3,2
+108032,Retinal dehydrogenase 2,2
+108054,Peregrin,1
+108234,Putative N-acetylglucosamine-6-phosphate deacetylase,1
+108248,Transcription initiation factor TFIID subunit 1,2
+108256,Glucose-6-phosphate translocase,1
+108275,Apelin,13
+108362,Pyridoxine-5'-phosphate oxidase,1
+108376,Stromal cell-derived factor 1,25
+109446,Lysine-specific demethylase 4B,1
+109454,Ubiquitin-like domain-containing CTD phosphatase 1,1
+109464,"N-acetyllactosaminide beta-1,3-N-acetylglucosaminyltransferase 3",2
+109479,Phosphoglycerate mutase 1,1
+109514,Hepatocyte growth factor activator,65
+109542,2'-deoxynucleoside 5'-phosphate N-hydrolase 1,25
+109836,"CMP-N-acetylneuraminate-beta-galactosamide-alpha-2,3-sialyltransferase 1",2
+109849,"Alpha-(1,6)-fucosyltransferase",1
+109900,"Bifunctional methylenetetrahydrofolate dehydrogenase/cyclohydrolase, mitochondrial",1
+109909,"Indoleamine 2,3-dioxygenase 2",23
+109917,Mucosa-associated lymphoid tissue lymphoma translocation protein 1,8
+109932,Rho GDP-dissociation inhibitor 1,6
+109939,Opioid growth factor receptor-like protein 1,88
+109942,Kininogen-1,59
+109954,Glutaminyl-peptide cyclotransferase-like protein,10
+109996,Histone H1.0,7
+110158,Cytosolic purine 5'-nucleotidase,5
+110226,"7,8-dihydro-8-oxoguanine triphosphatase",1
+114829,17-beta-hydroxysteroid dehydrogenase 14,47
+114868,Transmembrane domain-containing protein TMIGD3,147
+115023,Tissue factor pathway inhibitor,2
+115316,Polypeptide N-acetylgalactosaminyltransferase 2,1
+116040,G-protein coupled receptor 84,66
+116704,Telomeric repeat-binding factor 2-interacting protein 1,24
+116710,"5'(3')-deoxyribonucleotidase, cytosolic type",2
+116711,"5'(3')-deoxyribonucleotidase, mitochondrial",2
+116734,Protein cereblon,4
+116742,Sodium-dependent phosphate transport protein 2A,11
+116749,Lysine-specific demethylase 5B,8
+116822,"Fatty acid-binding protein, brain",30
+116961,Ras-related protein Rab-7L1,1
+117211,Cytosolic carboxypeptidase 2,4
+117215,Thyrotropin-releasing hormone-degrading ectoenzyme,1
+117261,Porphobilinogen deaminase,2
+117392,Diacylglycerol kinase alpha,4
+117437,Eukaryotic initiation factor 4A-III,1
+117443,DCN1-like protein 1,29
+117484,Meprin A subunit beta,2
+117512,Sigma intracellular receptor 2,166
+117554,Peptidyl-prolyl cis-trans isomerase FKBP2,1
+117891,Mannan-binding lectin serine protease 2,4
+117909,Tolloid-like protein 1,2
+118006,Protein AF-9,28
+118013,Mannan-binding lectin serine protease 1,2
+118046,Protein ENL,28
+118111,DCN1-like protein 2,1
+118139,DCN1-like protein 3,1
+118159,DCN1-like protein 4,1
+118182,DCN1-like protein 5,1
+118218,DNA repair protein REV1,20
+118240,Tolloid-like protein 2,2
+118257,Telomeric repeat-binding factor 2,31
+118941,Interleukin-1 receptor antagonist protein,8
+118986,DNA replication ATP-dependent helicase/nuclease DNA2,1
+119036,GRB2-associated-binding protein 1,3
+119064,La-related protein 7,1
+119080,Disabled homolog 2-interacting protein,5
+119104,Nicotinate phosphoribosyltransferase,22
+119125,Cytochrome P450 4Z1,1
+119127,Stimulator of interferon genes protein,1
+119168,Inositol hexakisphosphate kinase 1,1
+119174,BTB/POZ domain-containing protein KCTD12,22
+119181,Inositol hexakisphosphate kinase 3,1
+119192,N-terminal Xaa-Pro-Lys N-methyltransferase 1,3
+119228,C5a anaphylatoxin chemotactic receptor 2,2
+119238,Inositol hexakisphosphate kinase 2,1
+119260,Cholesterol 24-hydroxylase,2
