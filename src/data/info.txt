@@ -1,0 +1,14 @@
+#ACNet location
+## from https://drugai.github.io/ACNet/
+https://drive.google.com/drive/folders/1JogBAg9AI0pUxY44w9_g8RHboLf7V5q7
+
+##info from https://github.com/DrugAI/ACNet#illustration
+## has additional info on how to create datasets in paper
+all_smiles_target.csv Contains 142,307 activities screened from ChEMBL.
+mmp_ac_s_distinct.csv Contains 21,352 MMP-Cliffs.
+mmp_ac_s_neg_distinct.csv Contains 423,282 non-AC MMPs.
+target_dictionary.xlsx A dictionary that match target ids to the target names. Contains 1006 targets.
+MMP_AC.json All of the MMP-Cliffs and non-AC MMPs. Contains samples against 190 targets.
+MMP_AC_Discarded.json Discarded samples when organizing 21,352 positive samples and 423,282 negative samples.
+MMP_AC_Large.json, MMP_AC_Medium.json, MMP_AC_Small.json, MMP_AC_Few.json, MMP_AC_Mixed_Screened.json 
+Five subsets of the ACNet benchmark generated based on the configuration file.
