@@ -3,13 +3,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import pandas as pd
 import numpy as np
 import pytorch_lightning as pl
-import torch, torch-geometric
+import torch, torch_geometric
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 from MoleculeACE import Data
 import molfeat
 
-class aca_datamodule(pl.LightningDataModule):
+class MMPDataModule(pl.LightningDataModule):
     """
     PyTorch Lightning data module for MMP AC datasets.
     Args:
@@ -28,12 +28,25 @@ class aca_datamodule(pl.LightningDataModule):
     val_dataset: Dataset = None
     test_dataset: Dataset = None
     
-    def __init__(self, csv_file, root_dir, batch_size, num_workers, shuffle=True):
+    def __init__(
+        ## add type hints here
+        self, 
+        file_name,
+        data_dir,
+        train_val_test_split,
+        batch_size, 
+        num_workers,
+        pin_memory, 
+        shuffle
+    ):
         super().__init__()
-        self.csv_file = csv_file
-        self.root_dir = root_dir
+
+        self.file_name = file_name
+        self.data_dir = data_dir
+        self.train_val_test_split = train_val_test_split
         self.batch_size = batch_size
         self.num_workers = num_workers
+        self.pin_memory = pin_memory
         self.shuffle = shuffle
 
     def prepare_data(self) -> None:
