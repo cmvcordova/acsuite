@@ -17,6 +17,28 @@ class Files:
     test_labels: str
 
 @dataclass
+class Data:
+    filename: str
+    data_dir: str
+    batch_size: int
+    train_val_test_split: List[float]
+    num_workers: int
+    shuffle: bool
+    pin_memory: bool
+
+@dataclass
 class ACAconfig:
+    """Groups parameters in terms of the previously
+    defined dataclasses"""
+    data: Data
+    hydra: str
+    model: str
     paths: Paths
     files: Files
+    trainer: str
+    wandb: str
+    seed: int = 42
+
+cs = ConfigStore.instance().store(
+    name="ACAconfig",
+    node=ACAconfig)

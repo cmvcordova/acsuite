@@ -1,12 +1,14 @@
 from typing import List, Optional, Tuple
-
 import hydra
+import sys, os
 import pyrootutils
 import pytorch_lightning as pl
 import wandb
 from omegaconf import DictConfig, omegaconf
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import Logger
+from hydra.utils import instantiate, get_original_cwd
+from hydra.core.config_store import ConfigStore
 
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
@@ -25,16 +27,57 @@ pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 #
 # more info: https://github.com/ashleve/pyrootutils
 # ------------------------------------------------------------------------------------ #
-
 from src import utils
 
 log = utils.get_pylogger(__name__)
 
+from dataclasses import dataclass
+
+@dataclass
+class Paths:
+    ## from default paths config
+    root_dir: str
+    data_dir: str
+    log_dir: str
+    output_dir: str
+    work_dir: str
+
+@dataclass
+class Files:
+    train_data: str
+    train_labels: str
+    test_data: str
+    test_labels: str
+
+@dataclass
+class Data:
+    file_name: str
+    data_dir: str
+    batch_size: int
+    train_val_test_split: List[float]
+    num_workers: int
+    shuffle: bool
+    pin_memory: bool
+
+@dataclass
+class ACAconfig:
+    """Groups parameters in terms of the previously
+    defined dataclasses"""
+    data: Data
+    hydra: str
+    model: str
+    paths: Paths
+    files: Files
+    trainer: str
+    wandb: str
+    seed: int = 42
+
+cs = ConfigStore.instance().store(
+    name="ACAconfig",
+    node=ACAconfig)
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
-    
-    return 
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
@@ -47,14 +90,30 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     Returns:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
-
-    ""
-    """
+    
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
-
-    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
+    if cfg.get("train"):
+        log.info("Starting training!")
+        print(info)
+        return
+    
+    """ 
+     object_dict = {
+        "cfg": cfg,
+        "datamodule": datamodule,
+        "model": model,
+        "callbacks": callbacks,
+        "logger": logger,
+        "trainer": trainer,
+    }
+     if cfg.get("train"):
+        log.info("Starting training!")
+        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+    """
+    """
+        log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
@@ -69,22 +128,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
-    object_dict = {
-        "cfg": cfg,
-        "datamodule": datamodule,
-        "model": model,
-        "callbacks": callbacks,
-        "logger": logger,
-        "trainer": trainer,
-    }
-
-    if logger:
+       if logger:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
-
-    if cfg.get("train"):
-        log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
 
@@ -105,14 +151,16 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
    """
 
-
-
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
-def main(cfg: DictConfig) -> Optional[float]:
-    print(cfg)
+def main(cfg: ACAconfig) -> Optional[float]:
+    #following line is responsive on online portal
+    #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
+    #wandb.log({"loss": loss})
+    print(f"Current working directory : {os.getcwd()}")
+    print(f"Orig working directory    : {get_original_cwd()}")
+    pl.seed_everything(cfg.seed)
+    print(instantiate(cfg.data))
     return
-
-
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,9 @@
+defaults:
+  - _self_
+  - data: default.yaml
+  - hydra: default.yaml
+  - model: default.yaml
+  - paths: default.yaml
+  - trainer: default.yaml
+  - wandb: default.yaml
+seed: 42

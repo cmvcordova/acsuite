@@ -1,0 +1,7 @@
+# https://github.com/captain-pool/hydra-example/blob/main/configs/wandb/defaults.yaml
+project: tlacamr
+entity: cmvcordova
+mode: online
+watch:
+    log: all
+    log_freq: 100
