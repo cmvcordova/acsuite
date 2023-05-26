@@ -158,8 +158,11 @@ def main(cfg: ACAconfig) -> Optional[float]:
     #wandb.log({"loss": loss})
     print(f"Current working directory : {os.getcwd()}")
     print(f"Orig working directory    : {get_original_cwd()}")
+    ## seed and data setup
     pl.seed_everything(cfg.seed)
-    print(instantiate(cfg.data))
+    data_module = instantiate(cfg.data)
+    data_module.prepare_data()
+    data_module.setup(cfg.seed)
     return
 
 if __name__ == "__main__":

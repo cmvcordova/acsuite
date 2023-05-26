@@ -1,3 +1,4 @@
+#
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -146,6 +147,11 @@ dmypy.json
 
 # Lightning-Hydra-Template
 configs/local/default.yaml
-/data/
-/logs/
+src/logs/
+data
+logs
 .env
+src.egg-info
+outputs/
+src/outputs/
+src/wandb/
