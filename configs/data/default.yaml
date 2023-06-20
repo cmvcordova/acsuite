@@ -1,8 +1,22 @@
 _target_: src.data.mmp_datamodule.MMPDataModule
-file_name: "ACNet/MMP_AC_Small.json"
+file_name: "ACNet/MMP_AC_Mixed_Screened.json"
 data_dir: ${paths.data_dir}
+## consult dataset size from Zhange et al. 2023 ACNet
+train_val_test_split: [222693, 27837, 27837]
 batch_size: 128
-train_val_test_split: [42466, 5309, 5309]
 num_workers: 0
-shuffle: False
 pin_memory: False
+shuffle: False
+## options related to the dataset start here.
+output_type: "concat"
+molfeat_featurizer: 
+  _target_: molfeat.trans.MoleculeTransformer
+  featurizer: 
+    _target_: molfeat.calc.FPCalculator
+    method: "ecfp"
+    length: 512
+    radius: 2
+  #dtype: torch.float32 add support later, currently
+  #doesn't work due to how hydra passes arguments as string
+  #while molfeat needs dtype to be a torch dtype
+target_dict: None

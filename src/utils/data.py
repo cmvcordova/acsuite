@@ -49,24 +49,4 @@ def sanitize_standardize(smiles_list: List[str]) -> List[rdkit.Chem.rdchem.Mol]:
             _mol = dm.sanitize_mol(_mol)
             _mol = dm.standardize_mol(_mol)
             standardized_mols.append(_mol)
-    return standardized_mols 
-
-"""
-def descriptors_from_smiles(smiles_array: Union[List[str], np.ndarray],
-                            featurizer: str = 'ecfp',
-                            rdkit_log:bool = False) -> np.ndarray:
-    WIP Is this necessary? check interactions with datamol/molfeat
-    Calculate molecular descriptors from SMILES strings using molfeat.
-
-    Args:
-        smiles_array: List or array of SMILES strings.
-        featurizer: Molecular descriptor to use. Default: 'ecfp'.
-        rdkit_log: Whether to show the rdkit log output. Default: False.
-    Returns:
-        featurized_mols: Array of molecular descriptors.
-    featurized_mols = []
-    for i in range(len(smiles_array)):
-        if not rdkit_log:
-            with dm.without_rdkit_log():
-    return featurized_mols
-"""
+    return standardized_mols
