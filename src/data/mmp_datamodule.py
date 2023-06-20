@@ -9,6 +9,7 @@ from torch.utils.data import Dataset, DataLoader, random_split
 from src.utils.data import read_ACNet_single_line_JSON_file
 from src.data.mmp_dataset import MMPDataset
 
+
 class MMPDataModule(pl.LightningDataModule):
     """
     PyTorch Lightning data module for MMP AC datasets.
@@ -37,7 +38,11 @@ class MMPDataModule(pl.LightningDataModule):
         batch_size, 
         num_workers,
         pin_memory, 
-        shuffle
+        shuffle,
+        ## dataset options
+        molfeat_featurizer,
+        output_type,
+        target_dict
     ):
         super().__init__()
 
@@ -48,6 +53,11 @@ class MMPDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.pin_memory = pin_memory
         self.shuffle = shuffle
+        ## dataset options
+        self.molfeat_featurizer = molfeat_featurizer
+        self.output_type = output_type
+        self.target_dict = target_dict
+
 
     def prepare_data(self) -> None:
         print('Preprocessing data...')
@@ -57,12 +67,10 @@ class MMPDataModule(pl.LightningDataModule):
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
         if not self.train_dataset and not self.val_dataset and not self.test_dataset:
-            """ may have to split into following convention, keep reg for now
-            trainset = MMPDataset(self.mmp_df)
-            testset = MMPDataset(self.mmp_df)
-            dataset = ConcatDataset(datasets=[trainset, testset]
-            """
-            dataset = MMPDataset(self.mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target')
+            dataset = MMPDataset(self.mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
+            output_type=self.output_type, 
+            molfeat_featurizer=self.molfeat_featurizer,
+            target_dict = self.target_dict)
             self.train_dataset, self.val_dataset, self.test_dataset = random_split(
                 dataset=dataset,
                 lengths=self.train_val_test_split,

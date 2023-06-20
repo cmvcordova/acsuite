@@ -108,6 +108,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         "logger": logger,
         "trainer": trainer,
     }
+    
      if cfg.get("train"):
         log.info("Starting training!")
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
@@ -163,7 +164,6 @@ def main(cfg: ACAconfig) -> Optional[float]:
     data_module = instantiate(cfg.data)
     data_module.prepare_data()
     data_module.setup(cfg.seed)
-    return
 
 if __name__ == "__main__":
     main()

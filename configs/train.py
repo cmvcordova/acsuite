@@ -21,10 +21,13 @@ class Data:
     filename: str
     data_dir: str
     batch_size: int
-    train_val_test_split: List[float]
+    train_val_test_split: List[int]
     num_workers: int
-    shuffle: bool
     pin_memory: bool
+    shuffle: bool
+    output_type: str
+    molfeat_featurizer: MoleculeTransformer
+    target_dict: dict
 
 @dataclass
 class ACAconfig:
