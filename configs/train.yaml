@@ -1,9 +1,26 @@
+## Use this as a template for your own config files
 defaults:
   - _self_
-  - data: default.yaml
+  - data: 1024ECFP2MixedACNet.yaml
   - model: default.yaml
   - paths: default.yaml
   - trainer: default.yaml
   - wandb: default.yaml
   - hydra: default.yaml
-seed: 42
+tags: ["dev"]
+
+# set False to skip model training
+train: True
+
+# evaluate on test set, using best model weights achieved during training
+# lightning chooses best weights based on the metric specified in checkpoint callback
+test: True
+
+# compile model for faster training with pytorch 2.0
+compile: False
+
+# simply provide checkpoint path to resume training
+ckpt_path: null
+
+# seed for random number generators in pytorch, numpy and python.random
+seed: null
