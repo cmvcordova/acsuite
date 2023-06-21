@@ -2,11 +2,11 @@ from typing import List, Optional, Tuple
 import hydra
 import sys, os
 import pyrootutils
-import pytorch_lightning as pl
+import lightning as L
 import wandb
 from omegaconf import DictConfig, omegaconf
-from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers import Logger
+from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers import Logger
 from hydra.utils import instantiate, get_original_cwd
 from hydra.core.config_store import ConfigStore
 
@@ -93,45 +93,59 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
-        pl.seed_everything(cfg.seed, workers=True)
-    if cfg.get("train"):
-        log.info("Starting training!")
-        print(info)
-        return
-    
-    """ 
-     object_dict = {
-        "cfg": cfg,
-        "datamodule": datamodule,
-        "model": model,
-        "callbacks": callbacks,
-        "logger": logger,
-        "trainer": trainer,
-    }
-    
-     if cfg.get("train"):
-        log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
-    """
-    """
-        log.info(f"Instantiating datamodule <{cfg.data._target_}>")
-    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
+        L.seed_everything(cfg.seed, workers=True)
 
+    print(f"Current working directory : {os.getcwd()}")
+    print(f"Orig working directory    : {get_original_cwd()}")
+
+    
+    log.info(f"Instantiating datamodule <{cfg.data._target_}>")
+    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
+    datamodule.prepare_data()
+    datamodule.setup(cfg.seed)
+    
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
 
-    log.info("Instantiating callbacks...")
-    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
+    #log.info("Instantiating callbacks...")
+    #callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
 
-    log.info("Instantiating loggers...")
-    logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+    #log.info("Instantiating logger...")
+    #logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+    
+    # if cfg.get("train"):
+    #    log.info("Starting training!")
+    #    trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
-    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
-       if logger:
+    #log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
+    #trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
+    """
+    object_dict = {
+        "cfg": cfg,
+        "datamodule": datamodule,
+        "model": model,
+        #"callbacks": callbacks,
+        "logger": logger,
+        "trainer": trainer,
+    }
+    """
+    #following line is responsive on online portal
+    #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
+    #wandb.log({"loss": loss})
+
+
+    if logger:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
+
+    if cfg.get("compile"):
+        log.info("Compiling model!")
+        model = torch.compile(model)
+
+    if cfg.get("train"):
+        log.info("Starting training!")
+        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
 
@@ -144,26 +158,18 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
         log.info(f"Best ckpt path: {ckpt_path}")
 
-    test_metrics = trainer.callback_metrics
+    #test_metrics = trainer.callback_metrics
 
     # merge train and test metrics
-    metric_dict = {**train_metrics, **test_metrics}
+    #metric_dict = {**train_metrics, **test_metrics}
 
-    return metric_dict, object_dict
-   """
+    return model #metric_dict, object_dict
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: ACAconfig) -> Optional[float]:
-    #following line is responsive on online portal
-    #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
-    #wandb.log({"loss": loss})
-    print(f"Current working directory : {os.getcwd()}")
-    print(f"Orig working directory    : {get_original_cwd()}")
-    ## seed and data setup
-    pl.seed_everything(cfg.seed)
-    data_module = instantiate(cfg.data)
-    data_module.prepare_data()
-    data_module.setup(cfg.seed)
+    ## apply extra utilities 
+    x = train(cfg)
+    return x  
 
 if __name__ == "__main__":
     main()
