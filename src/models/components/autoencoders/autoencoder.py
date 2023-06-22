@@ -6,37 +6,60 @@ import torch.nn.functional as F
 
 class AutoEncoder(nn.Module):
 
-    def __init__(self, in_features: int = 1024, code_features: int = 64,
-        depth: int = 2, activation: nn.Module = nn.ReLU()):
+    def __init__(
+    self, 
+    in_features: int = 1024, 
+    code_features: int = 64, 
+    hidden_layers: int = 2, 
+    layer_activation: nn.Module = nn.ReLU(),
+    output_activation: nn.Module = nn.Sigmoid(),
+    dropout: float = 0.2):
 
         """
         Autoencoder for molecular data. Takes ECFP-like features as input and 
         outputs a compressed fingerprint as the autoencoder's latent code.
 
+        Note: currently only works with canonical ECFP sizes e.g. 512, 1024, 2048, 4096
+        and corresponding hidden layer combinations
+
         Args:
-            in_features (int): Number of input features, ECFP Size
+            in_features (int): Number of input features, Uses canonical ECFP Sizes e.g. 512, 1024, 2048, 4096
             code_features (int): Number of features in the code, i.e. size of the compressed fingerprint
-            activation (nn.Module, optional): Activation function to use for the code. Defaults to nn.Sigmoid().
+            hidden_layers (int): Number of hidden layers
+            layer_activation (nn.Module, optional): Activation function to use for the code. Defaults to nn.ReLU().
+            output_activation (nn.Module, optional): Activation function to use for the output. Defaults to nn.Sigmoid().
+            dropout (float, optional): Dropout probability. Defaults to 0.2.
         """
+        
         super().__init__()
+        self.in_features = in_features
+        self.code_features = code_features
+        self.hidden_layers = hidden_layers
+        self.layer_activation = layer_activation
+        self.output_activation = output_activation
+        self.dropout = dropout
+        ## vector specifying the number of features in each layer if halving w.r.t former layer
+        self.layer_features = np.concatenate((
+        self.in_features,
+        [self.in_features//2**i for i in range(1, self.hidden_layers+2)]),
+        axis = None)
 
-        assert in_features > code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
+        assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
+        assert self.layer_features[-1] > self.code_features, f"Final hidden layer output features must be greater than code features: {layer_features[-1]} !> {code_features}"
 
-        self.encoder = nn.Sequential(
-            nn.Linear(in_features, in_features/2), # input layer
-            activation,
-            nn.Linear(in_features/2, in_features/4), ## hidden 1
-            activation,
-            nn.Linear(in_features/4, code_features), ## hidden 2, code output layer
-        )
+        self.layers = nn.ModuleList()
 
-        self.decoder = nn.Sequential(
-            nn.Linear(code_features, in_features/4), ## hidden 1,
-            activation,
-            nn.Linear(in_features/4, in_features/2), ## hidden 2
-            activation,
-            nn.Linear(in_features/2, in_features)
-         ) ## output layer, restore original FP size
+        for i in range(self.hidden_layers+1):
+            self.layers.append(nn.Linear(self.layer_features[i], self.layer_features[i+1]))
+            self.layers.append(self.layer_activation)
+            if dropout > 0.0:
+                self.layers.append(nn.Dropout(p=self.dropout))
+        self.layers.append(nn.Linear(self.layer_features[-1], self.code_features))
+        
+        self.encoder = nn.Sequential(*self.layers, 
+                                    self.output_activation)
+        self.decoder = nn.Sequential(*self.layers[::-1], 
+                                    self.output_activation)
 
     def forward_encoder(self, x):
         z = self.encoder(x)
@@ -53,8 +76,6 @@ class AutoEncoder(nn.Module):
     
     #def initialize_weights(self):
         ## use kaiming for relu
-
-
 
 if __name__ == "__main__":
     _ = AutoEncoder()
