@@ -1,12 +1,15 @@
 ## Use this as a template for your own config files
 defaults:
   - _self_
-  - data: 1024ECFP2MixedACNet.yaml
-  - model: default.yaml
+  - data: test_Concat512ECFP2MixedACNet.yaml
+  - model: test_JointAutoEncoder.yaml
+  - callbacks: default.yaml
+  - logger: wandb.yaml
   - paths: default.yaml
   - trainer: default.yaml
-  - wandb: default.yaml
+  - wandb: cmvcordova.yaml
   - hydra: default.yaml
+  
 tags: ["dev"]
 
 # set False to skip model training
@@ -17,7 +20,7 @@ train: True
 test: True
 
 # compile model for faster training with pytorch 2.0
-compile: False
+compile: True
 
 # simply provide checkpoint path to resume training
 ckpt_path: null
