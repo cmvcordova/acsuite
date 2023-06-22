@@ -11,7 +11,7 @@ class MLP(nn.Module):
     
             """
             MLP for molecular data. Takes a latent code as input and
-            outputs a regressed value, e.g. a property prediction.
+            outputs a regressed value, e.g. for property prediction.
     
             Args:
                 in_features (int): Number of input features, i.e. size of the compressed fingerprint

@@ -3,7 +3,6 @@ import hydra
 import sys, os
 import pyrootutils
 import lightning as L
-import wandb
 from omegaconf import DictConfig, omegaconf
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger

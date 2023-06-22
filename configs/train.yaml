@@ -2,6 +2,7 @@
 defaults:
   - _self_
   - data: test_Concat512ECFP2MixedACNet.yaml
+  - extras: default.yaml
   - model: test_JointAutoEncoder.yaml
   - callbacks: default.yaml
   - logger: wandb.yaml
@@ -26,4 +27,4 @@ compile: True
 ckpt_path: null
 
 # seed for random number generators in pytorch, numpy and python.random
-seed: null
+seed: 42
