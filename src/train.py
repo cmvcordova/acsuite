@@ -107,29 +107,28 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
 
-    #log.info("Instantiating callbacks...")
-    #callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
+    log.info("Instantiating callbacks...")
+    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
 
-    #log.info("Instantiating logger...")
-    #logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+    log.info("Instantiating logger...")
+    logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
     
-    # if cfg.get("train"):
-    #    log.info("Starting training!")
-    #    trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+    if cfg.get("train"):
+        log.info("Starting training!")
+        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
 
-    #log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    #trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
-    """
+    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
+    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
     object_dict = {
         "cfg": cfg,
         "datamodule": datamodule,
         "model": model,
-        #"callbacks": callbacks,
+        "callbacks": callbacks,
         "logger": logger,
         "trainer": trainer,
     }
-    """
+
     #following line is responsive on online portal
     #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
     #wandb.log({"loss": loss})
@@ -158,32 +157,19 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
         log.info(f"Best ckpt path: {ckpt_path}")
 
-    #test_metrics = trainer.callback_metrics
+    test_metrics = trainer.callback_metrics
 
     # merge train and test metrics
-    #metric_dict = {**train_metrics, **test_metrics}
+    metric_dict = {**train_metrics, **test_metrics}
 
-    return model #metric_dict, object_dict
+    return metric_dict, object_dict
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: ACAconfig) -> Optional[float]:
-    ## apply extra utilities 
-    x = train(cfg)
-    return x  
+    # apply extra utilities
+    # (e.g. ask for tags if none are provided in cfg, print cfg tree, etc.)
+    utils.extras(cfg)
 
-if __name__ == "__main__":
-    main()
-
-
-"""
-    wandb.config = omegaconf.OmegaConf.to_container(
-        cfg, resolve=True, throw_on_missing=True
-    )
-    run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
-
-    wandb.log({"loss": loss})
-    model = Model(**wandb.config.model.configs)
-    
     # train the model
     metric_dict, _ = train(cfg)
 
@@ -191,6 +177,11 @@ if __name__ == "__main__":
     metric_value = utils.get_metric_value(
         metric_dict=metric_dict, metric_name=cfg.get("optimized_metric")
     )
-"""
+
     # return optimized metric
-    #return#metric_value
+    return metric_value
+
+
+
+if __name__ == "__main__":
+    main()

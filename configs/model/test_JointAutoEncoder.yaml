@@ -1,8 +1,8 @@
-_target_: src.models.mnist_module.ACAModule
+_target_: src.models.acamodule.ACAModule
 
 net:
-  _target_: src.models.components.autoencoder.AutoEncoder
-  in_features: 2048
+  _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
+  in_features: 1024 # 512x2 for for concat
   code_features: 64
   activation: nn.ReLU
 
