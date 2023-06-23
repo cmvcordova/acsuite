@@ -1,16 +1,5 @@
 _target_: src.models.acamodule.ACAModule
 
-autoencoder:
-  _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
-  in_features: 1024 # 512x2 for for concat
-  code_features: 64
-  hidden_layers: 2
-  layer_activation: 
-    _target_: torch.nn.ReLU
-  output_activation:
-    _target_: torch.nn.Sigmoid
-  dropout: 0.2
-
 optimizer:
   _target_: torch.optim.Adam
   _partial_: true
@@ -24,5 +13,16 @@ scheduler:
   factor: 0.1
   patience: 10
 
+model:
+  _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
+  in_features: 1024 # 512x2 for for concat
+  code_features: 64
+  hidden_layers: 2
+  layer_activation: 
+    _target_: torch.nn.ReLU
+  output_activation:
+    _target_: torch.nn.Sigmoid
+  dropout: 0.2
+  
 criterion:
   _target_: torch.nn.CrossEntropyLoss

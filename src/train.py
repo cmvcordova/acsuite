@@ -30,6 +30,7 @@ from src import utils
 
 log = utils.get_pylogger(__name__)
 
+"""
 from dataclasses import dataclass
 
 @dataclass
@@ -60,8 +61,8 @@ class Data:
 
 @dataclass
 class ACAconfig:
-    """Groups parameters in terms of the previously
-    defined dataclasses"""
+    #Groups parameters in terms of the previously
+    #defined dataclasses
     data: Data
     hydra: str
     model: str
@@ -74,6 +75,7 @@ class ACAconfig:
 cs = ConfigStore.instance().store(
     name="ACAconfig",
     node=ACAconfig)
+"""
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -94,14 +96,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("seed"):
         L.seed_everything(cfg.seed, workers=True)
 
-    print(f"Current working directory : {os.getcwd()}")
-    print(f"Orig working directory    : {get_original_cwd()}")
-
-    
     log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
-    datamodule.prepare_data()
-    datamodule.setup(cfg.seed)
+    #datamodule.prepare_data()
+    #datamodule.setup(cfg.seed)
     
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
@@ -131,7 +129,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     #following line is responsive on online portal
     #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
     #wandb.log({"loss": loss})
-
 
     if logger:
         log.info("Logging hyperparameters!")
@@ -164,7 +161,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
-def main(cfg: ACAconfig) -> Optional[float]:
+def main(cfg: DictConfig) -> Optional[float]:
     # apply extra utilities
     # (e.g. ask for tags if none are provided in cfg, print cfg tree, etc.)
     utils.extras(cfg)

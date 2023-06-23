@@ -1,16 +1,36 @@
-## Use this as a template for your own config files
+# specify here default configuration
+# order of defaults determines the order in which configs override each other
 defaults:
   - _self_
-  - data: test_Concat512ECFP2MixedACNet.yaml
-  - extras: default.yaml
-  - model: test_JointAutoEncoder.yaml
-  - callbacks: default.yaml
-  - logger: wandb.yaml
-  - paths: default.yaml
-  - trainer: default.yaml
-  - wandb: cmvcordova.yaml
-  - hydra: default.yaml
-  
+  - data: test_Concat512ECFP2MixedACNet
+  - model: test_JointAutoEncoder
+  - callbacks: default
+  - logger: wandb # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - trainer: default
+  - paths: default
+  - extras: default
+  - hydra: default
+
+  # experiment configs allow for version control of specific hyperparameters
+  # e.g. best hyperparameters for given model and datamodule
+  - experiment: null
+
+  # config for hyperparameter optimization
+  - hparams_search: null
+
+  # optional local config for machine/user specific settings
+  # it's optional since it doesn't need to exist and is excluded from version control
+  - optional local: default.yaml
+
+  # debugging config (enable through command line, e.g. `python train.py debug=default)
+  - debug: null
+
+# task name, determines output directory path
+task_name: "train"
+
+# tags to help you identify your experiments
+# you can overwrite this in experiment configs
+# overwrite from command line with `python train.py tags="[first_tag, second_tag]"`
 tags: ["dev"]
 
 # set False to skip model training

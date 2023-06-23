@@ -1,21 +1,25 @@
 from typing import Any
+
 import torch
-import lightning as L
+from lightning import LightningModule
+from torchmetrics import MaxMetric, MeanMetric
+from torchmetrics.classification.accuracy import Accuracy
+
 
 ## Heavily borrows from ashleve/lightning-hydra-template's 
 ## MNISTLitModule class
 
-class ACAModule(L.LightningModule):
+class ACAModule(LightningModule):
     """ Example of LightningModule for Activity-Cliff Aware representation learning
     through multiple encoding schemes.
     """
 
     def __init_(
         self,
-        autoencoder: torch.nn.Module,
+        model: torch.nn.Module,
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: torch.nn.modules.loss = torch.nn.CrossEntropyLoss(),
+        criterion: torch.nn.modules.loss,
     ):
         super().__init__()
 
@@ -23,7 +27,7 @@ class ACAModule(L.LightningModule):
         # also ensures init params will be stored in ckpt
         self.save_hyperparameters(logger=False)
 
-        self.autoencoder = autoencoder
+        self.model = model
 
         # loss function
         ### if siamese autoencoder.... elif autoencoder...
@@ -45,7 +49,7 @@ class ACAModule(L.LightningModule):
         ## define the default forward pass depending on
         ## associated autoencoder
         def forward(self, x:torch.Tensor) -> torch.Tensor:
-            return self.autoencoder.forward(x)
+            return self.model(x)
 
         def on_train_start(self):
             # by default lightning executes validation step sanity checks before training starts,
@@ -127,4 +131,4 @@ class ACAModule(L.LightningModule):
     
     
     if __name__ == "__main__":
-        _ = ACAModule(None, None, None)
+        _ = ACAModule(None, None, None, None)
