@@ -11,8 +11,8 @@ class AutoEncoder(nn.Module):
     in_features: int = 1024, 
     code_features: int = 64, 
     hidden_layers: int = 2, 
-    layer_activation: nn.Module = nn.ReLU(),
-    output_activation: nn.Module = nn.Sigmoid(),
+    layer_activation: nn.Module = nn.ReLU,
+    output_activation: nn.Module = nn.Sigmoid,
     dropout: float = 0.2):
 
         """
@@ -35,31 +35,39 @@ class AutoEncoder(nn.Module):
         self.in_features = in_features
         self.code_features = code_features
         self.hidden_layers = hidden_layers
-        self.layer_activation = layer_activation
-        self.output_activation = output_activation
         self.dropout = dropout
         ## vector specifying the number of features in each layer if halving w.r.t former layer
         self.layer_features = np.concatenate((
         self.in_features,
-        [self.in_features//2**i for i in range(1, self.hidden_layers+2)]),
+        [self.in_features//2**i for i in range(1, self.hidden_layers+2)],
+        self.code_features),
         axis = None)
 
         assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
-        assert self.layer_features[-1] > self.code_features, f"Final hidden layer output features must be greater than code features: {layer_features[-1]} !> {code_features}"
+        assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
 
-        self.layers = nn.ModuleList()
+        ## build the encoder
+        self.encoder = nn.ModuleList([nn.Linear(self.layer_features[0], self.layer_features[1])])
 
-        for i in range(self.hidden_layers+1):
-            self.layers.append(nn.Linear(self.layer_features[i], self.layer_features[i+1]))
-            self.layers.append(self.layer_activation)
+        for i in range(1, len(self.layer_features)-1):
+            self.encoder.append(nn.Linear(self.layer_features[i], self.layer_features[i+1]))
+            if i == len(self.layer_features)-2: ## stop activation, dropout before code layer
+                break
+            self.encoder.append(layer_activation)
             if dropout > 0.0:
-                self.layers.append(nn.Dropout(p=self.dropout))
-        self.layers.append(nn.Linear(self.layer_features[-1], self.code_features))
+                self.encoder.append(nn.Dropout(p=self.dropout))
+
+        ## build the decoder
+        self.decoder = nn.ModuleList()
         
-        self.encoder = nn.Sequential(*self.layers, 
-                                    self.output_activation)
-        self.decoder = nn.Sequential(*self.layers[::-1], 
-                                    self.output_activation)
+        for i in range(len(self.layer_features)-1, 0, -1):
+            self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
+
+        ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
+        self.encoder = nn.Sequential(*self.encoder)
+
+        self.decoder = nn.Sequential(*self.decoder,
+                                    output_activation)
 
     def forward_encoder(self, x):
         z = self.encoder(x)

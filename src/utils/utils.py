@@ -58,7 +58,7 @@ def task_wrapper(task_func: Callable) -> Callable:
         return metric_dict, object_dict
     ```
     """
-
+    
     def wrap(cfg: DictConfig):
         # execute the task
         try:

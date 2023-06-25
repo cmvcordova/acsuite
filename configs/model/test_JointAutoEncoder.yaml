@@ -23,6 +23,6 @@ model:
   output_activation:
     _target_: torch.nn.Sigmoid
   dropout: 0.2
-  
+ 
 criterion:
   _target_: torch.nn.CrossEntropyLoss

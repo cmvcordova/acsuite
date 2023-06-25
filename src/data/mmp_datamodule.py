@@ -1,16 +1,14 @@
-import os, sys
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-import pandas as pd
-import numpy as np
-import pytorch_lightning as pl
-import torch, torch_geometric
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader, random_split
+from typing import Any, Dict, Optional, Tuple
+
+import torch
+from lightning import LightningDataModule
+from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
+from torchvision.transforms import transforms
+
 from src.utils.data import read_ACNet_single_line_JSON_file
 from src.data.mmp_dataset import MMPDataset
 
-
-class MMPDataModule(pl.LightningDataModule):
+class MMPDataModule(LightningDataModule):
     """
     PyTorch Lightning data module for MMP AC datasets.
     Args:
@@ -20,14 +18,6 @@ class MMPDataModule(pl.LightningDataModule):
         batch_size (int): Batch size
         num_workers (int): Number of workers
     """
-
-    df_train = None
-    df_val = None
-    df_test = None
-
-    train_dataset: Dataset = None
-    val_dataset: Dataset = None
-    test_dataset: Dataset = None
     
     def __init__(
         ## add type hints here
@@ -45,6 +35,7 @@ class MMPDataModule(pl.LightningDataModule):
         target_dict
     ):
         super().__init__()
+        self.save_hyperparameters(logger=False)
 
         self.file_name = file_name
         self.data_dir = data_dir
@@ -58,20 +49,29 @@ class MMPDataModule(pl.LightningDataModule):
         self.output_type = output_type
         self.target_dict = target_dict
 
+        self.data_train: Optional[Dataset] = None
+        self.data_val: Optional[Dataset] = None
+        self.data_test: Optional[Dataset] = None
+
+
 
     def prepare_data(self) -> None:
         print('Preprocessing data...')
         ## add additional split info here
-        self.mmp_df = read_ACNet_single_line_JSON_file(self.data_dir + self.file_name)
+        ## make a class similar to MNIST
+        ## and add ACNet download method?
         
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
-        if not self.train_dataset and not self.val_dataset and not self.test_dataset:
+        if not self.data_train and not self.data_val and not self.data_test:
+            self.mmp_df = read_ACNet_single_line_JSON_file(self.data_dir + self.file_name)
+            print(len(self.mmp_df))
             dataset = MMPDataset(self.mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
-            output_type=self.output_type, 
-            molfeat_featurizer=self.molfeat_featurizer,
+            output_type = self.output_type, 
+            molfeat_featurizer = self.molfeat_featurizer,
             target_dict = self.target_dict)
-            self.train_dataset, self.val_dataset, self.test_dataset = random_split(
+            
+            self.data_train, self.data_val, self.data_test = random_split(
                 dataset=dataset,
                 lengths=self.train_val_test_split,
                 generator=torch.Generator().manual_seed(42),
@@ -79,7 +79,7 @@ class MMPDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(
-            dataset=self.train_dataset,
+            dataset=self.data_train,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
@@ -87,7 +87,7 @@ class MMPDataModule(pl.LightningDataModule):
         )
     def val_dataloader(self):
         return DataLoader(
-            dataset=self.val_dataset,
+            dataset=self.data_val,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
@@ -96,7 +96,7 @@ class MMPDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(
-            dataset=self.test_dataset,
+            dataset=self.data_test,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
@@ -110,6 +110,10 @@ class MMPDataModule(pl.LightningDataModule):
     def state_dict(self):
         """Extra things to save to checkpoint."""
         return {}
+    
+    def load_state_dict(self, state_dict: Dict[str, Any]):
+        """Things to do when loading from checkpoint."""
+        pass
 
 if __name__ == '__main__':
     _ = MMPDataModule()

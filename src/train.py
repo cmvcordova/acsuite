@@ -1,13 +1,13 @@
 from typing import List, Optional, Tuple
+
 import hydra
-import sys, os
-import pyrootutils
 import lightning as L
-from omegaconf import DictConfig, omegaconf
+import pyrootutils
+import torch
+import sys, os
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
-from hydra.utils import instantiate, get_original_cwd
-from hydra.core.config_store import ConfigStore
+from omegaconf import DictConfig, omegaconf
 
 pyrootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
@@ -30,53 +30,6 @@ from src import utils
 
 log = utils.get_pylogger(__name__)
 
-"""
-from dataclasses import dataclass
-
-@dataclass
-class Paths:
-    ## from default paths config
-    root_dir: str
-    data_dir: str
-    log_dir: str
-    output_dir: str
-    work_dir: str
-
-@dataclass
-class Files:
-    train_data: str
-    train_labels: str
-    test_data: str
-    test_labels: str
-
-@dataclass
-class Data:
-    file_name: str
-    data_dir: str
-    batch_size: int
-    train_val_test_split: List[float]
-    num_workers: int
-    shuffle: bool
-    pin_memory: bool
-
-@dataclass
-class ACAconfig:
-    #Groups parameters in terms of the previously
-    #defined dataclasses
-    data: Data
-    hydra: str
-    model: str
-    paths: Paths
-    files: Files
-    trainer: str
-    wandb: str
-    seed: int = 42
-
-cs = ConfigStore.instance().store(
-    name="ACAconfig",
-    node=ACAconfig)
-"""
-
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
@@ -98,9 +51,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     log.info(f"Instantiating datamodule <{cfg.data._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.data)
-    #datamodule.prepare_data()
-    #datamodule.setup(cfg.seed)
-    
+
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
 
@@ -109,14 +60,10 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     log.info("Instantiating logger...")
     logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
-    
-    if cfg.get("train"):
-        log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
-
 
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
     trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
+
     object_dict = {
         "cfg": cfg,
         "datamodule": datamodule,
@@ -125,10 +72,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         "logger": logger,
         "trainer": trainer,
     }
-
-    #following line is responsive on online portal
-    #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
-    #wandb.log({"loss": loss})
 
     if logger:
         log.info("Logging hyperparameters!")
@@ -178,6 +121,9 @@ def main(cfg: DictConfig) -> Optional[float]:
     return metric_value
 
 
-
 if __name__ == "__main__":
     main()
+
+    #following line is responsive on online portal
+    #run = wandb.init(entity=cfg.wandb.entity, project=cfg.wandb.project)
+    #wandb.log({"loss": loss})
