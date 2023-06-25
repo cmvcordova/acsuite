@@ -14,7 +14,7 @@ class ACAModule(LightningModule):
     through multiple encoding schemes.
     """
 
-    def __init_(
+    def __init__(
         self,
         model: torch.nn.Module,
         optimizer: torch.optim.Optimizer,
@@ -25,10 +25,10 @@ class ACAModule(LightningModule):
 
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
-        self.save_hyperparameters(logger=False)
+        self.save_hyperparameters(ignore=['model', 'criterion'], logger=False)
 
         self.model = model
-
+        print(self.model)
         # loss function
         ### if siamese autoencoder.... elif autoencoder...
         self.criterion = criterion
@@ -48,7 +48,7 @@ class ACAModule(LightningModule):
         
         ## define the default forward pass depending on
         ## associated autoencoder
-        def forward(self, x:torch.Tensor) -> torch.Tensor:
+        def forward(self, x:torch.Tensor):
             return self.model(x)
 
         def on_train_start(self):
@@ -66,6 +66,7 @@ class ACAModule(LightningModule):
             return loss, preds, y
         
         def training_step(self, batch: Any, batch_idx: int):
+            ## Required
             loss, preds, targets = self.model_step(batch)
 
             # update and log metrics
@@ -109,6 +110,7 @@ class ACAModule(LightningModule):
             pass
     
         def configure_optimizers(self):
+            ## Required
             """Choose what optimizers and learning-rate schedulers to use in your optimization.
             Normally you'd need one. But in the case of GANs or similar you might have multiple.
     
