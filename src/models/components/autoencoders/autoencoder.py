@@ -74,7 +74,7 @@ class AutoEncoder(nn.Module):
         ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
         self.encoder = nn.Sequential(*self.encoder)
         self.decoder = nn.Sequential(*self.decoder)
-        
+
     def forward_encoder(self, x):
         z = self.encoder(x)
         return z

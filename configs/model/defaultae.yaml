@@ -15,13 +15,11 @@ scheduler:
 
 net:
   _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
-  in_features: 1024 # 512x2 for for concat
+  in_features: 2048
   code_features: 64
   hidden_layers: 2
   layer_activation: 
     _target_: torch.nn.ReLU
-  #output_activation:
-  #  _target_: torch.nn.Sigmoid
   dropout: 0.2
  
 criterion:
