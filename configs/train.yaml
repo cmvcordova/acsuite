@@ -4,12 +4,12 @@ defaults:
   - _self_
   - data: test_Concat512ECFP2MixedACNet
   - model: test_JointAutoEncoder
-  - callbacks: default
+  - callbacks: null
   - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default
   - paths: default
-  - extras: default
-  - hydra: default
+  - extras: null
+  - hydra: null
 
   # experiment configs allow for version control of specific hyperparameters
   # e.g. best hyperparameters for given model and datamodule

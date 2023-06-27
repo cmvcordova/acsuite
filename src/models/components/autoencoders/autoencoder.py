@@ -13,7 +13,8 @@ class AutoEncoder(nn.Module):
     hidden_layers: int = 2, 
     layer_activation: nn.Module = nn.ReLU,
     output_activation: nn.Module = nn.Sigmoid,
-    dropout: float = 0.2):
+    dropout: float = 0.2,
+    layer_features: np.ndarray = None):
 
         """
         Autoencoder for molecular data. Takes ECFP-like features as input and 
@@ -29,6 +30,7 @@ class AutoEncoder(nn.Module):
             layer_activation (nn.Module, optional): Activation function to use for the code. Defaults to nn.ReLU().
             output_activation (nn.Module, optional): Activation function to use for the output. Defaults to nn.Sigmoid().
             dropout (float, optional): Dropout probability. Defaults to 0.2.
+            layer_features (np.ndarray, optional): Array specifying the number of features in each layer. Defaults to None, since it is calculated from the other parameters.
         """
         
         super().__init__()
@@ -36,7 +38,9 @@ class AutoEncoder(nn.Module):
         self.code_features = code_features
         self.hidden_layers = hidden_layers
         self.dropout = dropout
-        ## vector specifying the number of features in each layer if halving w.r.t former layer
+        ## array specifying the number of features in each layer if halving w.r.t former layer
+        ## defaults to halving the input layer size for each hidden layer until the code layer
+        ## e.g. 1024, 512, 256, 128, 64, can provide own as long as it meets assertions below
         self.layer_features = np.concatenate((
         self.in_features,
         [self.in_features//2**i for i in range(1, self.hidden_layers+2)],
@@ -46,12 +50,12 @@ class AutoEncoder(nn.Module):
         assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
         assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
 
-        ## build the encoder
+        ## build the encoder, specify the input layer separately to avoid activation, dropout in input layer
         self.encoder = nn.ModuleList([nn.Linear(self.layer_features[0], self.layer_features[1])])
 
         for i in range(1, len(self.layer_features)-1):
             self.encoder.append(nn.Linear(self.layer_features[i], self.layer_features[i+1]))
-            if i == len(self.layer_features)-2: ## stop activation, dropout before code layer
+            if i == len(self.layer_features)-2: ## stop activation, dropout after inserting code layer
                 break
             self.encoder.append(layer_activation)
             if dropout > 0.0:
@@ -70,6 +74,7 @@ class AutoEncoder(nn.Module):
                                     output_activation)
 
     def forward_encoder(self, x):
+        print(x.dtype)
         z = self.encoder(x)
         return z
     
