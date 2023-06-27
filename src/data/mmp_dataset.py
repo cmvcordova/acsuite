@@ -59,7 +59,7 @@ class MMPDataset(Dataset):
     def __getitem__(self, idx):
         molecule_one = torch.as_tensor(self.smiles_one[idx], dtype = torch.float32)
         molecule_two = torch.as_tensor(self.smiles_two[idx], dtype = torch.float32)
-        label = torch.as_tensor(self.label[idx], dtype = torch.long)
+        label = torch.tensor(self.label[idx], dtype = torch.long)
         #target = torch.from_numpy(self.target[idx]) protein target, add support later since "All" needs to be encoded
         if self.output_type == 'pair':
             return molecule_one, molecule_two, label#, target

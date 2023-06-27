@@ -61,20 +61,21 @@ class AutoEncoder(nn.Module):
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
+
         ## build the decoder
         self.decoder = nn.ModuleList()
         
         for i in range(len(self.layer_features)-1, 0, -1):
             self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
 
+        ## initialize weights
+        self.initialize_weights()
+
         ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
         self.encoder = nn.Sequential(*self.encoder)
-
-        self.decoder = nn.Sequential(*self.decoder,
-                                    output_activation)
-
+        self.decoder = nn.Sequential(*self.decoder)
+        
     def forward_encoder(self, x):
-        print(x.dtype)
         z = self.encoder(x)
         return z
     
@@ -87,8 +88,17 @@ class AutoEncoder(nn.Module):
         logits = self.forward_decoder(z)
         return logits
     
-    #def initialize_weights(self):
+    def initialize_weights(self):
+        ## using subordinate function in case we want to initialize weights differently
+        self.apply(self._init_weights)
+    
+    def _init_weights(self, m):
         ## use kaiming for relu
+        ## currently assumes all layers are activated with a ReLU
+        if isinstance(m, nn.Linear):
+            nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
+            if isinstance(m , nn.Linear) and m.bias is not None:
+                nn.init.constant_(m.bias, 0.0)
 
 if __name__ == "__main__":
     _ = AutoEncoder()

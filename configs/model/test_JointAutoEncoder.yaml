@@ -20,9 +20,9 @@ net:
   hidden_layers: 2
   layer_activation: 
     _target_: torch.nn.ReLU
-  output_activation:
-    _target_: torch.nn.Sigmoid
+  #output_activation:
+  #  _target_: torch.nn.Sigmoid
   dropout: 0.2
  
 criterion:
-  _target_: torch.nn.CrossEntropyLoss
+  _target_: torch.nn.BCEWithLogitsLoss

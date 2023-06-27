@@ -62,7 +62,7 @@ def task_wrapper(task_func: Callable) -> Callable:
     def wrap(cfg: DictConfig):
         # execute the task
         try:
-            metric_dict, object_dict = task_func(cfg=cfg)
+             metric_dict, object_dict = task_func(cfg=cfg)
 
         # things to do if exception occurs
         except Exception as ex:

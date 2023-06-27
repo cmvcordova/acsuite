@@ -4,7 +4,7 @@ defaults:
   - _self_
   - data: test_Concat512ECFP2MixedACNet
   - model: test_JointAutoEncoder
-  - callbacks: null
+  - callbacks: default
   - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default
   - paths: default
