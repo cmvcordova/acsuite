@@ -66,8 +66,8 @@ class MMPDataModule(LightningDataModule):
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
         if not self.data_train and not self.data_val and not self.data_test:
-            self.hparams.train_val_test_split = [10,10,10]
-            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name).iloc[:30]
+            self.hparams.train_val_test_split = [204,26,26] #mmp_dataset debug purposes
+            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name).iloc[:256] #debug purposes
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
             output_type = self.hparams.output_type, 
             molfeat_featurizer = self.hparams.molfeat_featurizer,
@@ -87,13 +87,13 @@ class MMPDataModule(LightningDataModule):
             pin_memory=self.hparams.pin_memory,
             shuffle=self.hparams.shuffle
         )
+
     def val_dataloader(self):
         return DataLoader(
             dataset=self.data_val,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
-            pin_memory=self.hparams.pin_memory,
-            shuffle=self.hparams.shuffle
+            pin_memory=self.hparams.pin_memory
         )
 
     def test_dataloader(self):

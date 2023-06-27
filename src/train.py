@@ -80,14 +80,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("compile"):
         log.info("Compiling model!")
         model = torch.compile(model)
-    ###
-    #datamodule.setup()
-    #print(model)
-    #data_sample = next(iter(datamodule.train_dataloader()))
-    #print(data_sample[0])
-    #print(model.model_step(data_sample))
-    ###
-    return
+    
     if cfg.get("train"):
         log.info("Starting training!")
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
