@@ -38,8 +38,8 @@ class MMPDataset(Dataset):
         target: str,
         molfeat_featurizer = MoleculeTransformer(
             FPCalculator('ecfp', 
-            length = 1024,
-            radius = 2)
+            length = 2048,
+            radius = 4)
             #, dtype = torch.float32 didn't work
         ),
         input_type: str = 'concat',
@@ -53,6 +53,7 @@ class MMPDataset(Dataset):
         self.input_type = input_type
         self.target_dict = target_dict
 
+        self.featurized_smiles = None
         if input_type == 'single':
             self.featurized_smiles = self.featurized_smiles_one + self.featurized_smiles_two
 

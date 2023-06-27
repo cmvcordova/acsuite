@@ -5,11 +5,11 @@ defaults:
   - data: default
   - model: autoencoder
   - callbacks: default
-  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - logger: wandb # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default
   - paths: default
   - extras: default
-  - hydra: null
+  - hydra: default
 
   # experiment configs allow for version control of specific hyperparameters
   # e.g. best hyperparameters for given model and datamodule

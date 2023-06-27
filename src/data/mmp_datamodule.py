@@ -38,7 +38,7 @@ class MMPDataModule(LightningDataModule):
         shuffle: bool,
         ## dataset options
         molfeat_featurizer,
-        output_type: str,
+        input_type: str,
         target_dict: Dict[str, Any]
     ):
         super().__init__()
@@ -69,7 +69,7 @@ class MMPDataModule(LightningDataModule):
             self.hparams.train_val_test_split = [204,26,26] #mmp_dataset debug purposes
             mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name).iloc[:256] #debug purposes
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
-            output_type = self.hparams.output_type, 
+            input_type = self.hparams.input_type, 
             molfeat_featurizer = self.hparams.molfeat_featurizer,
             target_dict = self.hparams.target_dict)
             
