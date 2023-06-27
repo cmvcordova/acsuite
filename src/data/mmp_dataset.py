@@ -20,7 +20,15 @@ class MMPDataset(Dataset):
     Create a dataset for MMPs from a JSON file as provided after generating ACNet datasets.
     
     Args:
-
+        mmp_df: MMP dataframe, instantiated from a JSON file as provided after generating ACNet datasets.
+        smiles_one: Name of the column containing the first SMILES string
+        smiles_two: Name of the column containing the second SMILES string
+        label: Name of the column containing the label, corresponds to a binary label in the ACNet dataset 
+            that indicates whether the two molecules represent an activity cliff or not
+        target: Name of the column containing the target value, corresponds to the protein target value in the ACNet dataset
+        molfeat_featurizer: MolFeat featurizer
+        output_type: Type of output
+        target_dict: Dictionary of target options when providing ChEMBL names for lookup in other datasets
     """
     def __init__(self,
         mmp_df: pd.DataFrame,
@@ -32,27 +40,28 @@ class MMPDataset(Dataset):
             FPCalculator('ecfp', 
             length = 1024,
             radius = 2)
+            #, dtype = torch.float32 didn't work
         ),
         output_type: str = 'concat',
         target_dict: Optional[TypedDict] = None,
     ):
-        self.smiles_one = mmp_df[smiles_one].values
-        self.smiles_two = mmp_df[smiles_two].values
-        self.label = mmp_df[label].values
+        self.molfeat_featurizer = molfeat_featurizer
+        self.smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
+        self.smiles_two = molfeat_featurizer(mmp_df[smiles_two].values)
+        self.label = [int(label) for label in mmp_df[label].values]
         self.target = mmp_df[target].values
         self.output_type = output_type
-        self.molfeat_featurizer = molfeat_featurizer
         self.target_dict = target_dict
 
     def __len__(self):
         return len(self.label)
 
     def __getitem__(self, idx):
-        molecule_one = self.molfeat_featurizer(self.smiles_one[idx])
-        molecule_two = self.molfeat_featurizer(self.smiles_two[idx])
-        target = self.target[idx]
-        label = self.label[idx]
+        molecule_one = torch.as_tensor(self.smiles_one[idx], dtype = torch.float32)
+        molecule_two = torch.as_tensor(self.smiles_two[idx], dtype = torch.float32)
+        label = torch.as_tensor(self.label[idx], dtype = torch.long)
+        #target = torch.from_numpy(self.target[idx]) protein target, add support later since "All" needs to be encoded
         if self.output_type == 'pair':
-            return molecule_one, molecule_two, target, label
+            return molecule_one, molecule_two, label#, target
         elif self.output_type == 'concat':
-            return np.concatenate((molecule_one, molecule_two), axis = None), target, label
+            return torch.cat((molecule_one, molecule_two), dim = -1), label #,target

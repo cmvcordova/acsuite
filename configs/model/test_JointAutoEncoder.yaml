@@ -13,7 +13,7 @@ scheduler:
   factor: 0.1
   patience: 10
 
-model:
+net:
   _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
   in_features: 1024 # 512x2 for for concat
   code_features: 64

@@ -8,6 +8,9 @@ max_epochs: 5
 accelerator: cpu
 devices: 1
 
+enable_model_summary: True
+profiler: simple
+
 # mixed precision for extra speed-up
 # precision: 16
 

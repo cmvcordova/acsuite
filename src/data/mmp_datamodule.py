@@ -10,44 +10,42 @@ from src.data.mmp_dataset import MMPDataset
 
 class MMPDataModule(LightningDataModule):
     """
-    PyTorch Lightning data module for MMP AC datasets.
+    Lightning DataModule for MMP AC datasets.
+    
     Args:
-        data_path (str): Path to the data
-        sequence_transform (callable): Transformation for the sequence
-        cell_type_transform (callable): Transformation for the cell type
+        file_name: Name of the file
+        data_dir (str): Path to the data
+        train_val_test_split (Tuple[int, int, int]): Train, validation, and test split sizes in number of samples
         batch_size (int): Batch size
         num_workers (int): Number of workers
+        pin_memory (bool): Whether to pin memory
+        shuffle (bool): Whether to shuffle the data
+        ## dataset options
+        molfeat_featurizer: MolFeat featurizer
+        output_type (str): Type of output
+        ## Currently unused, to be added later
+        target_dict (Dict[str, Any]): Dictionary of target options when providing ChEMBL names for lookup in other datasets
     """
     
     def __init__(
-        ## add type hints here
         self, 
-        file_name,
-        data_dir,
-        train_val_test_split,
-        batch_size, 
-        num_workers,
-        pin_memory, 
-        shuffle,
+        file_name: str,
+        data_dir: str,
+        train_val_test_split: Tuple[int, int, int],
+        batch_size: int, 
+        num_workers: int,
+        pin_memory: bool, 
+        shuffle: bool,
         ## dataset options
         molfeat_featurizer,
-        output_type,
-        target_dict
+        output_type: str,
+        target_dict: Dict[str, Any]
     ):
         super().__init__()
-        self.save_hyperparameters(logger=False)
+        ## this line allows to access init params with 'self.hparams' attribute
+        ## also ensures init params will be stored in ckpt
 
-        self.file_name = file_name
-        self.data_dir = data_dir
-        self.train_val_test_split = train_val_test_split
-        self.batch_size = batch_size
-        self.num_workers = num_workers
-        self.pin_memory = pin_memory
-        self.shuffle = shuffle
-        ## dataset options
-        self.molfeat_featurizer = molfeat_featurizer
-        self.output_type = output_type
-        self.target_dict = target_dict
+        self.save_hyperparameters(logger=False)
 
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
@@ -57,6 +55,10 @@ class MMPDataModule(LightningDataModule):
 
     def prepare_data(self) -> None:
         print('Preprocessing data...')
+        """ Download data if needed
+
+        Do not use it to assign state (self.x = y). """
+
         ## add additional split info here
         ## make a class similar to MNIST
         ## and add ACNet download method?
@@ -64,43 +66,43 @@ class MMPDataModule(LightningDataModule):
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
         if not self.data_train and not self.data_val and not self.data_test:
-            self.mmp_df = read_ACNet_single_line_JSON_file(self.data_dir + self.file_name)
-            print(len(self.mmp_df))
-            dataset = MMPDataset(self.mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
-            output_type = self.output_type, 
-            molfeat_featurizer = self.molfeat_featurizer,
-            target_dict = self.target_dict)
+            self.hparams.train_val_test_split = [10,10,10]
+            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name).iloc[:30]
+            dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
+            output_type = self.hparams.output_type, 
+            molfeat_featurizer = self.hparams.molfeat_featurizer,
+            target_dict = self.hparams.target_dict)
             
             self.data_train, self.data_val, self.data_test = random_split(
                 dataset=dataset,
-                lengths=self.train_val_test_split,
+                lengths=self.hparams.train_val_test_split,
                 generator=torch.Generator().manual_seed(42),
             )
 
     def train_dataloader(self):
         return DataLoader(
             dataset=self.data_train,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            shuffle=self.shuffle
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            shuffle=self.hparams.shuffle
         )
     def val_dataloader(self):
         return DataLoader(
             dataset=self.data_val,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            shuffle=self.shuffle
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            shuffle=self.hparams.shuffle
         )
 
     def test_dataloader(self):
         return DataLoader(
             dataset=self.data_test,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-            pin_memory=self.pin_memory,
-            shuffle=self.shuffle
+            batch_size=self.hparams.batch_size,
+            num_workers=self.hparams.num_workers,
+            pin_memory=self.hparams.pin_memory,
+            shuffle=self.hparams.shuffle
         )
     
     def teardown(self, stage: Optional[str] = None):
