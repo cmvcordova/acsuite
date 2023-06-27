@@ -42,26 +42,36 @@ class MMPDataset(Dataset):
             radius = 2)
             #, dtype = torch.float32 didn't work
         ),
-        output_type: str = 'concat',
+        input_type: str = 'concat',
         target_dict: Optional[TypedDict] = None,
     ):
         self.molfeat_featurizer = molfeat_featurizer
-        self.smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
-        self.smiles_two = molfeat_featurizer(mmp_df[smiles_two].values)
+        self.featurized_smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
+        self.featurized_smiles_two = molfeat_featurizer(mmp_df[smiles_two].values)
         self.label = [int(label) for label in mmp_df[label].values]
         self.target = mmp_df[target].values
-        self.output_type = output_type
+        self.input_type = input_type
         self.target_dict = target_dict
+
+        if input_type == 'single':
+            self.featurized_smiles = self.featurized_smiles_one + self.featurized_smiles_two
 
     def __len__(self):
         return len(self.label)
 
     def __getitem__(self, idx):
-        molecule_one = torch.as_tensor(self.smiles_one[idx], dtype = torch.float32)
-        molecule_two = torch.as_tensor(self.smiles_two[idx], dtype = torch.float32)
-        label = torch.tensor(self.label[idx], dtype = torch.long)
+        if self.featurized_smiles:
+            molecule = torch.as_tensor(self.featurized_smiles[idx], dtype = torch.float32)
+
+        else:
+            molecule_one = torch.as_tensor(self.featurized_smiles_one[idx], dtype = torch.float32)
+            molecule_two = torch.as_tensor(self.featurized_smiles_two[idx], dtype = torch.float32)
+            label = torch.tensor(self.label[idx], dtype = torch.long)
         #target = torch.from_numpy(self.target[idx]) protein target, add support later since "All" needs to be encoded
-        if self.output_type == 'pair':
+        if self.input_type == 'pair':
             return molecule_one, molecule_two, label#, target
-        elif self.output_type == 'concat':
+        elif self.input_type == 'concat':
             return torch.cat((molecule_one, molecule_two), dim = -1), label #,target
+        elif self.input_type == 'single':
+            ## label not supported since it denotes AC relationship between MMPs
+            return molecule #, target
