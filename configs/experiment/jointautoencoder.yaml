@@ -11,6 +11,8 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+debug: default
+
 tags: ["joint_ac_ecfp_autoencoder"]
 
 data:
@@ -37,3 +39,6 @@ logger:
     entity: cmvcordova
   aim:
     experiment: "joint_ac_ecfp_autoencoder"
+  
+trainer:
+  accelerator: gpu
