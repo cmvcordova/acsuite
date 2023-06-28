@@ -64,9 +64,7 @@ class ACAModule(LightningModule):
 
     def model_step(self, batch: Any):
         x, _ = batch
-        print(x)
         x_logits = self.forward(x)
-        print(x_logits)
         loss = self.criterion(x_logits, x)
         #preds = torch.argmax(logits, dim=1) classification
         return loss #, preds, y
