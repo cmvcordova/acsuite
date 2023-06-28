@@ -19,17 +19,18 @@ data:
   input_type: concat
   batch_size: 128
 
-seed: 42
-
 model:
   net:
     _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
     in_features: 4096
-    code_features: 64
+    code_features: 128
     hidden_layers: 2
     layer_activation: 
       _target_: torch.nn.ReLU
     dropout: 0.2
+    
+  criterion:
+    _target_: torch.nn.BCEWithLogitsLoss
 
 logger:
   wandb:

@@ -17,8 +17,8 @@ class AutoEncoder(nn.Module):
     in_features: int = 1024, 
     code_features: int = 64, 
     hidden_layers: int = 2, 
-    layer_activation: nn.Module = nn.ReLU,
-    output_activation: nn.Module = nn.Sigmoid,
+    layer_activation: nn.Module = nn.ReLU(),
+    output_activation: nn.Module = nn.Sigmoid(),
     dropout: float = 0.2,
     layer_features: np.ndarray = None):
 

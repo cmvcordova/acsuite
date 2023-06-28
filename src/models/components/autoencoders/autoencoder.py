@@ -37,6 +37,7 @@ class AutoEncoder(nn.Module):
         self.in_features = in_features
         self.code_features = code_features
         self.hidden_layers = hidden_layers
+        self.layer_activation = layer_activation
         self.dropout = dropout
         ## array specifying the number of features in each layer if halving w.r.t former layer
         ## defaults to halving the input layer size for each hidden layer until the code layer
@@ -57,17 +58,18 @@ class AutoEncoder(nn.Module):
             self.encoder.append(nn.Linear(self.layer_features[i], self.layer_features[i+1]))
             if i == len(self.layer_features)-2: ## stop activation, dropout after inserting code layer
                 break
-            self.encoder.append(layer_activation)
+            self.encoder.append(self.layer_activation)
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
         self.decoder = nn.ModuleList()
+
         ## build the decoder
         for i in range(len(self.layer_features)-1, 0, -1):
             self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
             if i == 1: ## stop activation, dropout before final layer
                 break
-            self.decoder.append(layer_activation)
+            self.decoder.append(self.layer_activation)
             if dropout > 0.0:
                 self.decoder.append(nn.Dropout(p=self.dropout))
 
