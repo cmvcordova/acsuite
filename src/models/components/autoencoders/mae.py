@@ -70,7 +70,6 @@ class MaskedAutoEncoder(nn.Module):
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
-
         ## build the decoder
         self.decoder = nn.ModuleList()
         
