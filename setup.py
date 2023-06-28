@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-
+import os
 from setuptools import find_packages, setup
 
 setup(
-    name="src",
-    version="0.0.1",
+    name="tlacamr",
+    py_modules = ['tlacamr'],
+    version="0.1",
     description="Towards learning activty cliff aware molecular representations",
     author="César Miguel Valdez Córdova",
     author_email="cmvcordova@pm.me",
