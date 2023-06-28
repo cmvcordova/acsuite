@@ -11,8 +11,8 @@ class AutoEncoder(nn.Module):
     in_features: int = 1024, 
     code_features: int = 64, 
     hidden_layers: int = 2, 
-    layer_activation: nn.Module = nn.ReLU,
-    output_activation: nn.Module = nn.Sigmoid,
+    layer_activation: nn.Module = nn.ReLU(),
+    output_activation: nn.Module = nn.Sigmoid(),
     dropout: float = 0.2,
     layer_features: np.ndarray = None):
 
@@ -61,12 +61,15 @@ class AutoEncoder(nn.Module):
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
-
-        ## build the decoder
         self.decoder = nn.ModuleList()
-        
+        ## build the decoder
         for i in range(len(self.layer_features)-1, 0, -1):
             self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
+            if i == 1: ## stop activation, dropout before final layer
+                break
+            self.decoder.append(layer_activation)
+            if dropout > 0.0:
+                self.decoder.append(nn.Dropout(p=self.dropout))
 
         ## initialize weights
         self.initialize_weights()
