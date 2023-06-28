@@ -8,6 +8,7 @@ from torchmetrics.classification.accuracy import Accuracy
 
 ## Heavily borrows from ashleve/lightning-hydra-template's 
 ## MNISTLitModule class
+## https://github.com/ashleve/lightning-hydra-template/blob/main/src/models/mnist_module.py
 
 class ACAModule(LightningModule):
     """ Example of LightningModule for Activity-Cliff Aware representation learning
@@ -63,8 +64,10 @@ class ACAModule(LightningModule):
 
     def model_step(self, batch: Any):
         x, _ = batch
+        print(x)
         x_logits = self.forward(x)
-        loss = self.criterion(x, x_logits)
+        print(x_logits)
+        loss = self.criterion(x_logits, x)
         #preds = torch.argmax(logits, dim=1) classification
         return loss #, preds, y
         
