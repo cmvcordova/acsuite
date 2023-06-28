@@ -23,7 +23,7 @@ model:
   net:
     _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
     in_features: 4096
-    code_features: 128
+    code_features: 64
     hidden_layers: 2
     layer_activation: 
       _target_: torch.nn.ReLU
