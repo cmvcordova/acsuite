@@ -26,7 +26,8 @@ class ACAModule(LightningModule):
 
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
-        self.save_hyperparameters(ignore=['net', 'criterion'], logger=False)
+        ## ignore the 'ignore' tag that will be proposed by the logger
+        self.save_hyperparameters(logger=False)
 
         self.net = net
         # loss function
