@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class AutoEncoder(nn.Module):
+class SiameseAutoEncoder(nn.Module):
 
     def __init__(
     self, 
@@ -81,11 +81,12 @@ class AutoEncoder(nn.Module):
         self.encoder = nn.Sequential(*self.encoder)
         self.decoder = nn.Sequential(*self.decoder)
 
-    def forward_encoder(self, x):
-        z = self.encoder(x)
-        return z
+    def forward_encoder(self, x1, x2):
+        z1 = self.encoder(x1)
+        z2 = self.encoder(x2)
+        return z1, z2
     
-    def forward_decoder(self, z):
+    def forward_decoder(self, z1, z2):
         recon_x = self.decoder(z)
         return recon_x
     
