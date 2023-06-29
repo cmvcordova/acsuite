@@ -4,24 +4,21 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-## CURRENTLY UNCHANGED W.R.T
-### AUTOENCODER, MASKING TO COME SOON
-
 import math
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class MaskedAutoEncoder(nn.Module):
+class SharedSiameseAutoEncoder(nn.Module):
 
     def __init__(
     self, 
     in_features: int = 1024, 
     code_features: int = 64, 
     hidden_layers: int = 2, 
-    layer_activation: nn.Module = nn.ReLU,
-    output_activation: nn.Module = nn.Sigmoid,
+    layer_activation: nn.Module = nn.ReLU(),
+    output_activation: nn.Module = nn.Sigmoid(),
     dropout: float = 0.2,
     layer_features: np.ndarray = None):
 
@@ -70,6 +67,7 @@ class MaskedAutoEncoder(nn.Module):
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
+
         ## build the decoder
         self.decoder = nn.ModuleList()
         
@@ -82,12 +80,13 @@ class MaskedAutoEncoder(nn.Module):
         ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
         self.encoder = nn.Sequential(*self.encoder)
         self.decoder = nn.Sequential(*self.decoder)
-        
-    def forward_encoder(self, x):
-        z = self.encoder(x)
-        return z
+
+    def forward_encoder(self, x1, x2):
+        z1 = self.encoder(x1)
+        z2 = self.encoder(x2)
+        return z1, z2
     
-    def forward_decoder(self, z):
+    def forward_decoder(self, z1, z2):
         recon_x = self.decoder(z)
         return recon_x
     
@@ -95,10 +94,7 @@ class MaskedAutoEncoder(nn.Module):
         z = self.forward_encoder(x)
         logits = self.forward_decoder(z)
         return logits
-
-    def random_masking(self, x, mask_ratio):
-        return x
-        
+    
     def initialize_weights(self):
         ## using subordinate function in case we want to initialize weights differently
         self.apply(self._init_weights)
@@ -112,4 +108,4 @@ class MaskedAutoEncoder(nn.Module):
                 nn.init.constant_(m.bias, 0.0)
 
 if __name__ == "__main__":
-    _ = MaskedAutoEncoder()
+    _ = SharedSiameseAutoEncoder()
