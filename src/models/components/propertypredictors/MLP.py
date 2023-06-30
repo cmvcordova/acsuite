@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#https://discuss.pytorch.org/t/how-to-delete-layer-in-pretrained-model/17648
+
 class MLP(nn.Module):
     
         def __init__(self, in_features: int, out_features: int, hidden_features: int,
@@ -34,3 +36,4 @@ class MLP(nn.Module):
     
         def forward(self, x):
             return self.mlp(x)
+
