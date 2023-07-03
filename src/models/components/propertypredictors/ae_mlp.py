@@ -6,14 +6,16 @@ import torch.nn.functional as F
 
 #https://discuss.pytorch.org/t/how-to-delete-layer-in-pretrained-model/17648
 
-class MLP(nn.Module):
+class AE_MLP(nn.Module):
     
-        def __init__(self, in_features: int, out_features: int, hidden_features: int,
+        def __init__(self, 
+            pretrained_autoencoder, out_features: int, hidden_features: int,
             activation: nn.Module = nn.ReLU(), dropout: float = 0.0):
     
             """
-            MLP for molecular data. Takes a latent code as input and
-            outputs a regressed value, e.g. for property prediction.
+            MLP that builds upon a pretrained autoencoder. Removes the input layer and the decoder from the autoencoder,
+            freezes its weights and adds a new input layer that's the same fingerprint size as the layers used to
+            and an MLP that learns from the autoencoder's generated features.
     
             Args:
                 in_features (int): Number of input features, i.e. size of the compressed fingerprint

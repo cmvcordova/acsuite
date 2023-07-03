@@ -43,7 +43,7 @@ class MMPDataset(Dataset):
             #, dtype = torch.float32 didn't work
         ),
         input_type: str = 'concat',
-        target_dict: Optional[TypedDict] = None,
+        target_dict: Optional[TypedDict] = None
     ):
         self.molfeat_featurizer = molfeat_featurizer
         self.featurized_smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
