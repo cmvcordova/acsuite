@@ -1,4 +1,4 @@
-_target_: src.data.mmp_datamodule.MMPDataModule
+_target_: src.data.representation_learning.mmp_datamodule.MMPDataModule
 file_name: "ACNet/MMP_AC_Mixed_Screened.json"
 data_dir: ${paths.data_dir}
 ## consult dataset size from Zhange et al. 2023 ACNet

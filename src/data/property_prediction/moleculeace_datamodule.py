@@ -5,8 +5,7 @@ from lightning import LightningDataModule
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
 from torchvision.transforms import transforms
 
-from src.utils.data import read_ACNet_single_line_JSON_file
-from src.data.mmp_dataset import MMPDataset
+from src.data.property_prediction.moleculeace_dataset import MoleculeACEDataset
 
 class MoleculeACEDataModule(LightningDataModule):
     """
