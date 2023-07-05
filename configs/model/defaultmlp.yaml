@@ -1,0 +1,26 @@
+_target_: src.models.acappmodule.ACAPPModule
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+net:
+  _target_: src.models.components.predictors.aca_mlp.ACA_MLP
+  in_features: 2048
+  code_features: 64
+  hidden_layers: 2
+  layer_activation: 
+    _target_: torch.nn.ReLU
+  dropout: 0.2
+ 
+criterion:
+  _target_: torch.nn.BCEWithLogitsLoss

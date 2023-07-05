@@ -6,6 +6,13 @@
 ## you'd probably write a second class that takes
 ## the module and unrolls it inside a single lightning module.
 
+from typing import Any
+
+import torch
+from lightning import LightningModule
+from torchmetrics import MaxMetric, MeanMetric
+from torchmetrics.classification.accuracy import Accuracy
+
 ## REMEMBER TO CHANGE NET TO AUTOENCODER IN THE ACAMODULE.PY FILE
 ## FOR CONSISTENCY
 
@@ -17,7 +24,7 @@ class ACAPPModule(LightningModule):
     
     def __init__(
         self,
-        property_predictor: torch.nn.Module,
+        net: torch.nn.Module,
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         criterion: torch.nn.modules.loss,
@@ -39,8 +46,6 @@ class ACAPPModule(LightningModule):
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
 
-        """
-        Use when incorporating classification tasks, currently unused
         # metric objects for calculating and averaging accuracy across batches
         self.train_acc = Accuracy(task="binary")
         self.val_acc = Accuracy(task="binary")
@@ -48,7 +53,6 @@ class ACAPPModule(LightningModule):
 
         # for tracking best so far validation accuracy
         self.val_acc_best = MaxMetric()
-        """
 
         ## define the default forward pass depending on
         ## associated autoencoder
@@ -64,22 +68,21 @@ class ACAPPModule(LightningModule):
         #self.val_acc_best.reset()
 
     def model_step(self, batch: Any):
-        x, _ = batch
-        x_logits = self.forward(x)
-        loss = self.criterion(x_logits, x)
-        #preds = torch.argmax(logits, dim=1) classification
-        return loss #, preds, y
+        x, y = batch
+        logits = self.forward(x)
+        loss = self.criterion(logits, y)
+        preds = torch.argmax(logits, dim=1) #classification
+        return loss , preds, y
         
     def training_step(self, batch: Any, batch_idx: int):
         ## Required
-        #loss, preds, targets = self.model_step(batch)
+        loss, preds, targets = self.model_step(batch)
         loss = self.model_step(batch)
         # update and log metrics
         self.train_loss(loss)
-        #self.train_acc(preds, targets)
+        self.train_acc(preds, targets)
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        #self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
-
+        self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
         # return loss or backpropagation will fail
         return loss
     
@@ -87,32 +90,32 @@ class ACAPPModule(LightningModule):
         pass
     
     def validation_step(self, batch: Any, batch_idx: int):
-        #loss, preds, targets = self.model_step(batch)
+        loss, preds, targets = self.model_step(batch)
         loss = self.model_step(batch)
 
         # update and log metrics
         self.val_loss(loss)
-        #self.val_acc(preds, targets)
+        self.val_acc(preds, targets)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        #self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
-    """
-    Use when incorporating classification tasks
+        self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
+
+    #Use when incorporating classification tasks
     def on_validation_epoch_end(self):
         acc = self.val_acc.compute()  # get current val acc
         self.val_acc_best(acc)  # update best so far val acc
         # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
         self.log("val/acc_best", self.val_acc_best.compute(), sync_dist=True, prog_bar=True)
-    """
+
     def test_step(self, batch: Any, batch_idx: int):
         #loss, preds, targets = self.model_step(batch)
         loss = self.model_step(batch)
 
         # update and log metrics
         self.test_loss(loss)
-        #self.test_acc(preds, targets)
+        self.test_acc(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        #self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, prog_bar=True)
     
     def on_test_epoch_end(self):
         pass

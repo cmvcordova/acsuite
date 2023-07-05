@@ -1,0 +1,9 @@
+defaults:
+- override /model: 
+- override /callbacks: default
+- override /trainer: default
+
+tags: ["mlp_training_test"]
+
+data:
+  property_prediction: default
