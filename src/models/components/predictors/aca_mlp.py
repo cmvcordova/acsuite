@@ -12,11 +12,11 @@ class ACA_MLP(nn.Module):
     
         def __init__(self, 
             pretrained_autoencoder_ckpt: str = None,
-            activation: nn.Module = nn.ReLU(),
+            layer_activation: nn.Module = nn.ReLU(),
             in_features: int = 2048,
-            out_features: int = 1, 
-            hidden_features: int = 100, ## Ilnicka and Schneider 2023
-            depth: int = 2,
+            hidden_features: int = 1, 
+            hidden_layers: int = 2, ## Ilnicka and Schneider 2023
+            output_features: int = 1, 
             dropout: float = 0.0):
     
             """
@@ -36,7 +36,15 @@ class ACA_MLP(nn.Module):
                 dropout (float, optional): Dropout probability. Defaults to 0.0.
             """
             super().__init__()
-            pretrained_autoencoder_ckpt = 'data/models/autoencoders/ae_test.ckpt'
+            self.pretrained_autoencoder_ckpt = pretrained_autoencoder_ckpt
+            self.layer_activation = layer_activation
+            self.in_features = in_features
+            self.hidden_features = hidden_features
+            self.hidden_layers = hidden_layers
+            self.output_features = output_features
+            self.dropout = dropout
+
+            print(self.pretrained_autoencoder_ckpt)
             if pretrained_autoencoder_ckpt is not None:
                 encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'}).net.encoder
                 # remove the input layer and keep only the encoder
@@ -47,7 +55,6 @@ class ACA_MLP(nn.Module):
             ## add a new input layer that's the same fingerprint size as the layers used to
             self.encoder[0] = nn.Linear(in_features, self.encoder[0].out_features)
             ## add an MLP that learns from the autoencoder's generated features
-
             """
             self.mlp = nn.Sequential(
                 nn.Linear(in_features, hidden_features),

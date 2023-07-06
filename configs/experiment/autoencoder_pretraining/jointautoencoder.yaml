@@ -1,9 +1,10 @@
 # @package _global_
 
 # to execute this experiment run:
-# python train.py experiment=example
+# python train.py experiment=autoencoder_pretraining/jointautoencoder
 
 defaults:
+  - override /data: representation_learning/default
   - override /model: defaultae
   - override /callbacks: default
   - override /trainer: default

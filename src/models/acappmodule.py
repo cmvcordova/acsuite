@@ -1,11 +1,3 @@
-
-## write a class that takes a pretrained AE
-## module, keeps the encoder minus the first layer
-## and appends a property prediction MLP to the end,
-## on any of the MoleculeACE tasks
-## you'd probably write a second class that takes
-## the module and unrolls it inside a single lightning module.
-
 from typing import Any
 
 import torch
