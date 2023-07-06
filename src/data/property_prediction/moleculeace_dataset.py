@@ -10,15 +10,25 @@ import datamol as dm
 from molfeat.calc import FP_FUNCS, FPCalculator
 from molfeat.trans.concat import FeatConcat
 from molfeat.trans import MoleculeTransformer
+## MoleculeACE imports
+from MoleculeACE import Data as moleculeace_Data
+
 
 class MoleculeACEDataset(Dataset):
     """
-    Wrapper that creates a pytorch dataloader compliant dataset for molecular property prediction data from the datasets as provided in
+    Wrapper that creates a pytorch dataloader compliant dataset for molecular property prediction data 
+    from the datasets as provided by MoleculeACE:
     van Tilborg et al 2022.
-    ## https://github.com/molML/MoleculeACE
+    https://github.com/molML/MoleculeACE
+    Supports molfeat featurizer schemes and classification/regression tasks.
+
+    Args:
+        dataset_name: Name of the dataset to be used e.g. "CHEMBL234"
+        data_split: Data split to be used, either "train" or "test"
+        task: Task to be performed, either "regression" or "classification"
+        molfeat_featurizer: MolFeat featurizer
     """
     def __init__(self,
-    molecule_ace_data_object: MoleculeACE.benchmark.utils.Data = Data(),
     dataset_name: str = None,
     data_split: str = 'train',
     task: Literal['regression', 'classification'] = 'classification',
@@ -29,7 +39,7 @@ class MoleculeACEDataset(Dataset):
         #, dtype = torch.float32 didn't work
         )
     ):
-        self.dataset = molecule_ace_data_object(dataset_name)
+        self.dataset = moleculeace_Data(dataset_name)
         self.molfeat_featurizer = molfeat_featurizer
 
         if task == 'regression':
