@@ -14,7 +14,7 @@ class ACA_MLP(nn.Module):
             pretrained_autoencoder_ckpt: str = None,
             layer_activation: nn.Module = nn.ReLU(),
             in_features: int = 2048,
-            hidden_features: int = 1, 
+            hidden_features: int = 100, 
             hidden_layers: int = 2, ## Ilnicka and Schneider 2023
             output_features: int = 1, 
             dropout: float = 0.0):
@@ -37,38 +37,53 @@ class ACA_MLP(nn.Module):
             """
             super().__init__()
             self.pretrained_autoencoder_ckpt = pretrained_autoencoder_ckpt
-            self.layer_activation = layer_activation
             self.in_features = in_features
             self.hidden_features = hidden_features
             self.hidden_layers = hidden_layers
             self.output_features = output_features
             self.dropout = dropout
 
-            print(self.pretrained_autoencoder_ckpt)
-            if pretrained_autoencoder_ckpt is not None:
-                encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'}).net.encoder
-                # remove the input layer and keep only the encoder
-                self.encoder = nn.Sequential(*list(encoder.children())[1:])
-            ## freeze the encoder
-            for param in self.encoder.parameters():
-                param.requires_grad = False
-            ## add a new input layer that's the same fingerprint size as the layers used to
-            self.encoder[0] = nn.Linear(in_features, self.encoder[0].out_features)
-            ## add an MLP that learns from the autoencoder's generated features
-            """
-            self.mlp = nn.Sequential(
-                nn.Linear(in_features, hidden_features),
-                activation,
-                nn.Dropout(dropout),
-                nn.Linear(hidden_features, hidden_features),
-                activation,
-                nn.Dropout(dropout),
-                nn.Linear(hidden_features, out_features)
-            )
-            """
+            ## Instantiate the input block:
+            ## Linear layer mapping the input to the hidden layer size if no
+            ## pretrained autoencoder is supplied, otherwise the input block
+            ## integrates the pretrained autoencoder's encoder
+            
+            if self.pretrained_autoencoder_ckpt is not None:
+                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'})
+                frozen_encoder = nn.ModuleList(frozen_encoder.net.encoder[1:])
+                # freeze the encoder's layers
+                for param in frozen_encoder.parameters():
+                    param.requires_grad = False
+                self.input_block = nn.ModuleList([nn.Linear(self.in_features, frozen_encoder[0].in_features)])
+                self.input_block.extend(frozen_encoder)
+            else:
+                self.input_block = nn.ModuleList([nn.Linear(self.in_features, self.hidden_features)])
+
+            self.input_block = nn.Sequential(*self.input_block)
+
+            ## Instantiate the MLP'S hidden layers for learning on the input block's output
+            ## if no pretrained autoencoder is supplied, the input block
+            ## is just a linear mapping input layer to the MLP
+
+            self.mlp = nn.ModuleList([nn.Linear(self.input_block[-1].out_features, self.hidden_features)])
+            self.mlp.append(layer_activation)
+            
+            ## variably instantiate the hidden layers
+            for i in range(self.hidden_layers):
+                self.mlp.append(nn.Linear(self.hidden_features, self.hidden_features))
+                self.mlp.append(layer_activation)
+                if self.dropout > 0:
+                    self.mlp.append(nn.Dropout(self.dropout))
+            ## add the output layer
+            self.mlp.append(nn.Linear(self.hidden_features, self.output_features))
+
+            self.mlp = nn.Sequential(*self.mlp)
+
     
         def forward(self, x):
-            return self.mlp(x)
+            x = self.input_block(x)
+            x = self.mlp(x)
+            return x
 
 
 print(ACA_MLP())

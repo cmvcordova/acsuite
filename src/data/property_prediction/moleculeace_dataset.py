@@ -44,18 +44,18 @@ class MoleculeACEDataset(Dataset):
 
         if task == 'regression':
             if data_split == 'train':
-                self.x = molfeat_featurizer(self.dataset.x_train)
+                self.x = molfeat_featurizer(self.dataset.smiles_train)
                 self.y = self.dataset.y_train
             elif data_split == 'test':
-                self.x = molfeat_featurizer(self.dataset.x_test)
+                self.x = molfeat_featurizer(self.dataset.smiles_test)
                 self.y = self.dataset.y_test
 
         elif task == 'classification':
             if data_split == 'train':
-                self.x = molfeat_featurizer(self.dataset.x_train)
+                self.x = molfeat_featurizer(self.dataset.smiles_train)
                 self.y = self.dataset.cliff_mols_train
             elif data_split == 'test':
-                self.x = molfeat_featurizer(self.dataset.x_test)
+                self.x = molfeat_featurizer(self.dataset.smiles_test)
                 self.y = self.dataset.cliff_mols_test
 
     def __len__(self):

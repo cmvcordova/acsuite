@@ -12,7 +12,7 @@ defaults:
 tags: ["mlp_training_test"]
 
 data: ## calls MoleculeACEDataModule directly
-  dataset_name: 'CHEMBL234'
+  dataset_name: 'CHEMBL2034_Ki'
 
 model: ## calls ACAPPModule directly
   net:
