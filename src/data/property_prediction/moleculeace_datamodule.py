@@ -59,12 +59,16 @@ class MoleculeACEDataModule(LightningDataModule):
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
         if not self.data_train and not self.data_val and not self.data_test:
-            train_dataset = MoleculeACEDataset(dataset_name, data_split='train', task=task, 
-            input_type=input_type, 
-            molfeat_featurizer=molfeat_featurizer)
-            test_dataset = MoleculeACEDataset(dataset_name, data_split='test', task=task,
-            input_type=input_type,
-            molfeat_featurizer=molfeat_featurizer)
+            train_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
+            data_split='train', 
+            task=self.hparams.task, 
+            molfeat_featurizer=self.hparams.molfeat_featurizer)
+
+            test_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
+            data_split='test', 
+            task=self.hparams.task,
+            molfeat_featurizer=self.hparams.molfeat_featurizer)
+
             test_dataset, val_dataset = torch.utils.data.random_split(test_dataset,[0.5, 0.5])
             
             self.data_train = train_dataset
