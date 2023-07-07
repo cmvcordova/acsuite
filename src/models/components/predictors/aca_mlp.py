@@ -49,7 +49,7 @@ class ACA_MLP(nn.Module):
             ## integrates the pretrained autoencoder's encoder
             
             if self.pretrained_autoencoder_ckpt is not None:
-                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'})
+                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt)
                 frozen_encoder = nn.ModuleList(frozen_encoder.net.encoder[1:])
                 # freeze the encoder's layers
                 for param in frozen_encoder.parameters():
@@ -67,7 +67,7 @@ class ACA_MLP(nn.Module):
 
             self.mlp = nn.ModuleList([nn.Linear(self.input_block[-1].out_features, self.hidden_features)])
             self.mlp.append(layer_activation)
-            
+
             ## variably instantiate the hidden layers
             for i in range(self.hidden_layers):
                 self.mlp.append(nn.Linear(self.hidden_features, self.hidden_features))
@@ -84,9 +84,6 @@ class ACA_MLP(nn.Module):
             x = self.input_block(x)
             x = self.mlp(x)
             return x
-
-
-print(ACA_MLP())
 
 if __name__ == "__main__":
     _ = ACA_MLP()
