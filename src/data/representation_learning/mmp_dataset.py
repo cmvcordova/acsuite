@@ -26,6 +26,7 @@ class MMPDataset(Dataset):
         label: Name of the column containing the label, corresponds to a binary label in the ACNet dataset 
             that indicates whether the two molecules represent an activity cliff or not
         target: Name of the column containing the target value, corresponds to the protein target value in the ACNet dataset
+        positive_only: Whether to only include positive samples i.e. activity cliffs
         molfeat_featurizer: MolFeat featurizer
         output_type: Type of output
         target_dict: Dictionary of target options when providing ChEMBL names for lookup in other datasets
@@ -36,6 +37,7 @@ class MMPDataset(Dataset):
         smiles_two: str,
         label: str,
         target: str,
+        positive_only: bool = False,
         molfeat_featurizer = MoleculeTransformer(
             FPCalculator('ecfp', 
             length = 2048,
@@ -46,6 +48,10 @@ class MMPDataset(Dataset):
         target_dict: Optional[TypedDict] = None
     ):
         self.molfeat_featurizer = molfeat_featurizer
+
+        if positive_only:
+            mmp_df = mmp_df[mmp_df[label] == 1]
+            
         self.featurized_smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
         self.featurized_smiles_two = molfeat_featurizer(mmp_df[smiles_two].values)
         self.label = [int(label) for label in mmp_df[label].values]

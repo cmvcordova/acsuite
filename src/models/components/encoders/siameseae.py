@@ -3,24 +3,25 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Any, List, Tuple, Union, Literal
 
-import math
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
-class SharedSiameseAutoEncoder(nn.Module):
+class SiameseAutoEncoder(nn.Module):
 
     def __init__(
     self, 
-    in_features: int = 1024, 
-    code_features: int = 64, 
-    hidden_layers: int = 2, 
+    in_features: int = 2048, 
+    code_features: int = 256, 
+    hidden_layers: int = 2,
+    layer_features: np.ndarray = None,
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
-    dropout: float = 0.2,
-    layer_features: np.ndarray = None):
+    norm_layer: nn.Module = nn.LayerNorm(),
+    training_type: Literal['binary_classification', 'reconstruction'] = 'reconstruction',
+    masking: Literal['mmp', 'random', 'none'] = 'none',
+    decoder_type: Literal['cross_decoder'] = 'cross_decoder',
+    similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
+    sparse: bool = False,
+    dropout: float = 0.2):
 
         """
         Autoencoder for molecular data. Takes ECFP-like features as input and 
@@ -30,28 +31,37 @@ class SharedSiameseAutoEncoder(nn.Module):
         and corresponding hidden layer combinations
 
         Args:
-            in_features (int): Number of input features, Uses canonical ECFP Sizes e.g. 512, 1024, 2048, 4096
-            code_features (int): Number of features in the code, i.e. size of the compressed fingerprint
-            hidden_layers (int): Number of hidden layers
-            layer_activation (nn.Module, optional): Activation function to use for the code. Defaults to nn.ReLU().
-            output_activation (nn.Module, optional): Activation function to use for the output. Defaults to nn.Sigmoid().
-            dropout (float, optional): Dropout probability. Defaults to 0.2.
-            layer_features (np.ndarray, optional): Array specifying the number of features in each layer. Defaults to None, since it is calculated from the other parameters.
+            in_features: Number of input features, Uses canonical ECFP Sizes e.g. 512, 1024, 2048, 4096
+            code_features: Number of features in the code, i.e. size of the compressed fingerprint
+            hidden_layers: Number of hidden layers
+                        ## array specifying the number of features in each layer if halving w.r.t former layer
+                        ## defaults to halving the input layer size for each hidden layer until the code layer
+                        ## e.g. 1024, 512, 256, 128, 64, can provide own as long as it meets assertions below
+            layer_features: Array specifying the number of features in each layer. Defaults to None, since it is calculated from the other parameters.
+            layer_activation: Activation function to use for the code. 
+            output_activation: Activation function to use for the output.
+            norm_layer: Normalization layer to use for the code.
+            training_type: Training type for the autoencoder. 
+            masking: Masking type for the autoencoder. 
+            decoder_type: Decoder type for the siamese autoencoder. Only usable if training_type is 'reconstruction'.
+            similarity_function: Similarity function to compute distance in siamese encoder. 
+            sparse: Whether to use a sparsity constraint for the code layer or not.
+            dropout: Dropout probability. -- Denoising autoencoders
         """
-        
+
         super().__init__()
         self.in_features = in_features
         self.code_features = code_features
         self.hidden_layers = hidden_layers
-        self.dropout = dropout
-        ## array specifying the number of features in each layer if halving w.r.t former layer
-        ## defaults to halving the input layer size for each hidden layer until the code layer
-        ## e.g. 1024, 512, 256, 128, 64, can provide own as long as it meets assertions below
+
         self.layer_features = np.concatenate((
         self.in_features,
         [self.in_features//2**i for i in range(1, self.hidden_layers+2)],
         self.code_features),
         axis = None)
+        self.norm_layer = norm_layer(self.code_features)
+        self.similarity_function = torch.dot() if similarity_function == 'dot_product' else nn.CosineSimilarity()
+        self.dropout = dropout
 
         assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
         assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
@@ -108,4 +118,4 @@ class SharedSiameseAutoEncoder(nn.Module):
                 nn.init.constant_(m.bias, 0.0)
 
 if __name__ == "__main__":
-    _ = SharedSiameseAutoEncoder()
+    _ = SiameseAutoEncoder()

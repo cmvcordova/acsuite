@@ -4,6 +4,8 @@ import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification.accuracy import Accuracy
+from torchmetrics.regression import MeanSquaredError
+
 
 ## REMEMBER TO CHANGE NET TO AUTOENCODER IN THE ACAMODULE.PY FILE
 ## FOR CONSISTENCY
@@ -17,6 +19,7 @@ class ACAPPModule(LightningModule):
     def __init__(
         self,
         net: torch.nn.Module,
+        task: str,
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         criterion: torch.nn.modules.loss,
@@ -30,7 +33,6 @@ class ACAPPModule(LightningModule):
 
         self.net = net
         # loss function
-        ### if siamese autoencoder.... elif autoencoder...
         self.criterion = criterion
         
         # for averaging loss across batches
@@ -39,12 +41,28 @@ class ACAPPModule(LightningModule):
         self.test_loss = MeanMetric()
 
         # metric objects for calculating and averaging accuracy across batches
-        self.train_acc = Accuracy(task="binary")
-        self.val_acc = Accuracy(task="binary")
-        self.test_acc = Accuracy(task="binary")
+        if task == "classification":
+        self.train_metric= Accuracy(task="binary")
+        self.val_metric = Accuracy(task="binary")
+        self.test_metric = Accuracy(task="binary")
+        ## logging purposes
+        self.metric_name = 'acc'
+
+
+        elif task == "regression":
+        self.train_metric = MeanSquaredError(squared=True)
+        self.val_metric = MeanSquaredError(squared=True)
+        self.test_metric = MeanSquaredError(squared=True)
+        ## logging purposes
+        ## assuming default RMSE loss from MSE in the regression setting
+        self.eps = 1e-8
+        self.criterion = lambda x, y: torch.sqrt(self.criterion(x, y) + self.eps)
+        self.metric_name = 'rmse'
 
         # for tracking best so far validation accuracy
-        self.val_acc_best = MaxMetric()
+        self.val_metric_best = MaxMetric()
+
+        # for tracking best so far validation RMSE
 
         ## define the default forward pass depending on
         ## associated autoencoder
@@ -56,14 +74,15 @@ class ACAPPModule(LightningModule):
         # so it's worth to make sure validation metrics don't store results from these checks
         self.val_loss.reset()
         ## classification tasks:
-        #self.val_acc.reset()
-        #self.val_acc_best.reset()
+        self.val_metric.reset()
+        self.val_metric_best.reset()
 
     def model_step(self, batch: Any):
         x, y = batch
-        logits = self.forward(x)
-        loss = self.criterion(logits, y)
-        preds = torch.argmax(logits, dim=1) #classification
+        preds = self.forward(x)
+        loss = self.criterion(preds, y)
+        #preds = torch.argmax(logits, dim=1) #classification, removed assuming
+        #the binary classification criterion is BCEWithLogitsLoss
         return loss , preds, y
         
     def training_step(self, batch: Any, batch_idx: int):
@@ -72,9 +91,9 @@ class ACAPPModule(LightningModule):
         loss = self.model_step(batch)
         # update and log metrics
         self.train_loss(loss)
-        self.train_acc(preds, targets)
+        self.train_metric(preds, targets)
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("train/acc", self.train_acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"train/{self.metric_name}", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
         # return loss or backpropagation will fail
         return loss
     
@@ -89,15 +108,15 @@ class ACAPPModule(LightningModule):
         self.val_loss(loss)
         self.val_acc(preds, targets)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
 
     #Use when incorporating classification tasks
     def on_validation_epoch_end(self):
-        acc = self.val_acc.compute()  # get current val acc
-        self.val_acc_best(acc)  # update best so far val acc
-        # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
+        metric = self.val_metric.compute()  # get current val acc
+        self.val_metric_best(metric)  # update best so far val acc
+        # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        self.log("val/acc_best", self.val_acc_best.compute(), sync_dist=True, prog_bar=True)
+        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
 
     def test_step(self, batch: Any, batch_idx: int):
         #loss, preds, targets = self.model_step(batch)
@@ -107,7 +126,7 @@ class ACAPPModule(LightningModule):
         self.test_loss(loss)
         self.test_acc(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/acc", self.test_acc, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"test/{self.metric_name}", self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
     
     def on_test_epoch_end(self):
         pass
