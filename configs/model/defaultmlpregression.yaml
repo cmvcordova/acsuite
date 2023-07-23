@@ -1,5 +1,7 @@
 _target_: src.models.acappmodule.ACAPPModule
 
+task: regression
+
 net:
   _target_: src.models.components.predictors.aca_mlp.ACA_MLP
   pretrained_autoencoder_ckpt: null # must be specified in experiment config

@@ -49,7 +49,8 @@ class ACA_MLP(nn.Module):
             ## integrates the pretrained autoencoder's encoder
             
             if self.pretrained_autoencoder_ckpt is not None:
-                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt)
+                #frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt)
+                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'})
                 frozen_encoder = nn.ModuleList(frozen_encoder.net.encoder[1:])
                 # freeze the encoder's layers
                 for param in frozen_encoder.parameters():

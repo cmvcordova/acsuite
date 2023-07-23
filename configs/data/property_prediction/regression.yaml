@@ -1,6 +1,6 @@
 _target_: src.data.property_prediction.moleculeace_datamodule.MoleculeACEDataModule
 ## consult dataset size from Zhange et al. 2023 ACNet
-dataset_name: 'CHEMBL234'
+dataset_name: null # provide from experiment
 task: regression
 molfeat_featurizer: 
   _target_: molfeat.trans.MoleculeTransformer
@@ -9,7 +9,7 @@ molfeat_featurizer:
     method: "ecfp"
     length: 2048
     radius: 4
-batch_size: 128
+batch_size: 64
 num_workers: 0
 pin_memory: False
 shuffle: True

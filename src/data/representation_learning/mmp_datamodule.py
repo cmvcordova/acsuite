@@ -32,6 +32,7 @@ class MMPDataModule(LightningDataModule):
         file_name: str,
         data_dir: str,
         train_val_test_split: Tuple[int, int, int],
+        positive_only: bool,
         batch_size: int, 
         num_workers: int,
         pin_memory: bool, 
@@ -65,11 +66,12 @@ class MMPDataModule(LightningDataModule):
         
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
-        if not self.data_train and not self.data_val and not self.data_test:
+         if not self.data_train and not self.data_val and not self.data_test:
             self.hparams.train_val_test_split = [204,26,26] #mmp_dataset debug purposes
             mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name).iloc[:256] #debug purposes
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
-            input_type = self.hparams.input_type, 
+            input_type = self.hparams.input_type,
+            positive_only = self.hparams.positive_only,
             molfeat_featurizer = self.hparams.molfeat_featurizer,
             target_dict = self.hparams.target_dict)
             
