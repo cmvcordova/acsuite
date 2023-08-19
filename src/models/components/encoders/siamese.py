@@ -4,8 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Any, List, Tuple, Union, Literal
+# https://datascience.stackexchange.com/questions/75559/why-does-siamese-neural-networks-use-tied-weights-and-how-do-they-work
 
-class SiameseAutoEncoder(nn.Module):
+class SiameseEncoder(nn.Module):
 
     def __init__(
     self, 
@@ -16,15 +17,14 @@ class SiameseAutoEncoder(nn.Module):
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
     norm_layer: bool = True,
-    training_type: Literal['binary_classification', 'reconstruction'] = 'reconstruction',
+    training_type: Literal['binary_classification'] = 'binary_classification',
     masking: Literal['mmp', 'random', 'none'] = 'none',
-    decoder_type: Literal['cross_decoder'] = 'cross_decoder',
     similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
     sparse: bool = False,
     dropout: float = 0.0):
 
         """
-        Autoencoder for molecular data. Takes ECFP-like features as input and 
+        Encoder for molecular data. Takes ECFP-like features as input and 
         outputs a compressed fingerprint as the autoencoder's latent code.
 
         Note: currently only works with canonical ECFP sizes e.g. 512, 1024, 2048, 4096
@@ -67,9 +67,6 @@ class SiameseAutoEncoder(nn.Module):
         assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
         assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
 
-        ## build the encoder, specify the input layer separately to avoid activation, dropout in input layer
-        ## self.encoder = nn.ModuleList([nn.Linear(self.layer_features[0], self.layer_features[1])])
-
         self.encoder = nn.ModuleList()
 
         for i in range(0, len(self.layer_features)-1):
@@ -82,14 +79,7 @@ class SiameseAutoEncoder(nn.Module):
 
         if self.norm_layer: self.encoder.append(nn.LayerNorm(self.code_features)) 
 
-        ## build the decoder
-        self.decoder = nn.ModuleList()
-        
-        for i in range(len(self.layer_features)-1, 0, -1):
-            self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
-            if i == 1: ## stop activation on final layer, since we use BCELossWithLogits
-                break
-            self.decoder.append(layer_activation)
+        self.output_layer = nn.Linear(self.code_features, 1)
 
         ## initialize weights
         self.initialize_weights()
@@ -97,22 +87,14 @@ class SiameseAutoEncoder(nn.Module):
         ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
         
         self.encoder = nn.Sequential(*self.encoder)
-        self.decoder = nn.Sequential(*self.decoder)
 
-    def forward_encoder(self, x1, x2):
+    def forward(self, x1, x2):
         z1 = self.encoder(x1)
         z2 = self.encoder(x2)
         z = self.similarity_function(z1, z2)
-        return z
-    
-    def forward_decoder(self, z1, z2):
-        recon_x = self.decoder(z)
-        return recon_x
-    
-    def forward(self, x):
-        z = self.forward_encoder(x)
-        logits = self.forward_decoder(z)
-        return logits
+        out = self.output_layer(z)
+        # return self.sigmoid(out) - assumes BCEwithlogits loss will be used
+        return out
     
     def initialize_weights(self):
         ## using subordinate function in case we want to initialize weights differently
@@ -126,6 +108,8 @@ class SiameseAutoEncoder(nn.Module):
             if isinstance(m , nn.Linear) and m.bias is not None:
                 nn.init.constant_(m.bias, 0.0)
 
-print(SiameseAutoEncoder())
+#https://pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html
+print(SiameseEncoder())
+
 if __name__ == "__main__":
-    _ = SiameseAutoEncoder()
+    _ = SiameseEncoder()
