@@ -4,12 +4,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class AutoEncoder(nn.Module):
+class JointEncoder(nn.Module):
 
     def __init__(
     self, 
-    in_features: int = 1024, 
-    code_features: int = 64, 
+    in_features: int = 2048, 
+    code_features: int = 256, 
     hidden_layers: int = 2, 
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
@@ -17,8 +17,8 @@ class AutoEncoder(nn.Module):
     layer_features: np.ndarray = None):
 
         """
-        Autoencoder for molecular data. Takes ECFP-like features as input and 
-        outputs a compressed fingerprint as the autoencoder's latent code.
+        Joint encoder for molecular data pre-trained on a binary classification objective (AC vs non AC). 
+        Takes ECFP-like features as input. Final prediction layer is included only for training purposes.
 
         Note: currently only works with canonical ECFP sizes e.g. 512, 1024, 2048, 4096
         and corresponding hidden layer combinations
@@ -62,37 +62,16 @@ class AutoEncoder(nn.Module):
             if dropout > 0.0:
                 self.encoder.append(nn.Dropout(p=self.dropout))
 
-        self.decoder = nn.ModuleList()
-
-        ## build the decoder
-        for i in range(len(self.layer_features)-1, 0, -1):
-            self.decoder.append(nn.Linear(self.layer_features[i], self.layer_features[i-1]))
-            if i == 1: ## stop activation, dropout before final layer
-                break
-            self.decoder.append(layer_activation)
-            if dropout > 0.0:
-                self.decoder.append(nn.Dropout(p=self.dropout))
-
         ## initialize weights
         self.initialize_weights()
 
         ## unroll into sequential modules to avoid specifying ModuleList method in forward pass
         self.encoder = nn.Sequential(*self.encoder)
-        self.decoder = nn.Sequential(*self.decoder)
 
     def forward_encoder(self, x):
         z = self.encoder(x)
         return z
-    
-    def forward_decoder(self, z):
-        recon_x = self.decoder(z)
-        return recon_x
-    
-    def forward(self, x):
-        z = self.forward_encoder(x)
-        logits = self.forward_decoder(z)
-        return logits
-    
+        
     def initialize_weights(self):
         ## using subordinate function in case we want to initialize weights differently
         self.apply(self._init_weights)
@@ -106,4 +85,4 @@ class AutoEncoder(nn.Module):
                 nn.init.constant_(m.bias, 0.0)
 
 if __name__ == "__main__":
-    _ = AutoEncoder()
+    _ = JointEncoder()

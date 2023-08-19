@@ -1,9 +1,9 @@
-from typing import Any
+from typing import Any, List, Tuple, Union, Literal
 
 import torch
 from lightning import LightningModule
-from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics.classification.accuracy import Accuracy
+from torchmetrics import MaxMetric, MeanMetric 
+from torchmetrics.classification import AUROC
 
 
 ## Heavily borrows from ashleve/lightning-hydra-template's 
@@ -20,6 +20,8 @@ class ACAModule(LightningModule):
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
         criterion: torch.nn.modules.loss,
+        objective: Literal['binary_classification', 'reconstruction'] = 'binary_classification',
+
     ):
         super().__init__()
 
@@ -32,7 +34,12 @@ class ACAModule(LightningModule):
         # loss function
         ### if siamese autoencoder.... elif autoencoder...
         self.criterion = criterion
-        
+        self.objective = objective
+
+        if self.objective == 'binary_classification':
+            self.train_auroc =  AUROC(task='binary')
+            self.val_auroc = AUROC(task='binary')
+            self.test_auroc = AUROC(task='binary')
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
@@ -49,17 +56,20 @@ class ACAModule(LightningModule):
         self.val_loss.reset()
 
     def model_step(self, batch: Any):
-        x, _ = batch
-        x_logits = self.forward(x)
-        loss = self.criterion(x_logits, x)
-        return loss
+        x, y = batch
+        logits = self.forward(x)
+        loss = self.criterion(logits, x) if self.objective == 'reconstruction' else self.criterion(logits, y)
+        preds = logits # Only using this since BCEWithLogitsLoss is used, change if loss function changes
+        return loss, preds, y
         
     def training_step(self, batch: Any, batch_idx: int):
-        loss = self.model_step(batch)
+        loss, preds, y = self.model_step(batch) 
         # update and log metrics
         self.train_loss(loss)
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-
+        if self.objective == 'binary_classification':
+            self.train_auroc(preds, y) if self.train_auroc else None
+            self.log("train/auroc", self.train_auroc, on_step=False, on_epoch=True, prog_bar=True)
         # return loss or backpropagation will fail
         return loss
     
@@ -68,19 +78,31 @@ class ACAModule(LightningModule):
     
     def validation_step(self, batch: Any, batch_idx: int):
         #loss, preds, targets = self.model_step(batch)
-        loss = self.model_step(batch)
-
+        loss, preds, y = self.model_step(batch)
         # update and log metrics
         self.val_loss(loss)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
+        if self.objective == 'binary_classification':
+            self.val_auroc(preds, y) if self.val_auroc else None
+            self.log("val/auroc", self.val_auroc, on_step=False, on_epoch=True, prog_bar=True)
+
+    def on_validation_epoch_end(self) -> None:
+        "Lightning hook that is called when a validation epoch ends."
+        if self.objective == 'binary_classification':
+            auroc = self.val_auroc.compute()  # get current auroc acc
+            self.val_auroc_best(auroc)  # update best so far val acc
+            # log `val_auroc_best` as a value through `.compute()` method, instead of as a metric object
+            # otherwise metric would be reset by lightning after each epoch
+            self.log("val/auroc_best", self.val_auroc_best.compute(), sync_dist=True, prog_bar=True)
+
 
     def test_step(self, batch: Any, batch_idx: int):
-        #loss, preds, targets = self.model_step(batch)
-        loss = self.model_step(batch)
-
+        loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.test_loss(loss)
+        self.test_acc(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("test/auroc", self.test_auroc, on_step=False, on_epoch=True, prog_bar=True)
     
     def on_test_epoch_end(self):
         pass
@@ -108,4 +130,4 @@ class ACAModule(LightningModule):
         return {"optimizer": optimizer}
     
 if __name__ == "__main__":
-    _ = ACAModule(None, None, None, None)
+    _ = ACAModule(None, None, None, None, None)

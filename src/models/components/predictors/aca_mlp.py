@@ -20,9 +20,9 @@ class ACA_MLP(nn.Module):
             dropout: float = 0.0):
     
             """
-            MLP that builds upon a pretrained autoencoder. Removes the input layer and the decoder from the autoencoder,
+            MLP that builds upon a pretrained encoder. Removes the input layer and the decoder from the autoencoder,
             freezes its weights and adds a new input layer that's the same fingerprint size as the layers used to
-            and an MLP that learns from the autoencoder's generated features.
+            and an MLP that learns from the encoder's generated features.
 
             Optionally just returns an MLP
      
