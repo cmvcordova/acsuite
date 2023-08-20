@@ -14,10 +14,9 @@ scheduler:
   patience: 10
 
 net:
-  _target_: src.models.components.autoencoders.autoencoder.AutoEncoder
+  _target_: src.models.components.encoders.siamese.SiameseEncoder
   in_features: 2048
-  code_features: 64
-  hidden_layers: 2
+  code_features: 256
   layer_activation: 
     _target_: torch.nn.ReLU
   dropout: 0.2
