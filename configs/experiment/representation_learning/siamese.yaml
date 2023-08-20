@@ -1,0 +1,28 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=representation_learning/siamese
+
+defaults:
+  - override /data: representation_learning/siamese
+  - override /model: representation_learning/siamese
+  - override /callbacks: default
+  - override /trainer: default
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+debug: default
+
+tags: ["tlacamr_siameseencoder"]
+
+logger:
+  wandb:
+    name: "tlacamr_siameseencoder"
+    tags: ${tags}
+    mode: online
+    entity: cmvcordova
+  aim:
+    experiment: "tlacamr_siameseencoder"
+  
+trainer:
+  accelerator: gpu

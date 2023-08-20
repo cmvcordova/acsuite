@@ -1,6 +1,4 @@
-## tinier dataset for debugging
-## currently debugging is done 
-_target_: src.data.mmp_datamodule.MMPDataModule
+_target_: src.data.representation_learning.mmp_datamodule.MMPDataModule
 file_name: "ACNet/MMP_AC_Mixed_Screened.json"
 data_dir: ${paths.data_dir}
 ## consult dataset size from Zhange et al. 2023 ACNet
@@ -9,13 +7,15 @@ batch_size: 128
 num_workers: 0
 pin_memory: False
 shuffle: True
-## options related to mmp_dataset construction start here.
-output_type: "concat"
 molfeat_featurizer: 
   _target_: molfeat.trans.MoleculeTransformer
   featurizer: 
     _target_: molfeat.calc.FPCalculator
     method: "ecfp"
-    length: 512
+    length: 2048
     radius: 2
+## options related to mmp_dataset construction start here.
+## input_type should be one of ["concat", "pair", "single"], 
+## pass from CLI with an experiment configuration
+input_type: concat
 target_dict: None
