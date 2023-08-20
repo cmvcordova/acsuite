@@ -12,12 +12,9 @@ class SiameseEncoder(nn.Module):
     self, 
     in_features: int = 2048, 
     code_features: int = 256, 
-    hidden_layers: int = 2,
-    layer_features: np.ndarray = None,
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
     norm_layer: bool = True,
-    training_type: Literal['binary_classification'] = 'binary_classification',
     masking: Literal['mmp', 'random', 'none'] = 'none',
     similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
     sparse: bool = False,
@@ -33,18 +30,10 @@ class SiameseEncoder(nn.Module):
         Args:
             in_features: Number of input features, Uses canonical ECFP Sizes e.g. 512, 1024, 2048, 4096
             code_features: Number of features in the code, i.e. size of the compressed fingerprint
-            hidden_layers: Number of hidden layers
-                        ## array specifying the number of features in each layer if halving w.r.t former layer
-                        ## defaults to halving the input layer size for each hidden layer until the code layer
-                        ## e.g. 1024, 512, 256, 128, 64, can provide own as long as it meets assertions below
-                        ## i.e. undercompletion w.r.t the former layer for all layers.
-            layer_features: Array specifying the number of features in each layer. Defaults to None, since it is calculated from the other parameters.
             layer_activation: Activation function to use for the code. 
             output_activation: Activation function to use for the output.
             norm_layer: Whether to use a normalization layer on the code or not. 
-            training_type: Training type for the autoencoder. 
-            masking: Masking type for the autoencoder. 
-            decoder_type: Decoder type for the siamese autoencoder. Only usable if training_type is 'reconstruction'.
+            masking: Masking type for the encoder. 
             similarity_function: Similarity function to compute distance in siamese encoder. 
             sparse: Whether to use a sparsity constraint for the code layer or not.
             dropout: Dropout probability. -- Denoising autoencoders
@@ -53,18 +42,20 @@ class SiameseEncoder(nn.Module):
         super().__init__()
         self.in_features = in_features
         self.code_features = code_features
-        self.hidden_layers = hidden_layers
 
-        self.layer_features = np.concatenate((
-        self.in_features,
-        [self.in_features//2**i for i in range(1, self.hidden_layers+1)],
-        self.code_features),
-        axis = None)
+        assert self.in_features % self.code_features == 0, f"Input features must be evenly divisible by code features: {in_features} % {code_features} != 0"
+        assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
+        
+        ## calculate layer features from in and code features, halving w.r.t former layer until code layer dimensions are obtained
+        ## e.g. 1024, 512, 256, 128, 64, can provide own dimensions as long as it meets assertions below
+
+        self.layer_features = []
+        while in_features >= code_features: self.layer_features.append(in_features) ; in_features//=2  
+        
         self.norm_layer = norm_layer
         self.dropout = dropout
 
         self.similarity_function = lambda x, y: torch.dot(x, y) if similarity_function == 'dot_product' else nn.CosineSimilarity()
-        assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
         assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
 
         self.encoder = nn.ModuleList()
