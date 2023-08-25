@@ -27,13 +27,13 @@ class ACA_MLP(nn.Module):
             Optionally just returns an MLP
      
             Args:
-                pretrained_autoencoder_ckpt (str, optional): Path to the pretrained autoencoder checkpoint. Defaults to None.
-                activation (nn.Module, optional): Activation function to use for the code. Defaults to nn.ReLU().
-                in_features (int): Number of input features, i.e. size of the compressed fingerprint
-                out_features (int): Number of output features, e.g. number of properties to predict
-                hidden_features (int): Number of hidden features
-                depth (int): Number of hidden layers                
-                dropout (float, optional): Dropout probability. Defaults to 0.0.
+                pretrained_autoencoder_ckpt: Path to the pretrained autoencoder checkpoint.
+                layer_activation: Activation function to use for the code.
+                in_features: Number of input features, i.e. size of the compressed fingerprint
+                out_features: Number of output features, e.g. number of properties to predict
+                hidden_features: Number of hidden features
+                depth: Number of hidden layers                
+                dropout: Dropout probability.
             """
             super().__init__()
             self.pretrained_autoencoder_ckpt = pretrained_autoencoder_ckpt
@@ -55,6 +55,7 @@ class ACA_MLP(nn.Module):
                 # freeze the encoder's layers
                 for param in frozen_encoder.parameters():
                     param.requires_grad = False
+                ## add custom input layer depending on specified in_features
                 self.input_block = nn.ModuleList([nn.Linear(self.in_features, frozen_encoder[0].in_features)])
                 self.input_block.extend(frozen_encoder)
             else:
@@ -70,7 +71,7 @@ class ACA_MLP(nn.Module):
             self.mlp.append(layer_activation)
 
             ## variably instantiate the hidden layers
-            for i in range(self.hidden_layers):
+            for i in range(self.hidden_layers-1):
                 self.mlp.append(nn.Linear(self.hidden_features, self.hidden_features))
                 self.mlp.append(layer_activation)
                 if self.dropout > 0:
@@ -85,6 +86,6 @@ class ACA_MLP(nn.Module):
             x = self.input_block(x)
             x = self.mlp(x)
             return x
-
+        
 if __name__ == "__main__":
     _ = ACA_MLP()

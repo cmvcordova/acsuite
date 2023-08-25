@@ -17,10 +17,10 @@ class ACAModule(LightningModule):
     def __init__(
         self,
         net: torch.nn.Module,
+        objective: Literal['binary_classification', 'reconstruction'],
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: torch.nn.modules.loss,
-        objective: Literal['binary_classification', 'reconstruction'] = 'binary_classification',
+        criterion: torch.nn.modules.loss
 
     ):
         super().__init__()
@@ -40,6 +40,7 @@ class ACAModule(LightningModule):
             self.train_auroc =  AUROC(task='binary')
             self.val_auroc = AUROC(task='binary')
             self.test_auroc = AUROC(task='binary')
+
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()

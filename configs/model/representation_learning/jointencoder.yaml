@@ -1,5 +1,15 @@
 _target_: src.models.acamodule.ACAModule
 
+net:
+  _target_: src.models.components.encoders.jointencoder.JointEncoder
+  in_features: 4096
+  code_features: 256
+  layer_activation: 
+    _target_: torch.nn.ReLU
+  dropout: 0.2
+
+objective: binary_classification 
+
 optimizer:
   _target_: torch.optim.Adam
   _partial_: true
@@ -13,13 +23,5 @@ scheduler:
   factor: 0.1
   patience: 10
 
-net:
-  _target_: src.models.components.encoders.jointencoder.JointEncoder
-  in_features: 4096
-  code_features: 256
-  layer_activation: 
-    _target_: torch.nn.ReLU
-  dropout: 0.2
- 
 criterion:
   _target_: torch.nn.BCEWithLogitsLoss

@@ -7,22 +7,18 @@ from torchmetrics.classification.accuracy import Accuracy
 from torchmetrics.regression import MeanSquaredError
 
 
-## REMEMBER TO CHANGE NET TO AUTOENCODER IN THE ACAMODULE.PY FILE
-## FOR CONSISTENCY
-
-
 class ACAPPModule(LightningModule):
 
     """ Module for training a property predictor on top of a 
-    pretrained autoencoder"""
+    pretrained encoder"""
     
     def __init__(
         self,
         net: torch.nn.Module,
-        task: str,
+        task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: torch.nn.modules.loss,
+        criterion: torch.nn.modules.loss
     ):
         super().__init__()
 
@@ -35,29 +31,33 @@ class ACAPPModule(LightningModule):
         # loss function
         self.criterion = criterion
         
+        if criterion == 'rmse':
+            self.eps = 1e-8
+            self.criterion = lambda x, y: torch.sqrt(torch.nn.MSELoss(x, y) + self.eps)
+        
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
-
-        # metric objects for calculating and averaging accuracy across batches
-        if task == "classification":
-        self.train_metric= Accuracy(task="binary")
-        self.val_metric = Accuracy(task="binary")
-        self.test_metric = Accuracy(task="binary")
+        
         ## logging purposes
         self.metric_name = 'acc'
 
-
+        # metric objects for calculating and averaging accuracy across batches
+        if task == "classification":
+            self.train_metric= Accuracy(task="binary")
+            self.val_metric = Accuracy(task="binary")
+            self.test_metric = Accuracy(task="binary")
         elif task == "regression":
-        self.train_metric = MeanSquaredError(squared=True)
-        self.val_metric = MeanSquaredError(squared=True)
-        self.test_metric = MeanSquaredError(squared=True)
-        ## logging purposes
-        ## assuming default RMSE loss from MSE in the regression setting
-        self.eps = 1e-8
-        self.criterion = lambda x, y: torch.sqrt(self.criterion(x, y) + self.eps)
-        self.metric_name = 'rmse'
+            self.train_metric = MeanSquaredError(squared=True)
+            self.val_metric = MeanSquaredError(squared=True)
+            self.test_metric = MeanSquaredError(squared=True)
+            if criterion == torch.nn.MSELoss:
+                self.criterion = criterion
+            ## assuming default RMSE loss from MSE in the regression setting
+            self.eps = 1e-8
+            self.criterion = lambda x, y: torch.sqrt(self.criterion(x, y) + self.eps)
+            self.metric_name = 'rmse'
 
         # for tracking best so far validation accuracy
         self.val_metric_best = MaxMetric()
@@ -154,4 +154,4 @@ class ACAPPModule(LightningModule):
         return {"optimizer": optimizer}
     
 if __name__ == "__main__":
-    _ = ACAPPModule(None, None, None, None)
+    _ = ACAPPModule(None, None, None, None, None)

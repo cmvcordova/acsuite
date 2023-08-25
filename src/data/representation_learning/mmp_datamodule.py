@@ -32,7 +32,6 @@ class MMPDataModule(LightningDataModule):
         file_name: str,
         data_dir: str,
         train_val_test_split: Tuple[int, int, int],
-        #positive_only: bool, test, to expand if positive/negative pairs are to be included later
         batch_size: int, 
         num_workers: int,
         pin_memory: bool, 
@@ -40,7 +39,8 @@ class MMPDataModule(LightningDataModule):
         ## dataset options
         molfeat_featurizer,
         input_type: str,
-        target_dict: Dict[str, Any]
+        target_dict: Optional[Dict[str, Any]] = None,
+        positive_only: Optional[bool] = None # to expand if positive/negative pairs are to be included later
     ):
         super().__init__()
         ## this line allows to access init params with 'self.hparams' attribute
