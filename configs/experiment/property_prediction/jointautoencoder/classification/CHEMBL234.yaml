@@ -4,8 +4,8 @@
 # python train.py experiment=mlp_training/default
 
 defaults:
-- override /data: property_prediction/default
-- override /model: defaultmlpclassification
+- override /data: property_prediction/regression
+- override /model: models/components/predictors/aca_mlp
 - override /callbacks: default
 - override /trainer: default
 
@@ -17,3 +17,4 @@ data: ## calls MoleculeACEDataModule directly
 model: ## calls ACAPPModule directly
   net:
     pretrained_autoencoder_ckpt: 'data/models/autoencoders/ae_test.ckpt'
+  task: classification

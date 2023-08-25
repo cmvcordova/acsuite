@@ -99,8 +99,5 @@ class SiameseEncoder(nn.Module):
             if isinstance(m , nn.Linear) and m.bias is not None:
                 nn.init.constant_(m.bias, 0.0)
 
-#https://pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html
-print(SiameseEncoder())
-
 if __name__ == "__main__":
     _ = SiameseEncoder()
