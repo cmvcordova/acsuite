@@ -11,12 +11,9 @@ class SiameseAutoEncoder(nn.Module):
     self, 
     in_features: int = 2048, 
     code_features: int = 256, 
-    hidden_layers: int = 2,
-    layer_features: np.ndarray = None,
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
     norm_layer: bool = True,
-    training_type: Literal['binary_classification', 'reconstruction'] = 'reconstruction',
     masking: Literal['mmp', 'random', 'none'] = 'none',
     decoder_type: Literal['cross_decoder'] = 'cross_decoder',
     similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
@@ -53,19 +50,20 @@ class SiameseAutoEncoder(nn.Module):
         super().__init__()
         self.in_features = in_features
         self.code_features = code_features
-        self.hidden_layers = hidden_layers
+        assert self.in_features % self.code_features == 0, f"Input features must be divisible by code features: {in_features} % {code_features} != 0"
+        
+        self.layer_features = []
+        ## calculate hidden layers from in, code features, halving w.r.t former layer
+        ## defaults to halving the input layer size for each hidden layer until the code layer
+        ## e.g. 1024, 512, 256, 128, 64, can provide own dimensions as long as it meets assertions below
+        while in_features >= code_features: self.layer_features.append(in_features) ; in_features//=2  
 
-        self.layer_features = np.concatenate((
-        self.in_features,
-        [self.in_features//2**i for i in range(1, self.hidden_layers+1)],
-        self.code_features),
-        axis = None)
-        self.norm_layer = norm_layer
-        self.dropout = dropout
-
-        self.similarity_function = lambda x, y: torch.dot(x, y) if similarity_function == 'dot_product' else nn.CosineSimilarity()
         assert self.in_features > self.code_features, f"Input features must be greater than code features: {in_features} !> {code_features}"
         assert self.layer_features[-2] > self.code_features, f"Final hidden layer output features must be greater than code features: {self.layer_features[-1]} !> {code_features}"
+
+        self.norm_layer = norm_layer
+        self.dropout = dropout
+        self.similarity_function = lambda x, y: torch.dot(x, y) if similarity_function == 'dot_product' else nn.CosineSimilarity()
 
         ## build the encoder, specify the input layer separately to avoid activation, dropout in input layer
         ## self.encoder = nn.ModuleList([nn.Linear(self.layer_features[0], self.layer_features[1])])
@@ -127,5 +125,6 @@ class SiameseAutoEncoder(nn.Module):
                 nn.init.constant_(m.bias, 0.0)
 
 print(SiameseAutoEncoder())
+
 if __name__ == "__main__":
     _ = SiameseAutoEncoder()
