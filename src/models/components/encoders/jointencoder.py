@@ -84,6 +84,6 @@ class JointEncoder(nn.Module):
             nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
             if isinstance(m , nn.Linear) and m.bias is not None:
                 nn.init.constant_(m.bias, 0.0)
-print(JointEncoder())
+
 if __name__ == "__main__":
     _ = JointEncoder()

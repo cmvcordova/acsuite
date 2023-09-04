@@ -101,9 +101,10 @@ class ACAModule(LightningModule):
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.test_loss(loss)
-        self.test_acc(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("test/auroc", self.test_auroc, on_step=False, on_epoch=True, prog_bar=True)
+        if self.objective == 'binary_classification':
+            self.test_auroc(preds, y) if self.test_auroc else None
+            self.log("test/auroc", self.test_auroc, on_step=False, on_epoch=True, prog_bar=True)
     
     def on_test_epoch_end(self):
         pass
