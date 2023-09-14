@@ -76,7 +76,7 @@ class MMPDataModule(LightningDataModule):
             "reduce_dataset_by must be a float between 0 and 1"
             self.hparams.train_val_test_split = [int(set_length * dataset_fraction) for set_length in self.hparams.train_val_test_split]
             mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)
-            mmp_df = mmp_df.sample(m = np.sum(self.hparams.train_val_test_split), random_state = seed)
+            mmp_df = mmp_df.sample(n = np.sum(self.hparams.train_val_test_split), random_state = seed)
 
         if not self.data_train and not self.data_val and not self.data_test:
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
