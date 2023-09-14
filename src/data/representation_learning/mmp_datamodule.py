@@ -70,12 +70,13 @@ class MMPDataModule(LightningDataModule):
         
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
+        mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)
+
         if self.hparams.dataset_fraction is not None:
             dataset_fraction = self.hparams.dataset_fraction
             assert dataset_fraction is None or dataset_fraction > 0 and dataset_fraction <= 1, \
             "dataset_fraction must be a float between 0 and 1"
             self.hparams.train_val_test_split = [int(set_length * dataset_fraction) for set_length in self.hparams.train_val_test_split]
-            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)
             mmp_df = mmp_df.sample(n = np.sum(self.hparams.train_val_test_split), random_state = seed)
 
         if not self.data_train and not self.data_val and not self.data_test:
