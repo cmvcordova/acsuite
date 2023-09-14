@@ -17,7 +17,7 @@ tags: ["tlacamr_jointautoencoder"]
 
 logger:
   wandb:
-    name: "tlacamr_jointauoencoder"
+    name: "tlacamr_jointautoencoder"
     tags: ${tags}
     mode: online
     entity: cmvcordova
@@ -25,4 +25,4 @@ logger:
     experiment: "tlacamr_jointauoencoder"
   
 #trainer:
-  #accelerator: gpu
+#  accelerator: gpu
