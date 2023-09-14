@@ -1,6 +1,9 @@
 from typing import Any, Dict, Optional, Tuple
 
 import torch
+import numpy as np
+import pandas as pd
+
 from lightning import LightningDataModule
 from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
 from torchvision.transforms import transforms
@@ -39,6 +42,7 @@ class MMPDataModule(LightningDataModule):
         ## dataset options
         molfeat_featurizer,
         input_type: str,
+        dataset_fraction: Optional[float] = None, # to reduce dataset size for debugging/throughput purposes
         target_dict: Optional[Dict[str, Any]] = None,
         positive_only: Optional[bool] = None # to expand if positive/negative pairs are to be included later
     ):
@@ -66,15 +70,21 @@ class MMPDataModule(LightningDataModule):
         
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
+        if self.hparams.dataset_fraction is not None:
+            dataset_fraction = self.hparams.dataset_fraction
+            assert dataset_fraction is None or dataset_fraction >= 0 and dataset_fraction < 1, \
+            "reduce_dataset_by must be a float between 0 and 1"
+            self.hparams.train_val_test_split = [int(set_length * dataset_fraction) for set_length in self.hparams.train_val_test_split]
+            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)
+            mmp_df = mmp_df.sample(m = np.sum(self.hparams.train_val_test_split), random_state = seed)
+
         if not self.data_train and not self.data_val and not self.data_test:
-            #self.hparams.train_val_test_split = [204,26,26] #mmp_dataset debug purposes
-            mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)#.iloc[:256] #debug purposes
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
             input_type = self.hparams.input_type,
             positive_only = self.hparams.positive_only,
             molfeat_featurizer = self.hparams.molfeat_featurizer,
             target_dict = self.hparams.target_dict)
-            
+
             self.data_train, self.data_val, self.data_test = random_split(
                 dataset=dataset,
                 lengths=self.hparams.train_val_test_split,

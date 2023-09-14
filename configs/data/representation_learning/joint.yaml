@@ -17,5 +17,6 @@ molfeat_featurizer:
 ## options related to mmp_dataset construction start here.
 ## input_type should be one of ["concat", "pair", "single"], 
 ## pass from CLI with an experiment configuration
+dataset_fraction: 0.1
 input_type: concat
 target_dict: None
