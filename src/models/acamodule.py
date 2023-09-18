@@ -37,7 +37,7 @@ class ACAModule(LightningModule):
         self.objective = objective
 
         if self.objective == 'binary_classification':
-            self.train_auroc =  AUROC(task='binary')
+            self.train_auroc = AUROC(task='binary')
             self.val_auroc = AUROC(task='binary')
             self.test_auroc = AUROC(task='binary')
 
