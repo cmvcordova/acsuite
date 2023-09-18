@@ -1,23 +1,25 @@
-import math
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from typing import Optional
 from src.models.acamodule import ACAModule
+from src.models.components.encoders.jointautoencoder import JointAutoEncoder
 
 #https://discuss.pytorch.org/t/how-to-delete-layer-in-pretrained-model/17648
 
 class ACA_MLP(nn.Module):
     
         def __init__(self, 
-            pretrained_autoencoder_ckpt: str = None,
             layer_activation: nn.Module = nn.ReLU(),
             in_features: int = 2048,
             hidden_features: int = 100, 
             hidden_layers: int = 2, ## Ilnicka and Schneider 2023
             output_features: int = 1, 
-            dropout: float = 0.0):
+            dropout: float = 0.0,
+            pretrained_encoder_ckpt: Optional[str] = 'src/models/pretrained/encoders/last.ckpt'
+            ):
     
             """
             MLP that builds upon a pretrained encoder. Removes the input layer and the decoder from the autoencoder,
@@ -36,7 +38,7 @@ class ACA_MLP(nn.Module):
                 dropout: Dropout probability.
             """
             super().__init__()
-            self.pretrained_autoencoder_ckpt = pretrained_autoencoder_ckpt
+            self.pretrained_encoder_ckpt = pretrained_encoder_ckpt
             self.in_features = in_features
             self.hidden_features = hidden_features
             self.hidden_layers = hidden_layers
@@ -47,23 +49,27 @@ class ACA_MLP(nn.Module):
             ## Linear layer mapping the input to the hidden layer size if no
             ## pretrained autoencoder is supplied, otherwise the input block
             ## integrates the pretrained autoencoder's encoder
-            
-            if self.pretrained_autoencoder_ckpt is not None:
-                #frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt)
-                frozen_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_autoencoder_ckpt, map_location={'cuda:0':'cpu'})
-                frozen_encoder = nn.ModuleList(frozen_encoder.net.encoder[1:])
-                # freeze the encoder's layers
-                for param in frozen_encoder.parameters():
+            if self.pretrained_encoder_ckpt is not None:
+            ## todo: add full flag support consistent with trainer accelerator flag from config
+                pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt)
+                #pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt, 
+                #                                                   map_location={'cuda:0':'cpu'})
+                
+            ## create input layer based on out features of first layer, to ensure
+                ## compatibility with first hidden layer of the pretrained encoder
+                self.input_block = nn.ModuleList(pretrained_encoder.net.encoder)
+                # freeze the previous encoder's layers
+                for param in self.input_block.parameters():
                     param.requires_grad = False
-                ## add custom input layer depending on specified in_features
-                self.input_block = nn.ModuleList([nn.Linear(self.in_features, frozen_encoder[0].in_features)])
-                self.input_block.extend(frozen_encoder)
+                ## add new input layer with consistent in_feature dims
+                self.input_block[0] = nn.Linear(self.in_features, 
+                                                self.input_block[0].out_features)
             else:
                 self.input_block = nn.ModuleList([nn.Linear(self.in_features, self.hidden_features)])
 
             self.input_block = nn.Sequential(*self.input_block)
 
-            ## Instantiate the MLP'S hidden layers for learning on the input block's output
+            ## Instantiate the predictor's (MLP) hidden layers for learning on the input block's output
             ## if no pretrained autoencoder is supplied, the input block
             ## is just a linear mapping input layer to the MLP
 
@@ -71,7 +77,7 @@ class ACA_MLP(nn.Module):
             self.mlp.append(layer_activation)
 
             ## variably instantiate the hidden layers
-            for i in range(self.hidden_layers-1):
+            for i in range(self.hidden_layers):
                 self.mlp.append(nn.Linear(self.hidden_features, self.hidden_features))
                 self.mlp.append(layer_activation)
                 if self.dropout > 0:
