@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 import torch
 from lightning import LightningModule
@@ -79,6 +79,7 @@ class ACAPPModule(LightningModule):
 
     def model_step(self, batch: Any):
         x, y = batch
+        y = y.unsqueeze(-1) ##placeholder, there must be something fancier for labels
         preds = self.forward(x)
         loss = self.criterion(preds, y)
         #preds = torch.argmax(logits, dim=1) #classification, removed assuming

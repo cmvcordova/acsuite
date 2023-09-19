@@ -44,14 +44,15 @@ class ACA_MLP(nn.Module):
             self.hidden_layers = hidden_layers
             self.output_features = output_features
             self.dropout = dropout
-
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             ## Instantiate the input block:
             ## Linear layer mapping the input to the hidden layer size if no
             ## pretrained autoencoder is supplied, otherwise the input block
             ## integrates the pretrained autoencoder's encoder
             if self.pretrained_encoder_ckpt is not None:
             ## todo: add full flag support consistent with trainer accelerator flag from config
-                pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt)
+                pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt,
+                                                                    map_location = self.device)
                 #pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt, 
                 #                                                   map_location={'cuda:0':'cpu'})
                 
