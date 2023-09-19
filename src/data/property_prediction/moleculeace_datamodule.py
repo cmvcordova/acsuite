@@ -26,7 +26,7 @@ class MoleculeACEDataModule(LightningDataModule):
     def __init__(
         self, 
         ## dataset options
-        dataset_name: List[str], ## extend to using lightning's CombinedLoader for multiple datasets
+        dataset_name: str, ## todo: extend to using lightning's CombinedLoader for multiple datasets?
         task: str,
         molfeat_featurizer,
         # misc parameters
@@ -58,7 +58,6 @@ class MoleculeACEDataModule(LightningDataModule):
         
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
-        print(self.hparams.dataset_name)
         if not self.data_train and not self.data_val and not self.data_test:
             train_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
             data_split='train', 

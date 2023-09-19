@@ -38,7 +38,7 @@ class MoleculeACEDataset(Dataset):
         radius = 4)
         #, dtype = torch.float32 didn't work
         )
-    ):
+    ):  
         self.dataset = moleculeace_Data(dataset_name)
         self.molfeat_featurizer = molfeat_featurizer
 
@@ -64,5 +64,7 @@ class MoleculeACEDataset(Dataset):
     def __getitem__(self, idx):
         molecule = torch.as_tensor(self.x[idx], dtype = torch.float32)
         label = torch.tensor(self.y[idx], dtype = torch.long)
+        print(f"molecule is {molecule} while its dim is {molecule.dim()}")
+        print(f"label is {label} while its dim is {label.dim()}")
         return molecule, label
     

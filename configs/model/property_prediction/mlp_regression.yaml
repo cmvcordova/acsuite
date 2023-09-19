@@ -1,10 +1,9 @@
 _target_: src.models.acappmodule.ACAPPModule
 
-task: classification
+task: regression
 
 net:
   _target_: src.models.components.predictors.aca_mlp.ACA_MLP
-  pretrained_autoencoder_ckpt: null # must be specified in experiment config
   layer_activation: 
     _target_: torch.nn.ReLU
   in_features: 2048
@@ -12,6 +11,7 @@ net:
   hidden_layers: 2
   output_features: 1
   dropout: 0.2
+  pretrained_encoder_ckpt: null # must be specified in experiment config
 
 optimizer:
   _target_: torch.optim.Adam
@@ -27,4 +27,4 @@ scheduler:
   patience: 10
  
 criterion:
-  _target_: torch.nn.BCEWithLogitsLoss
+  _target_: torch.nn.MSELoss
