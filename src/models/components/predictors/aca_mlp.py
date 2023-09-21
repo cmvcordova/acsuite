@@ -83,15 +83,20 @@ class ACA_MLP(nn.Module):
                 self.mlp.append(layer_activation)
                 if self.dropout > 0:
                     self.mlp.append(nn.Dropout(self.dropout))
-            ## add the output layer
-            self.mlp.append(nn.Linear(self.hidden_features, self.output_features))
-
             self.mlp = nn.Sequential(*self.mlp)
+
+            ## add the output layer, regression or classification
+            ##todo: add support for multiple classification classes/regression targets?
+            ## is this not already supported by the output_features parameter?
+
+            self.output_layer=(nn.Linear(self.hidden_features, self.output_features))
 
     
         def forward(self, x):
             x = self.input_block(x)
             x = self.mlp(x)
+            x = torch.flatten(x, start_dim=1)
+            x = self.output_layer(x)
             return x
         
 if __name__ == "__main__":

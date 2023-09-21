@@ -64,7 +64,5 @@ class MoleculeACEDataset(Dataset):
     def __getitem__(self, idx):
         molecule = torch.as_tensor(self.x[idx], dtype = torch.float32)
         label = torch.tensor(self.y[idx], dtype = torch.long)
-        print(f"molecule is {molecule} while its dim is {molecule.dim()}")
-        print(f"label is {label} while its dim is {label.dim()}")
         return molecule, label
     
