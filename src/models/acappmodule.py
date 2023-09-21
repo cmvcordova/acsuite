@@ -4,6 +4,7 @@ import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification.accuracy import Accuracy
+from torchmetrics.classification import AUROC
 from torchmetrics.regression import MeanSquaredError
 
 
@@ -41,13 +42,19 @@ class ACAPPModule(LightningModule):
         self.test_loss = MeanMetric()
         
         ## logging purposes
-        self.metric_name = 'acc'
+        self.metric_name = 'AUROC'
 
         # metric objects for calculating and averaging accuracy across batches
         if task == "classification":
-            self.train_metric= Accuracy(task="binary")
-            self.val_metric = Accuracy(task="binary")
-            self.test_metric = Accuracy(task="binary")
+            self.train_metric = AUROC(task='binary')
+            self.val_metric = AUROC(task='binary')
+            self.test_metric = AUROC(task='binary')
+            
+            ## add support in options for accuracy
+            #self.train_metric = Accuracy(task='binary')
+            #self.val_metric = Accuracy(task='binary')
+            #self.test_metric = Accuracy(task='binary')
+
         elif task == "regression":
             self.train_metric = MeanSquaredError(squared=True)
             self.val_metric = MeanSquaredError(squared=True)
@@ -59,13 +66,10 @@ class ACAPPModule(LightningModule):
             self.criterion = lambda x, y: torch.sqrt(self.criterion(x, y) + self.eps)
             self.metric_name = 'rmse'
 
-        # for tracking best so far validation accuracy
+        # for tracking best metric value so far
         self.val_metric_best = MaxMetric()
 
-        # for tracking best so far validation RMSE
-
-        ## define the default forward pass depending on
-        ## associated autoencoder
+        ## define the default forward pass depending on associated model
     def forward(self, x:torch.Tensor):
         return self.net(x)
 
@@ -79,17 +83,16 @@ class ACAPPModule(LightningModule):
 
     def model_step(self, batch: Any):
         x, y = batch
-        y = y.unsqueeze(-1) ##placeholder, there must be something fancier for labels
+        y = y.unsqueeze(-1)
         preds = self.forward(x)
         loss = self.criterion(preds, y)
-        #preds = torch.argmax(logits, dim=1) #classification, removed assuming
-        #the binary classification criterion is BCEWithLogitsLoss
+        #preds = torch.argmax(preds, dim=1) #classification, removed assuming
+        #the classification problem is binary and the criterion is BCEWithLogitsLoss
         return loss , preds, y
         
     def training_step(self, batch: Any, batch_idx: int):
         ## Required
         loss, preds, targets = self.model_step(batch)
-        loss = self.model_step(batch)
         # update and log metrics
         self.train_loss(loss)
         self.train_metric(preds, targets)
@@ -103,11 +106,9 @@ class ACAPPModule(LightningModule):
     
     def validation_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
-        loss = self.model_step(batch)
-
         # update and log metrics
         self.val_loss(loss)
-        self.val_acc(preds, targets)
+        self.val_metric(preds, targets)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
 
@@ -120,9 +121,7 @@ class ACAPPModule(LightningModule):
         self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
 
     def test_step(self, batch: Any, batch_idx: int):
-        #loss, preds, targets = self.model_step(batch)
-        loss = self.model_step(batch)
-
+        loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.test_loss(loss)
         self.test_acc(preds, targets)
