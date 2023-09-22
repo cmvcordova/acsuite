@@ -1,0 +1,21 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=property_prediction/jointautoencoder/classification/ChEMBL2835
+
+defaults: ## override defalt options in train.yaml config
+- override /data: property_prediction/classification
+- override /model: property_prediction/mlp_classification
+
+tags: ["ChEMBL2835 - classification"]
+
+data: ## calls MoleculeACEDataModule directly
+  dataset_name: CHEMBL2835_Ki
+
+model: ## calls ACAPPModule directly
+  task: classification
+  net: ## specify pretrained encoder
+    pretrained_encoder_ckpt: 'src/models/pretrained/encoders/jointautoencoder.ckpt'
+
+trainer:
+  accelerator: gpu
