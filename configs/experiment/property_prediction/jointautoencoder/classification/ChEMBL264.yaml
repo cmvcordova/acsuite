@@ -1,19 +1,21 @@
 # @package _global_
 
 # to execute this experiment run:
-# python train.py experiment=mlp_training/default
+# python train.py experiment=property_prediction/jointautoencoder/classification/ChEMBL264
 
-defaults:
-- override /data: property_prediction/default
-- override /model: defaultmlpregression
-- override /callbacks: default
-- override /trainer: default
+defaults: ## override defalt options in train.yaml config
+- override /data: property_prediction/classification
+- override /model: property_prediction/mlp_classification
 
-tags: ["mlp_training_test"]
+tags: ["ChEMBL264 - classification"]
 
 data: ## calls MoleculeACEDataModule directly
-  dataset_name: ["CHEMBL264_Ki"]
+  dataset_name: CHEMBL264_Ki
 
 model: ## calls ACAPPModule directly
-  net:
-    pretrained_autoencoder_ckpt: 'data/models/autoencoders/ae_test.ckpt'
+  task: classification
+  net: ## specify pretrained encoder
+    pretrained_encoder_ckpt: 'src/models/pretrained/encoders/jointautoencoder.ckpt'
+
+trainer:
+  accelerator: gpu
