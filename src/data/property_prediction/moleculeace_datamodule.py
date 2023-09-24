@@ -97,8 +97,7 @@ class MoleculeACEDataModule(LightningDataModule):
             dataset=self.data_test,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
-            pin_memory=self.hparams.pin_memory,
-            shuffle=self.hparams.shuffle
+            pin_memory=self.hparams.pin_memory
         )
     
     def teardown(self, stage: Optional[str] = None):

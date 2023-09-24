@@ -124,7 +124,7 @@ class ACAPPModule(LightningModule):
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.test_loss(loss)
-        self.test_acc(preds, targets)
+        self.test_metric(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log(f"test/{self.metric_name}", self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
     
