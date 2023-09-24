@@ -19,7 +19,7 @@ class ACAPPModule(LightningModule):
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: torch.nn.modules.loss
+        criterion: Any[str, torch.nn.modules.loss] ## any prevents error of assigning rmse lambda
     ):
         super().__init__()
 
@@ -31,25 +31,22 @@ class ACAPPModule(LightningModule):
         self.net = net
         # loss function
         self.criterion = criterion
-        
-        if criterion == 'rmse':
-            self.eps = 1e-8
-            self.criterion = lambda x, y: torch.sqrt(torch.nn.MSELoss(x, y) + self.eps)
-        
+                
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
         
-        ## logging purposes
-        self.metric_name = 'AUROC'
-
         # metric objects for calculating and averaging accuracy across batches
         if task == "classification":
             self.train_metric = AUROC(task='binary')
             self.val_metric = AUROC(task='binary')
             self.test_metric = AUROC(task='binary')
             
+            ## logging purposes
+            if criterion == torch.nn.BCEWithLogitsLoss:
+                self.metric_name = 'AUROC'
+
             ## add support in options for accuracy
             #self.train_metric = Accuracy(task='binary')
             #self.val_metric = Accuracy(task='binary')
@@ -60,11 +57,15 @@ class ACAPPModule(LightningModule):
             self.val_metric = MeanSquaredError(squared=True)
             self.test_metric = MeanSquaredError(squared=True)
             if criterion == torch.nn.MSELoss:
-                self.criterion = criterion
+                self.metric_name = 'mse'
+            elif criterion == 'mse':
+                self.criterion = torch.nn.MSELoss()
+                self.metric_name = 'mse'
             ## assuming default RMSE loss from MSE in the regression setting
-            self.eps = 1e-8
-            self.criterion = lambda x, y: torch.sqrt(self.criterion(x, y) + self.eps)
-            self.metric_name = 'rmse'
+            elif criterion == 'rmse':
+                self.eps = 1e-8
+                self.criterion = lambda x, y: torch.sqrt(torch.nn.MSELoss(x, y) + self.eps)
+                self.metric_name = 'rmse'
 
         # for tracking best metric value so far
         self.val_metric_best = MaxMetric()
