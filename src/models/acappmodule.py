@@ -19,7 +19,7 @@ class ACAPPModule(LightningModule):
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: Any[str, torch.nn.modules.loss] ## any prevents error of assigning rmse lambda
+        criterion: Any #[str, torch.nn.modules.loss] ## any prevents error of assigning rmse lambda
     ):
         super().__init__()
 
