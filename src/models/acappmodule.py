@@ -1,11 +1,11 @@
-from typing import Any, Literal
-
+from typing import Any, Literal, Optional, List
 import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
-from torchmetrics.classification.accuracy import Accuracy
-from torchmetrics.classification import AUROC
+from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
+from src.models.components.loss.loss import RMSELoss
+
 
 
 class ACAPPModule(LightningModule):
@@ -18,8 +18,9 @@ class ACAPPModule(LightningModule):
         net: torch.nn.Module,
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
-        scheduler: torch.optim.lr_scheduler,
-        criterion: Any #[str, torch.nn.modules.loss] ## any prevents error of assigning rmse lambda
+        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler],
+        criterion: torch.nn.Module
+        
     ):
         super().__init__()
 
@@ -27,47 +28,42 @@ class ACAPPModule(LightningModule):
         # also ensures init params will be stored in ckpt
         ## ignore the 'ignore' tag that will be proposed by the logger
         self.save_hyperparameters(logger=False)
-
         self.net = net
-        # loss function
-        self.criterion = criterion
                 
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
+        self.criterion = criterion
+        
         self.test_loss = MeanMetric()
         
         # metric objects for calculating and averaging accuracy across batches
         if task == "classification":
+            self.metric_name = 'AUROC'
             self.train_metric = AUROC(task='binary')
             self.val_metric = AUROC(task='binary')
             self.test_metric = AUROC(task='binary')
-            
-            ## logging purposes
-            if criterion == torch.nn.BCEWithLogitsLoss:
-                self.metric_name = 'AUROC'
-
-            ## add support in options for accuracy
+            ## todo: add support in options for accuracy
             #self.train_metric = Accuracy(task='binary')
             #self.val_metric = Accuracy(task='binary')
             #self.test_metric = Accuracy(task='binary')
 
         elif task == "regression":
-            self.train_metric = MeanSquaredError(squared=True)
-            self.val_metric = MeanSquaredError(squared=True)
-            self.test_metric = MeanSquaredError(squared=True)
-            if criterion == torch.nn.MSELoss:
-                self.metric_name = 'mse'
-            elif criterion == 'mse':
-                self.criterion = torch.nn.MSELoss()
-                self.metric_name = 'mse'
-            ## assuming default RMSE loss from MSE in the regression setting
-            elif criterion == 'rmse':
-                self.eps = 1e-8
-                self.criterion = lambda x, y: torch.sqrt(torch.nn.MSELoss(x, y) + self.eps)
+            if isinstance(criterion, RMSELoss):
                 self.metric_name = 'rmse'
+                self.train_metric = MeanSquaredError(squared=False)
+                self.val_metric = MeanSquaredError(squared=False)
+                self.test_metric = MeanSquaredError(squared=False)
 
-        # for tracking best metric value so far
+            elif isinstance(criterion, torch.nn.modules.loss.MSELoss):
+                self.metric_name = 'mse'
+                self.train_metric = MeanSquaredError(squared=True)
+                self.val_metric = MeanSquaredError(squared=True)
+                self.test_metric = MeanSquaredError(squared=True)
+
+            else:
+                raise ValueError(f"Unsuported loss metric {criterion} for the regression task")
+            
         self.val_metric_best = MaxMetric()
 
         ## define the default forward pass depending on associated model
