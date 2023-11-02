@@ -108,8 +108,12 @@ class ACAPPModule(LightningModule):
         # update and log metrics
         self.val_loss(loss)
         self.val_metric(preds, targets)
-        #self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        print('validation step')
+        print('checkpoint 1')
+        self.log("val/loss", self.val_loss, 
+                 on_step=False, 
+                 on_epoch=True, 
+                 prog_bar=True)
+        print('checkpoint 2')
         self.log(f"val/{self.metric_name}", self.val_metric, 
                  on_step=True, 
                  on_epoch=False, 
@@ -121,7 +125,6 @@ class ACAPPModule(LightningModule):
         self.val_metric_best(metric)  # update best so far val acc
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        print('on_validation_epoch_end')
         self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
                  on_step=False,
                  on_epoch=True, 
