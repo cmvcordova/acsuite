@@ -117,7 +117,11 @@ class ACAPPModule(LightningModule):
         self.val_metric_best(metric)  # update best so far val acc
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), on_epoch=True, sync_dist=True, prog_bar=True)
+        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
+                 on_step=False,
+                 on_epoch=True, 
+                 sync_dist=True, 
+                 prog_bar=True)
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
