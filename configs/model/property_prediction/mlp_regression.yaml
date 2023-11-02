@@ -27,4 +27,4 @@ scheduler:
   patience: 10
  
 criterion:
-  _target_: torch.nn.MSELoss
+  _target_: RMSELoss
