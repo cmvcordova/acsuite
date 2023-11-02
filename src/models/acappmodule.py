@@ -34,9 +34,7 @@ class ACAPPModule(LightningModule):
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.criterion = criterion
-        
-        self.test_loss = MeanMetric()
-        
+                
         # metric objects for calculating and averaging accuracy across batches
         if task == "classification":
             self.metric_name = 'AUROC'
@@ -63,7 +61,12 @@ class ACAPPModule(LightningModule):
 
             else:
                 raise ValueError(f"Unsuported loss metric {criterion} for the regression task")
-            
+        
+        # for averaging loss across batches
+        self.train_loss = MeanMetric()
+        self.val_loss = MeanMetric()
+        self.test_loss = MeanMetric()
+
         self.val_metric_best = MaxMetric()
 
         ## define the default forward pass depending on associated model
