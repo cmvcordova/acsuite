@@ -17,5 +17,8 @@ model: ## calls ACAPPModule directly
   net: ## specify pretrained encode
     pretrained_encoder_ckpt: 'src/models/pretrained/encoders/jointautoencoder.ckpt'
 
+callbacks:
+  model_checkpoint: 'min'
+  
 trainer:
   accelerator: gpu
