@@ -108,11 +108,13 @@ class ACAPPModule(LightningModule):
         # update and log metrics
         self.val_loss(loss)
         self.val_metric(preds, targets)
+        current_val_loss = self.val_loss.compute()
         print('checkpoint 1')
-        self.log("val/loss", self.val_loss, 
+        self.log("val/loss", current_val_loss, #self.val_loss.compute(), 
                  on_step=False, 
                  on_epoch=True, 
                  prog_bar=True)
+        self.val_loss.reset()
         print('checkpoint 2')
         self.log(f"val/{self.metric_name}", self.val_metric, 
                  on_step=True, 
