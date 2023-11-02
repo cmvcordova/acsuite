@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional, List
+from typing import Any, Literal, Optional, Dict, Tuple
 import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric
@@ -70,84 +70,109 @@ class ACAPPModule(LightningModule):
         self.val_metric_best = MaxMetric()
 
         ## define the default forward pass depending on associated model
-    def forward(self, x:torch.Tensor):
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Perform a forward pass through the model `self.net`.
+
+        :param x: A tensor of images.
+        :return: A tensor of logits.
+        """
         return self.net(x)
 
-    def on_train_start(self):
+    def on_train_start(self) -> None:
+        """Lightning hook that is called when training begins."""
         # by default lightning executes validation step sanity checks before training starts,
         # so it's worth to make sure validation metrics don't store results from these checks
         self.val_loss.reset()
-        ## classification tasks:
         self.val_metric.reset()
         self.val_metric_best.reset()
 
-    def model_step(self, batch: Any):
+    def model_step(
+        self, batch: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Perform a single model step on a batch of data.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target labels.
+
+        :return: A tuple containing (in order):
+            - A tensor of losses.
+            - A tensor of predictions.
+            - A tensor of target labels.
+        """
         x, y = batch
         y = y.unsqueeze(-1)
         preds = self.forward(x)
-        loss = self.criterion(preds, y)
-        #preds = torch.argmax(preds, dim=1) #classification, removed assuming
+        loss = self.criterion(preds, y.float())
+        #preds = torch.argmax(logits, dim=1) #classification, removed assuming
         #the classification problem is binary and the criterion is BCEWithLogitsLoss
-        return loss , preds, y
-        
-    def training_step(self, batch: Any, batch_idx: int):
-        ## Required
+        return loss, preds, y
+
+    def training_step(
+        self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
+        """Perform a single training step on a batch of data from the training set.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target
+            labels.
+        :param batch_idx: The index of the current batch.
+        :return: A tensor of losses between model predictions and targets.
+        """
         loss, preds, targets = self.model_step(batch)
+
         # update and log metrics
         self.train_loss(loss)
         self.train_metric(preds, targets)
-        self.log("train/loss", self.train_loss, 
-                 on_step=False, 
-                 on_epoch=True, 
-                 prog_bar=True)
-        
-        self.log(f"train/{self.metric_name}", self.train_metric, 
-                 on_step=False, 
-                 on_epoch=True, 
-                 prog_bar=True)
+        self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"train/{self.metric_name}", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
+
         # return loss or backpropagation will fail
         return loss
-    
-    def on_train_epoch_end(self):
+
+    def on_train_epoch_end(self) -> None:
+        "Lightning hook that is called when a training epoch ends."
         pass
-    
-    def validation_step(self, batch: Any, batch_idx: int):
+
+    def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
+        """Perform a single validation step on a batch of data from the validation set.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target
+            labels.
+        :param batch_idx: The index of the current batch.
+        """
         loss, preds, targets = self.model_step(batch)
+
         # update and log metrics
-        #self.val_loss(loss)
-        #self.val_metric(preds, targets)
+        self.val_loss(loss)
+        self.val_metric(preds, targets)
+        self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
 
-        self.log("val/loss", self.val_loss(loss),
-                 on_step=False, 
-                 on_epoch=True, 
-                 prog_bar=True)
-        
-        self.log(f"val/{self.metric_name}", self.val_metric(preds,targets), 
-                 on_step=False, 
-                 on_epoch=True, 
-                 prog_bar=True)
-
-    #Use when incorporating classification tasks
-    def on_validation_epoch_end(self):
-        metric = self.val_metric.compute()  # get current val metric
-        self.val_metric_best(metric)  # update best so far val metric
-        # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
+    def on_validation_epoch_end(self) -> None:
+        "Lightning hook that is called when a validation epoch ends."
+        metric = self.val_metric.compute()  # get current val acc
+        self.val_metric_best(metric)  # update best so far val acc
+        # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
-                 sync_dist=True, prog_bar=True
-            )
+        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
 
-    def test_step(self, batch: Any, batch_idx: int):
+    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
+        """Perform a single test step on a batch of data from the test set.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target
+            labels.
+        :param batch_idx: The index of the current batch.
+        """
         loss, preds, targets = self.model_step(batch)
+
         # update and log metrics
         self.test_loss(loss)
         self.test_metric(preds, targets)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
         self.log(f"test/{self.metric_name}", self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
-    
-    def on_test_epoch_end(self):
-        pass
 
+    def on_test_epoch_end(self) -> None:
+        """Lightning hook that is called when a test epoch ends."""
+        pass
 
     def setup(self, stage: str) -> None:
         """Lightning hook that is called at the beginning of fit (train + validate), validate,
@@ -160,16 +185,17 @@ class ACAPPModule(LightningModule):
         """
         if self.hparams.compile and stage == "fit":
             self.net = torch.compile(self.net)
-    
-    def configure_optimizers(self):
-        ## Required
+
+    def configure_optimizers(self) -> Dict[str, Any]:
         """Choose what optimizers and learning-rate schedulers to use in your optimization.
         Normally you'd need one. But in the case of GANs or similar you might have multiple.
-    
+
         Examples:
             https://lightning.ai/docs/pytorch/latest/common/lightning_module.html#configure-optimizers
+
+        :return: A dict containing the configured optimizers and learning-rate schedulers to be used for training.
         """
-        optimizer = self.hparams.optimizer(params=self.parameters())
+        optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
         if self.hparams.scheduler is not None:
             scheduler = self.hparams.scheduler(optimizer=optimizer)
             return {
@@ -182,6 +208,7 @@ class ACAPPModule(LightningModule):
                 },
             }
         return {"optimizer": optimizer}
-    
+
+
 if __name__ == "__main__":
     _ = ACAPPModule(None, None, None, None, None)
