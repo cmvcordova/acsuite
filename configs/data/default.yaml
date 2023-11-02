@@ -1,8 +1,0 @@
-_target_: src.data.mmp_datamodule.MMPDataModule
-file_name: "ACNet/MMP_AC_Small.json"
-data_dir: ${paths.data_dir}
-batch_size: 128
-train_val_test_split: [42466, 5309, 5309]
-num_workers: 0
-shuffle: False
-pin_memory: False

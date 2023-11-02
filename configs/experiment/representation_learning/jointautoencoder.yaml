@@ -1,0 +1,26 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=representation_learning/jointautoencoder
+
+defaults:
+  - override /data: representation_learning/joint
+  - override /model: representation_learning/jointautoencoder
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+debug: default
+
+tags: ["tlacamr_jointautoencoder"]
+
+logger:
+  wandb:
+    name: "tlacamr_jointautoencoder"
+    tags: ${tags}
+    mode: online
+    entity: cmvcordova
+  aim:
+    experiment: "tlacamr_jointauoencoder"
+  
+trainer:
+  accelerator: gpu

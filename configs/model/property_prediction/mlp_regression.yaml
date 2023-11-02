@@ -1,0 +1,30 @@
+_target_: src.models.acappmodule.ACAPPModule
+
+task: regression
+
+net:
+  _target_: src.models.components.predictors.aca_mlp.ACA_MLP
+  layer_activation: 
+    _target_: torch.nn.ReLU
+  in_features: 2048
+  hidden_features: 100
+  hidden_layers: 2
+  output_features: 1
+  dropout: 0.2
+  pretrained_encoder_ckpt: null # must be specified in experiment config
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.0
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+ 
+criterion:
+  _target_: src.models.components.loss.loss.RMSELoss
