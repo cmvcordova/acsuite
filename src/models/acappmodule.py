@@ -6,8 +6,6 @@ from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
 from src.models.components.loss.loss import RMSELoss
 
-
-
 class ACAPPModule(LightningModule):
 
     """ Module for training a property predictor on top of a 
@@ -28,19 +26,19 @@ class ACAPPModule(LightningModule):
         # also ensures init params will be stored in ckpt
         ## ignore the 'ignore' tag that will be proposed by the logger
         self.save_hyperparameters(logger=False)
+
         self.net = net
-                
-        # for averaging loss across batches
-        self.train_loss = MeanMetric()
-        self.val_loss = MeanMetric()
+
         self.criterion = criterion
                 
         # metric objects for calculating and averaging accuracy across batches
         if task == "classification":
-            self.metric_name = 'AUROC'
-            self.train_metric = AUROC(task='binary')
-            self.val_metric = AUROC(task='binary')
-            self.test_metric = AUROC(task='binary')
+            if isinstance(criterion, torch.nn.modules.loss.BCEWithLogitsLoss):
+                self.metric_name = 'AUROC'
+                self.train_metric = AUROC(task='binary')
+                self.val_metric = AUROC(task='binary')
+                self.test_metric = AUROC(task='binary')
+
             ## todo: add support in options for accuracy
             #self.train_metric = Accuracy(task='binary')
             #self.val_metric = Accuracy(task='binary')
@@ -77,7 +75,6 @@ class ACAPPModule(LightningModule):
         # by default lightning executes validation step sanity checks before training starts,
         # so it's worth to make sure validation metrics don't store results from these checks
         self.val_loss.reset()
-        ## classification tasks:
         self.val_metric.reset()
         self.val_metric_best.reset()
 
@@ -109,8 +106,8 @@ class ACAPPModule(LightningModule):
         # update and log metrics
         self.val_loss(loss)
         self.val_metric(preds, targets)
-        self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val/loss", self.val_loss, on_step=True, on_epoch=False, prog_bar=True)
+        self.log(f"val/{self.metric_name}", self.val_metric, on_step=True, on_epoch=False, prog_bar=True)
 
     #Use when incorporating classification tasks
     def on_validation_epoch_end(self):
@@ -118,7 +115,9 @@ class ACAPPModule(LightningModule):
         self.val_metric_best(metric)  # update best so far val acc
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
+        self.log("val/loss_epoch", avg_loss, on_step=False, on_epoch=True)
+        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
+                 sync_dist=True, prog_bar=True, on_epoch=True, on_step=False)
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
