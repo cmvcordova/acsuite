@@ -18,9 +18,10 @@ class ACAPPModule(LightningModule):
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
-        criterion: torch.nn.Module
+        criterion: torch.nn.Module,
+        compile: bool = False,
+    ) -> None:
         
-    ):
         super().__init__()
 
         # this line allows to access init params with 'self.hparams' attribute
@@ -115,6 +116,7 @@ class ACAPPModule(LightningModule):
         # update and log metrics
         self.val_loss(loss)
         self.val_metric(preds, targets)
+
         self.log("val/loss", self.val_loss,
                  on_step=False, 
                  on_epoch=True, 
