@@ -114,15 +114,15 @@ class ACAPPModule(LightningModule):
     def validation_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
-        self.val_loss(loss)
-        self.val_metric(preds, targets)
+        #self.val_loss(loss)
+        #self.val_metric(preds, targets)
 
-        self.log("val/loss", self.val_loss,
+        self.log("val/loss", self.val_loss(loss),
                  on_step=False, 
                  on_epoch=True, 
                  prog_bar=True)
         
-        self.log(f"val/{self.metric_name}", self.val_metric, 
+        self.log(f"val/{self.metric_name}", self.val_metric(preds,targets), 
                  on_step=False, 
                  on_epoch=True, 
                  prog_bar=True)
