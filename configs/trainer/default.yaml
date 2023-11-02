@@ -12,7 +12,7 @@ enable_model_summary:
 profiler: simple
 
 # mixed precision for extra speed-up
-#precision: 16
+precision: 16
 
 # perform a validation loop every N training epochs
 check_val_every_n_epoch: 1

@@ -1,7 +1,7 @@
 from typing import Any, Literal, Optional, Dict, Tuple
 import torch
 from lightning import LightningModule
-from torchmetrics import MaxMetric, MeanMetric
+from torchmetrics import MaxMetric, MeanMetric, MinMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
 from src.models.components.loss.loss import RMSELoss
@@ -67,7 +67,10 @@ class ACAPPModule(LightningModule):
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
 
-        self.val_metric_best = MaxMetric()
+        if task == "classification":
+            self.val_metric_best = MaxMetric()
+        elif task == "regression":
+            self.val_metric_best = MinMetric()
 
         ## define the default forward pass depending on associated model
 
@@ -151,7 +154,7 @@ class ACAPPModule(LightningModule):
         "Lightning hook that is called when a validation epoch ends."
         metric = self.val_metric.compute()  # get current val acc
         self.val_metric_best(metric)  # update best so far val acc
-        # log `val_acc_best` as a value through `.compute()` method, instead of as a metric object
+        # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
         self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
 
