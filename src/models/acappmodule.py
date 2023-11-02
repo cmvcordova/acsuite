@@ -103,34 +103,34 @@ class ACAPPModule(LightningModule):
     def on_train_epoch_end(self):
         pass
     
-    def validation_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.model_step(batch)
+    #def validation_step(self, batch: Any, batch_idx: int):
+    #    loss, preds, targets = self.model_step(batch)
         # update and log metrics
-        self.val_loss(loss)
-        self.val_metric(preds, targets)
-        print('checkpoint 1')
-        self.log("val/loss", self.val_loss,
-                 on_step=True, 
-                 on_epoch=False, 
-                 prog_bar=True)
-        print('checkpoint 2')
-        self.log(f"val/{self.metric_name}", self.val_metric, 
-                 on_step=True, 
-                 on_epoch=False, 
-                 prog_bar=True)
+    #    self.val_loss(loss)
+    #    self.val_metric(preds, targets)
+    #    print('checkpoint 1')
+    #    self.log("val/loss", self.val_loss,
+    #             on_step=True, 
+    #             on_epoch=False, 
+    #             prog_bar=True)
+    #    print('checkpoint 2')
+    #    self.log(f"val/{self.metric_name}", self.val_metric, 
+    #             on_step=True, 
+    #             on_epoch=False, 
+    #             prog_bar=True)
 
     #Use when incorporating classification tasks
-    def on_validation_epoch_end(self):
-        metric = self.val_metric.compute()  # get current val metric
-        self.val_metric_best(metric)  # update best so far val metric
+    #def on_validation_epoch_end(self):
+    #    metric = self.val_metric.compute()  # get current val metric
+    #    self.val_metric_best(metric)  # update best so far val metric
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
-                 on_step=False,
-                 on_epoch=True, 
-                 sync_dist=True, 
-                 prog_bar=True
-            )
+    #    self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
+    #             on_step=False,
+    #             on_epoch=True, 
+    #             sync_dist=True, 
+    #             prog_bar=True
+    #        )
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
