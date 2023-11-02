@@ -17,7 +17,7 @@ class ACAPPModule(LightningModule):
         net: torch.nn.Module,
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
-        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler],
+        scheduler: torch.optim.lr_scheduler,
         criterion: torch.nn.Module
         
     ):
@@ -95,42 +95,45 @@ class ACAPPModule(LightningModule):
         # update and log metrics
         self.train_loss(loss)
         self.train_metric(preds, targets)
-        self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"train/{self.metric_name}", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("train/loss", self.train_loss, 
+                 on_step=False, 
+                 on_epoch=True, 
+                 prog_bar=True)
+        
+        self.log(f"train/{self.metric_name}", self.train_metric, 
+                 on_step=False, 
+                 on_epoch=True, 
+                 prog_bar=True)
         # return loss or backpropagation will fail
         return loss
     
     def on_train_epoch_end(self):
         pass
     
-    #def validation_step(self, batch: Any, batch_idx: int):
-    #    loss, preds, targets = self.model_step(batch)
+    def validation_step(self, batch: Any, batch_idx: int):
+        loss, preds, targets = self.model_step(batch)
         # update and log metrics
-    #    self.val_loss(loss)
-    #    self.val_metric(preds, targets)
-    #    print('checkpoint 1')
-    #    self.log("val/loss", self.val_loss,
-    #             on_step=True, 
-    #             on_epoch=False, 
-    #             prog_bar=True)
-    #    print('checkpoint 2')
-    #    self.log(f"val/{self.metric_name}", self.val_metric, 
-    #             on_step=True, 
-    #             on_epoch=False, 
-    #             prog_bar=True)
+        self.val_loss(loss)
+        self.val_metric(preds, targets)
+        self.log("val/loss", self.val_loss,
+                 on_step=False, 
+                 on_epoch=True, 
+                 prog_bar=True)
+        
+        self.log(f"val/{self.metric_name}", self.val_metric, 
+                 on_step=False, 
+                 on_epoch=True, 
+                 prog_bar=True)
 
     #Use when incorporating classification tasks
-    #def on_validation_epoch_end(self):
-    #    metric = self.val_metric.compute()  # get current val metric
-    #    self.val_metric_best(metric)  # update best so far val metric
+    def on_validation_epoch_end(self):
+        metric = self.val_metric.compute()  # get current val metric
+        self.val_metric_best(metric)  # update best so far val metric
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
-    #    self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
-    #             on_step=False,
-    #             on_epoch=True, 
-    #             sync_dist=True, 
-    #             prog_bar=True
-    #        )
+        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), 
+                 sync_dist=True, prog_bar=True
+            )
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
@@ -142,6 +145,19 @@ class ACAPPModule(LightningModule):
     
     def on_test_epoch_end(self):
         pass
+
+
+    def setup(self, stage: str) -> None:
+        """Lightning hook that is called at the beginning of fit (train + validate), validate,
+        test, or predict.
+
+        This is a good hook when you need to build models dynamically or adjust something about
+        them. This hook is called on every process when using DDP.
+
+        :param stage: Either `"fit"`, `"validate"`, `"test"`, or `"predict"`.
+        """
+        if self.hparams.compile and stage == "fit":
+            self.net = torch.compile(self.net)
     
     def configure_optimizers(self):
         ## Required
