@@ -2,21 +2,24 @@
 import os
 from setuptools import find_packages, setup
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
-    name="tlacamr",
+    name="acsuite",
     py_modules = ['tlacamr'],
     version="0.1",
-    description="Towards learning activty cliff aware molecular representations",
+    description="Accompanying software for Master's thesis. Provides basic functionality to learn and evaluate representations from activity cliff data",
     author="César Miguel Valdez Córdova",
     author_email="cmvcordova@pm.me",
-    url="https://github.com/user/project",
-    install_requires=["pytorch-lightning", "hydra-core"], #add more
+    url="https://github.com/cmvcordova/acsuite",
+    install_requires=requirements,
     packages=find_packages(),
     # use this to customize global commands available in the terminal after installing the package
     entry_points={
         "console_scripts": [
-            "train_command = src.train:main",
-            "eval_command = src.eval:main",
+            "train = src.train:main",
+            "eval = src.eval:main",
         ]
     },
 )

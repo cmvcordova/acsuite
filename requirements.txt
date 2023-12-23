@@ -12,9 +12,12 @@ hydra-optuna-sweeper==1.2.0
 #-------- chemrelated --------#
 molfeat         # molecular featurizer
 rdkit           # general molecule management
+MoleculeACE     # evaluation suite for ACs
+torch-geometric # MoleculeACE dependency
+transformers    # MoleculeACE dependency
 
 # --------- loggers --------- #
-# wandb
+wandb
 # neptune-client
 # mlflow
 # comet-ml
