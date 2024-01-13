@@ -1,0 +1,16 @@
+# @package _global_
+
+defaults: ## override default options in train.yaml config
+- override /data: property_prediction/classification
+- override /model: property_prediction/mlp_classification
+
+tags: ["ChEMBL - MLP 2048 - classification"]
+
+callbacks:
+  model_checkpoint: 'max'
+
+hydra:
+  sweeper:
+    params:
+      data:
+        dataset_name: CHEMBL234_Ki, CHEMBL264_Ki, CHEMBL2047_Ki, CHEMBL2835_Ki, CHEMBL4203_Ki, CHEMBL4616_Ki

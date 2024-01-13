@@ -7,7 +7,7 @@ root_dir: ${oc.env:PROJECT_ROOT}
 data_dir: ${paths.root_dir}/data/
 
 ## pretrained dir
-pretrained_ae_dir: ${paths.root_dir}/data/models/autoencoder
+pretrained_encoder_dir: ${paths.root_dir}/src/models/pretrained/encoders/
 
 # path to logging directory
 log_dir: ${paths.root_dir}/logs/

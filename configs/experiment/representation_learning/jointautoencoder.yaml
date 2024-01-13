@@ -5,6 +5,7 @@
 defaults:
   - override /data: representation_learning/joint
   - override /model: representation_learning/jointautoencoder
+  - override /trainer: encoder
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -21,6 +22,3 @@ logger:
     entity: cmvcordova
   aim:
     experiment: "tlacamr_jointauoencoder"
-  
-trainer:
-  accelerator: gpu

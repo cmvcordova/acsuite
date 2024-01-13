@@ -28,3 +28,6 @@ scheduler:
  
 criterion:
   _target_: src.models.components.loss.loss.RMSELoss
+
+callbacks:
+  model_checkpoint: 'min'

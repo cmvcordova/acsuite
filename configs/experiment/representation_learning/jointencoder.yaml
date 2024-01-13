@@ -22,7 +22,4 @@ logger:
     mode: online
     entity: cmvcordova
   aim:
-    experiment: "tlacamr_jointencoder"
-  
-trainer:
-  accelerator: gpu
+    experiment: "tlacamr_jointencoder" 

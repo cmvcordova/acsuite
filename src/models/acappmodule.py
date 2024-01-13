@@ -4,7 +4,7 @@ from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric, MinMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
-from src.models.components.loss.loss import RMSELoss
+from src.models.components.losses import RMSELoss
 
 
 class ACAPPModule(LightningModule):

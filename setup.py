@@ -7,7 +7,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="acsuite",
-    py_modules = ['tlacamr'],
+    py_modules = ['acsuite'],
     version="0.1",
     description="Accompanying software for Master's thesis. Provides basic functionality to learn and evaluate representations from activity cliff data",
     author="César Miguel Valdez Córdova",

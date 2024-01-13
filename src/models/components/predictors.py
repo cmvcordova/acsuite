@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 from typing import Optional
 from src.models.acamodule import ACAModule
-from src.models.components.encoders.jointautoencoder import JointAutoEncoder
+from src.models.components.encoders import JointAutoEncoder
 
 #https://discuss.pytorch.org/t/how-to-delete-layer-in-pretrained-model/17648
 
@@ -98,6 +98,3 @@ class ACA_MLP(nn.Module):
             x = torch.flatten(x, start_dim=1)
             x = self.output_layer(x)
             return x
-        
-if __name__ == "__main__":
-    _ = ACA_MLP()

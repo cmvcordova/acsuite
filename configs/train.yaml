@@ -1,12 +1,15 @@
 # specify here default configuration
 # order of defaults determines the order in which configs override each other
+
+# @package _global_
+
 defaults:
   - _self_
   - data: null ## must be specified in experiment config
   - model: null ## see above
   - callbacks: default
   - logger: wandb # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
-  - trainer: default
+  - trainer: default ## must be set to either pretrain or train (property predictor)
   - paths: default
   - extras: default
   - hydra: default
