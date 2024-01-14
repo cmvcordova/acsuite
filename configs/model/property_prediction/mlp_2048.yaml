@@ -1,7 +1,5 @@
 _target_: src.models.acappmodule.ACAPPModule
 
-task: classification
-
 net:
   _target_: src.models.components.predictors.ACA_MLP
   layer_activation: 

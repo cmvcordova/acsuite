@@ -59,6 +59,8 @@ class MoleculeACEDataModule(LightningDataModule):
     def setup(self, seed: int = 42, stage=None):
         print('Setting up data...')
         if not self.data_train and not self.data_val and not self.data_test:
+            print(self.hparams.dataset_name)
+
             train_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
             data_split='train', 
             task=self.hparams.task, 
