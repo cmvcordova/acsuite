@@ -23,6 +23,3 @@ logger:
     entity: cmvcordova
   aim:
     experiment: "tlacamr_siameseencoder"
-  
-trainer:
-  accelerator: gpu

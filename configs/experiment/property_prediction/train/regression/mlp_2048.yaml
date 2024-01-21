@@ -1,0 +1,21 @@
+# @package _global_
+tags: ["ChEMBL - MLP 2048 - classification"]
+
+defaults:
+  - override /model: property_prediction/mlp_2048
+  - override /data: property_prediction/ecfp_2048
+
+model: 
+  task: regression
+
+callbacks:
+  model_checkpoint: 'max'
+
+data:
+  task: regression
+
+hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki
