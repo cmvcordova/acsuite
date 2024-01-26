@@ -33,7 +33,8 @@ class MoleculeACEDataModule(LightningDataModule):
         batch_size: int, 
         num_workers: int,
         pin_memory: bool, 
-        shuffle: bool
+        shuffle: bool,
+        train_val_split: Optional[float] = 0.8
 
     ):
         super().__init__()
@@ -61,7 +62,7 @@ class MoleculeACEDataModule(LightningDataModule):
         if not self.data_train and not self.data_val and not self.data_test:
             print(self.hparams.dataset_name)
 
-            train_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
+            full_train_dataset = MoleculeACEDataset(self.hparams.dataset_name, 
             data_split='train', 
             task=self.hparams.task, 
             molfeat_featurizer=self.hparams.molfeat_featurizer)
@@ -71,12 +72,13 @@ class MoleculeACEDataModule(LightningDataModule):
             task=self.hparams.task,
             molfeat_featurizer=self.hparams.molfeat_featurizer)
 
-            test_dataset, val_dataset = torch.utils.data.random_split(test_dataset,[0.5, 0.5])
-            
-            self.data_train = train_dataset
-            self.data_test = test_dataset
-            self.data_val = val_dataset
+            # Splitting full_train_dataset into train and validation
+            train_size = int(self.hparams.train_val_split * len(full_train_dataset))
+            val_size = len(full_train_dataset) - train_size
 
+            self.data_train, self.data_val = torch.utils.data.random_split(full_train_dataset, [train_size, val_size])
+            self.data_test = test_dataset
+                
     def train_dataloader(self):
         return DataLoader(
             dataset=self.data_train,
