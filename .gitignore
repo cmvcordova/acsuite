@@ -148,10 +148,29 @@ dmypy.json
 # Lightning-Hydra-Template
 configs/local/default.yaml
 src/logs/
-data
+data/ACNet/*
+data/models/
+
+src/models/pretrained/*
+# Ignore everything in pretrained directories 
+src/models/pretrained/encoders/*
+src/models/pretrained/property_prediction/*
+src/models/pretrained/property_prediction/classification/*
+src/models/pretrained/property_prediction/regression/*
+
+## But keep init files for structure 
+!src/models/pretrained/__init__.py
+!src/models/pretrained/encoders/__init__.py
+!src/models/pretrained/property_prediction/__init__.py
+!src/models/pretrained/property_prediction/classification/__init__.py
+!src/models/pretrained/property_prediction/regression/__init__.py
+
 logs
 .env
 src.egg-info
 outputs/
 src/outputs/
 src/wandb/
+configs/wandb/cmvcordova.yaml
+## these will be developed directly on colab
+notebooks/
