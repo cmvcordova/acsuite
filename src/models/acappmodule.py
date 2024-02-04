@@ -16,16 +16,14 @@ class ACAPPModule(LightningModule):
         self,
         net: torch.nn.Module,
         task: Literal['classification', 'regression'],
-        num_classes: int = 1,
         optimizer: torch.optim.Optimizer,
-        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
         criterion: torch.nn.Module,
+        num_classes: int = 1,
         compile: bool = False,
-
+        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
     ) -> None:
         
         super().__init__()
-
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
         ## ignore the 'ignore' tag that will be proposed by the logger
