@@ -5,11 +5,6 @@ from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric 
 from torchmetrics.classification import AUROC
 
-
-## Heavily borrows from ashleve/lightning-hydra-template's 
-## MNISTLitModule class
-## https://github.com/ashleve/lightning-hydra-template/blob/main/src/models/mnist_module.py
-
 class ACAModule(LightningModule):
     """ Activity-Cliff Aware representation learning through multiple encoding schemes.
     """

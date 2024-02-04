@@ -9,7 +9,7 @@ setup(
     name="acsuite",
     py_modules = ['acsuite'],
     version="0.1",
-    description="Accompanying software for Master's thesis. Provides basic functionality to learn and evaluate representations from activity cliff data",
+    description="Provides basic functionality to learn and evaluate representations from activity cliff data",
     author="César Miguel Valdez Córdova",
     author_email="cmvcordova@pm.me",
     url="https://github.com/cmvcordova/acsuite",

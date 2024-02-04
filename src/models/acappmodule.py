@@ -49,9 +49,10 @@ class ACAPPModule(LightningModule):
         if task == "classification":
             if num_classes == 1:
                 self.metric_name = 'AUROC'
-                self.train_metric = AUROC(num_classes=1)
-                self.val_metric = AUROC(num_classes=1)
-                self.test_metric = AUROC(num_classes=1)
+                self.train_metric = AUROC(num_classes=1, task="binary")
+                self.val_metric = AUROC(num_classes=1, task="binary")
+                self.test_metric = AUROC(num_classes=1, task="binary")
+            ## todo: add multiclass auroc later
             else:
                 self.metric_name = 'accuracy'
                 self.train_metric = Accuracy(num_classes=num_classes)
