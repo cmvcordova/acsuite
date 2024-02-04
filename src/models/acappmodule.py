@@ -1,9 +1,11 @@
 from typing import Any, Literal, Optional, Dict, Tuple
 import torch
+import torch.nn as nn
 from lightning import LightningModule
 from torchmetrics import MaxMetric, MeanMetric, MinMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
+from src.models.components.losses import RMSELoss
 
 class ACAPPModule(LightningModule):
 
@@ -14,10 +16,12 @@ class ACAPPModule(LightningModule):
         self,
         net: torch.nn.Module,
         task: Literal['classification', 'regression'],
+        num_classes: int = 1,
         optimizer: torch.optim.Optimizer,
-        scheduler: torch.optim.lr_scheduler,
+        scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
         criterion: torch.nn.Module,
         compile: bool = False,
+
     ) -> None:
         
         super().__init__()
@@ -26,36 +30,48 @@ class ACAPPModule(LightningModule):
         # also ensures init params will be stored in ckpt
         ## ignore the 'ignore' tag that will be proposed by the logger
         self.save_hyperparameters(logger=False)
-
         self.net = net
+        self.task = task
+        self.num_classes = num_classes
+        #self.compile = compile # add later
 
-        self.criterion = criterion
+        if criterion is None:
+            if task == "classification":
+                if num_classes == 1:
+                    self.criterion = torch.nn.BCEWithLogitsLoss()
+                else:
+                    self.criterion = nn.CrossEntropyLoss()
+            elif task == "regression":
+                self.criterion = nn.MSELoss()
+        else:
+            self.criterion = criterion
                 
         # metric objects for calculating and averaging accuracy across batches
+            
         if task == "classification":
-            if isinstance(criterion, torch.nn.modules.loss.BCEWithLogitsLoss):
+            if num_classes == 1:
                 self.metric_name = 'AUROC'
-                self.train_metric = AUROC(task='binary')
-                self.val_metric = AUROC(task='binary')
-                self.test_metric = AUROC(task='binary')
-
-            ## todo: add support in options for accuracy
-            #self.train_metric = Accuracy(task='binary')
-            #self.val_metric = Accuracy(task='binary')
-            #self.test_metric = Accuracy(task='binary')
+                self.train_metric = AUROC(num_classes=1)
+                self.val_metric = AUROC(num_classes=1)
+                self.test_metric = AUROC(num_classes=1)
+            else:
+                self.metric_name = 'accuracy'
+                self.train_metric = Accuracy(num_classes=num_classes)
+                self.val_metric = Accuracy(num_classes=num_classes)
+                self.test_metric = Accuracy(num_classes=num_classes)
 
         elif task == "regression":
             if isinstance(criterion, RMSELoss):
                 self.metric_name = 'rmse'
-                self.train_metric = MeanSquaredError(squared=False)
-                self.val_metric = MeanSquaredError(squared=False)
-                self.test_metric = MeanSquaredError(squared=False)
-
-            elif isinstance(criterion, torch.nn.modules.loss.MSELoss):
-                self.metric_name = 'mse'
                 self.train_metric = MeanSquaredError(squared=True)
                 self.val_metric = MeanSquaredError(squared=True)
                 self.test_metric = MeanSquaredError(squared=True)
+
+            elif isinstance(criterion, torch.nn.modules.loss.MSELoss):
+                self.metric_name = 'mse'
+                self.train_metric = MeanSquaredError(squared=False)
+                self.val_metric = MeanSquaredError(squared=False)
+                self.test_metric = MeanSquaredError(squared=False)
 
             else:
                 raise ValueError(f"Unsuported loss metric {criterion} for the regression task")
@@ -101,11 +117,10 @@ class ACAPPModule(LightningModule):
             - A tensor of target labels.
         """
         x, y = batch
-        y = y.unsqueeze(-1)
+        if self.task == "classification" and self.num_classes == 1:
+            y = y.unsqueeze(-1)
         preds = self.forward(x)
         loss = self.criterion(preds, y.float())
-        #preds = torch.argmax(logits, dim=1) #classification, removed assuming
-        #the classification problem is binary and the criterion is BCEWithLogitsLoss
         return loss, preds, y
 
     def training_step(
@@ -174,6 +189,24 @@ class ACAPPModule(LightningModule):
     def on_test_epoch_end(self) -> None:
         """Lightning hook that is called when a test epoch ends."""
         pass
+
+    
+    def predict_step(self, batch, batch_idx):
+        """Perform a single prediction step on a batch of data from the test set.
+
+        :param batch: A batch of data (a tuple) containing the input tensor of images and target
+            labels.
+        :param batch_idx: The index of the current batch.
+        """
+        x, _ = batch  
+        logits = self.forward(x)
+        if self.task == "classification":
+            if self.num_classes == 1:
+                probs = torch.sigmoid(logits)
+            else: ## multiclass
+                probs = torch.softmax(logits, dim=1)
+            return probs
+        return logits  # For regression tasks, return raw outputs
 
     def setup(self, stage: str) -> None:
         """Lightning hook that is called at the beginning of fit (train + validate), validate,
