@@ -46,8 +46,7 @@ class MoleculeACEDataModule(LightningDataModule):
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
         self.data_test: Optional[Dataset] = None
-
-
+        self.data_predict: Optional[Dataset] = None
 
     def prepare_data(self) -> None:
         print('Preprocessing data...')
@@ -106,7 +105,7 @@ class MoleculeACEDataModule(LightningDataModule):
     
     def predict_dataloader(self):
         return DataLoader(
-            dataset=self.data_test,
+            dataset=self.data_predict,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory

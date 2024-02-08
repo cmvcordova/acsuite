@@ -7,23 +7,21 @@ from typing import Optional
 from src.models.acamodule import ACAModule
 from src.models.components.encoders import *
 
-#https://discuss.pytorch.org/t/how-to-delete-layer-in-pretrained-model/17648
-
 class HotSwapEncoderMLP(nn.Module): 
         def __init__(self, 
             layer_activation: nn.Module = nn.ReLU(),
             in_features: int = 2048,
             hidden_features: int = 100, 
-            hidden_layers: int = 2, ## Ilnicka and Schneider 2023
+            hidden_layers: int = 2,
             output_features: int = 1, 
             dropout: float = 0.2,
-            pretrained_encoder_ckpt: Optional[str] = 'src/models/pretrained/encoders/jointautoencoder.ckpt'
+            pretrained_encoder_ckpt: Optional[str] = 'src/models/pretrained/encoders/yourencoder.ckpt'
             ):
             """
             MLP that optionally builds upon a pretrained encoder.
-            Adjusts the provided encoder: freezes its weights and if the MLP's input is different from
-            the encoder's, adds a new input linear map layer that's the same size as the 
-            input to the encoder. Else, returns an MLP.
+            Adjusts the provided encoder: freezes its weights and if the provided input features 
+            are different from the encoder's, it adds a new input linear map layer that's the same 
+            size as the input to the encoder. Else, returns an MLP.
 
             Args:
                 layer_activation: Activation function to use for the code.

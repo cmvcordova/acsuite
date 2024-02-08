@@ -1,7 +1,7 @@
 _target_: src.models.acappmodule.ACAPPModule
 
 net:
-  _target_: src.models.components.predictors.ACA_MLP
+  _target_: src.models.components.predictors.HotSwapEncoderMLP
   layer_activation: 
     _target_: torch.nn.ReLU
   in_features: 2048
