@@ -223,7 +223,7 @@ class SiameseAutoEncoder(HalfStepEncoder):
         recon_x2 = self.decoder(z2)
         return recon_x1, recon_x2
     
-    def forward(self, x):
-        z = self.forward_encoder(x)
-        recon_x = self.forward_decoder(z)
-        return recon_x
+    def forward(self, x1, x2):
+        z1, z2 = self.forward_encoder(x1, x2)
+        recon_x1, recon_x2 = self.forward_decoder(z1, z2)
+        return recon_x1, recon_x2, z1, z2

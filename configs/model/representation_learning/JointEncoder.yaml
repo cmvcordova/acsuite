@@ -1,14 +1,14 @@
 _target_: src.models.acamodule.ACAModule
 
 net:
-  _target_: src.models.components.encoders.jointautoencoder.JointAutoEncoder
+  _target_: src.models.components.encoders.JointEncoder
   in_features: 4096
   code_features: 256
   layer_activation: 
     _target_: torch.nn.ReLU
   dropout: 0.2
 
-objective: reconstruction
+objective: binary_classification 
 
 optimizer:
   _target_: torch.optim.Adam
@@ -25,4 +25,3 @@ scheduler:
 
 criterion:
   _target_: torch.nn.BCEWithLogitsLoss
-

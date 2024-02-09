@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union, Literal
+from typing import Any, Literal, Optional
 
 import torch
 from lightning import LightningModule

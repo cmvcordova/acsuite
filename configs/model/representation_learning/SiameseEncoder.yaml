@@ -1,14 +1,14 @@
 _target_: src.models.acamodule.ACAModule
 
 net:
-  _target_: src.models.components.encoders.jointencoder.JointEncoder
-  in_features: 4096
+  _target_: src.models.components.encoders.SiameseEncoder
+  in_features: 2048
   code_features: 256
   layer_activation: 
     _target_: torch.nn.ReLU
   dropout: 0.2
 
-objective: binary_classification 
+objective: binary_classification
 
 optimizer:
   _target_: torch.optim.Adam

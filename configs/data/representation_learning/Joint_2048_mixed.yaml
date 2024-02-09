@@ -16,8 +16,7 @@ molfeat_featurizer:
     radius: 2
 
 ## options related to mmp_dataset construction start here.
-## input_type should be one of ["concat", "pair", "single"], 
-## pass from CLI with an experiment configuration
+## input_type should be one of ["concat", "pair", "single"] 
 
 dataset_fraction: 0.25
 input_type: concat

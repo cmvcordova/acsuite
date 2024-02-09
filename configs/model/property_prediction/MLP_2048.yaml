@@ -4,7 +4,7 @@ net:
   _target_: src.models.components.predictors.HotSwapEncoderMLP
   layer_activation: 
     _target_: torch.nn.ReLU
-  in_features: 2048
+  in_features: 256
   hidden_features: 100
   hidden_layers: 2
   output_features: 1
@@ -20,7 +20,7 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
-  mode: min
+  mode: max
   factor: 0.1
   patience: 10
  
