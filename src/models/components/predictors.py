@@ -21,16 +21,7 @@ class HotSwapEncoderMLP(nn.Module):
             MLP that optionally builds upon a pretrained encoder.
             Adjusts the provided encoder: freezes its weights and if the provided input features 
             are different from the encoder's, it adds a new input linear map layer that's the same 
-            size as the input to the encoder. Else, returns an MLP.
-
-            Args:
-                layer_activation: Activation function to use for the code.
-                in_features: Number of input features
-                hidden_features: Number of hidden features
-                hidden_layers: Number of hidden layers
-                output_features: Number of output features
-                dropout: Dropout probability.
-                pretrained_encoder_ckpt: Path to the pretrained encoder checkpoint
+            size as the input to the encoder. Else, returns an MLP. 
             """
             super().__init__()
             self.in_features = in_features
