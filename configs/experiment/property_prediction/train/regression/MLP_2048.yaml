@@ -2,8 +2,8 @@
 tags: ["ChEMBL - MLP 2048 - classification"]
 
 defaults:
-  - override /model: property_prediction/mlp_2048
-  - override /data: property_prediction/ecfp_2048
+  - override /model: property_prediction/MLP_2048
+  - override /data: property_prediction/ECFP_2048
 
 model: 
   task: regression

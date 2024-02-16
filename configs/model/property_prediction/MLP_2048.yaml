@@ -4,7 +4,7 @@ net:
   _target_: src.models.components.predictors.HotSwapEncoderMLP
   layer_activation: 
     _target_: torch.nn.ReLU
-  in_features: 256
+  in_features: 2048
   hidden_features: 100
   hidden_layers: 2
   output_features: 1

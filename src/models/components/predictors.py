@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import torch
 import torch.nn as nn
@@ -15,7 +16,7 @@ class HotSwapEncoderMLP(nn.Module):
             hidden_layers: int = 2,
             output_features: int = 1, 
             dropout: float = 0.2,
-            pretrained_encoder_ckpt: Optional[str] = 'src/models/pretrained/encoders/yourencoder.ckpt'
+            pretrained_encoder_ckpt: Optional[str] = None 
             ):
             """
             MLP that optionally builds upon a pretrained encoder.
@@ -30,25 +31,31 @@ class HotSwapEncoderMLP(nn.Module):
             self.output_features = output_features
             self.dropout = dropout
             self.pretrained_encoder_ckpt = pretrained_encoder_ckpt
-            ## Instantiate the input layer:
-            ## Map the input to the encoder's size with a linear layer if there's a mismatch
-            ## else, use an identity layer.
+            # Instantiate the input layer:
+            # Map the input to the encoder's size with a linear layer if there's a mismatch
+            # else, use an identity layer.
             self.input_layer = nn.Identity()
             self.encoder = nn.Identity()
 
             mlp_input = self.in_features
             if self.pretrained_encoder_ckpt is not None:
+                if os.path.isfile(pretrained_encoder_ckpt):
+                    print(f"Loading pretrained encoder from {pretrained_encoder_ckpt}")
                 # Load the pretrained encoder
-                pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt, map_location = 'cpu')                
-                self.encoder = pretrained_encoder.net.encoder
-                for param in self.encoder.parameters():
-                    param.requires_grad = False
-                ## create input layer with out features equal to the in features of the 
-                ## first layer of the pretrained encoder, to ensure compatibility
-                if in_features != self.encoder[0].in_features:
-                    self.input_layer = nn.Linear(in_features, pretrained_encoder.net.encoder[0].in_features)
-                    mlp_input = self.encoder[-1].out_features ## set the input size of the MLP to the output size of the encoder
-            ## Instantiate the predictor's (MLP) hidden layers
+                    pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt, map_location = 'cpu')                
+                    self.encoder = pretrained_encoder.net.encoder
+                    # Freeze the weights of the encoder
+                    for param in self.encoder.parameters():
+                        param.requires_grad = False
+                    # create input layer with out features equal to the in features of the 
+                    # first layer of the pretrained encoder, to ensure compatibility
+                    if in_features != self.encoder[0].in_features:
+                        self.input_layer = nn.Linear(in_features, pretrained_encoder.net.encoder[0].in_features)
+                    # Adjust MLP input size to the output size of the encoder
+                    mlp_input = self.encoder[-1].out_features
+                else:
+                    print(f"Pretrained encoder checkpoint not found at {pretrained_encoder_ckpt}.")
+            # Build the MLP layers
             mlp_layers = []
             for i in range(hidden_layers):
                 mlp_layers.append(nn.Linear(mlp_input if i == 0 else hidden_features, hidden_features))
