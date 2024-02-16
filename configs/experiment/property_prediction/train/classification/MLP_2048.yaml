@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ChEMBL - MLP 2048 - classification"]
+tags: ["ChEMBL", "MLP_2048", "classification", "no_pretraining"]
 
 defaults:
   - override /model: property_prediction/MLP_2048
@@ -7,13 +7,16 @@ defaults:
 
 model: 
   task: classification
+  criterion:
+    _target_: torch.nn.BCEWithLogitsLoss
+  scheduler:
+    mode: max
 
 callbacks:
   model_checkpoint: 'max'
 
 data:
   task: classification
-  dataset_name: CHEMBL234_Ki
 
 hydra:
   mode: MULTIRUN

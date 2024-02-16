@@ -20,9 +20,6 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
-  mode: max
+  mode: null # must be specified in experiment config
   factor: 0.1
   patience: 10
- 
-criterion:
-  _target_: torch.nn.BCEWithLogitsLoss

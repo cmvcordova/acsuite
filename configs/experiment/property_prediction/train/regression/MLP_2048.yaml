@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ChEMBL - MLP 2048 - classification"]
+tags: ["ChEMBL", "MLP_2048", "regression", "no_pretraining"]
 
 defaults:
   - override /model: property_prediction/MLP_2048
@@ -7,9 +7,13 @@ defaults:
 
 model: 
   task: regression
+  criterion:
+    _target_: src.models.components.losses.RMSELoss
+  scheduler:
+    mode: min
 
 callbacks:
-  model_checkpoint: 'max'
+  model_checkpoint: 'min'
 
 data:
   task: regression

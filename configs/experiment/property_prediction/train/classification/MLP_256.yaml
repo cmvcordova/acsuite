@@ -1,20 +1,25 @@
 # @package _global_
+tags: ["ChEMBL", "MLP_256", "classification", "no_pretraining"]
 
-defaults: ## override defalt options in train.yaml config
-- override /data: property_prediction/classification
-- override /model: property_prediction/mlp_classification
+defaults:
+  - override /model: property_prediction/MLP_256
+  - override /data: property_prediction/ECFP_256
 
-tags: ["ChEMBL - MLP 256 - classification"]
-
-data: ## calls MoleculeACEDataModule directly
-  +dataset_name: CHEMBL234_Ki, CHEMBL264_Ki, CHEMBL2047_Ki, CHEMBL2835_Ki, CHEMBL4203_Ki, CHEMBL4616_Ki
-
-model: ## calls ACAPPModule directly
+model: 
   task: classification
-  net: in_features
+  criterion:
+    _target_: torch.nn.BCEWithLogitsLoss
+  scheduler:
+    mode: max
+
+data:
+  task: classification
 
 callbacks:
   model_checkpoint: 'max'
 
-trainer:
-  accelerator: gpu
+hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki

@@ -17,9 +17,9 @@ class ACAPPModule(LightningModule):
         net: torch.nn.Module,
         task: Literal['classification', 'regression'],
         optimizer: torch.optim.Optimizer,
-        criterion: torch.nn.Module,
         num_classes: int = 1,
-        compile: bool = False,
+        criterion: Optional[torch.nn.Module] = None,
+        compile: Optional[bool] = False,
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
     ) -> None:
         
@@ -40,7 +40,7 @@ class ACAPPModule(LightningModule):
                 else:
                     self.criterion = nn.CrossEntropyLoss()
             elif task == "regression":
-                self.criterion = nn.MSELoss()
+                self.criterion = RMSELoss()
         else:
             self.criterion = criterion
                 
@@ -54,20 +54,20 @@ class ACAPPModule(LightningModule):
                 self.test_metric = AUROC(num_classes=1, task="binary")
             ## todo: add multiclass auroc later
             else:
-                self.metric_name = 'accuracy'
+                self.metric_name = 'Accuracy'
                 self.train_metric = Accuracy(num_classes=num_classes)
                 self.val_metric = Accuracy(num_classes=num_classes)
                 self.test_metric = Accuracy(num_classes=num_classes)
 
         elif task == "regression":
             if isinstance(criterion, RMSELoss):
-                self.metric_name = 'rmse'
+                self.metric_name = 'RMSE'
                 self.train_metric = MeanSquaredError(squared=True)
                 self.val_metric = MeanSquaredError(squared=True)
                 self.test_metric = MeanSquaredError(squared=True)
 
             elif isinstance(criterion, torch.nn.modules.loss.MSELoss):
-                self.metric_name = 'mse'
+                self.metric_name = 'MSE'
                 self.train_metric = MeanSquaredError(squared=False)
                 self.val_metric = MeanSquaredError(squared=False)
                 self.test_metric = MeanSquaredError(squared=False)
@@ -116,9 +116,11 @@ class ACAPPModule(LightningModule):
             - A tensor of target labels.
         """
         x, y = batch
+        preds = self.forward(x)
+        if self.task == "regression":
+            preds = preds.squeeze(-1)
         if self.task == "classification" and self.num_classes == 1:
             y = y.unsqueeze(-1)
-        preds = self.forward(x)
         loss = self.criterion(preds, y.float())
         return loss, preds, y
 
