@@ -16,6 +16,7 @@ class HotSwapEncoderMLP(nn.Module):
             hidden_layers: int = 2,
             output_features: int = 1, 
             dropout: float = 0.2,
+            encoder: Optional[nn.Module] = None,
             pretrained_encoder_ckpt: Optional[str] = None 
             ):
             """

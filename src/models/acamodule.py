@@ -6,7 +6,8 @@ from torchmetrics import MaxMetric, MeanMetric
 from torchmetrics.classification import AUROC
 
 class ACAModule(LightningModule):
-    """ Activity-Cliff Aware representation learning through multiple encoding schemes.
+    """ 
+    Activity-Cliff Aware representation learning through multiple encoding schemes.
     """
 
     def __init__(
