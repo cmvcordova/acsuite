@@ -1,0 +1,25 @@
+# @package _global_
+tags: ["ChEMBL", "MLP_2048", "classification", "no_pretraining"]
+
+defaults:
+  - override /model: property_prediction/MLP_2048
+  - override /data: property_prediction/ECFP_2048
+
+model: 
+  task: classification
+  criterion:
+    _target_: torch.nn.BCEWithLogitsLoss
+  scheduler:
+    mode: max
+
+callbacks:
+  model_checkpoint: 'max'
+
+data:
+  task: classification
+
+hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki

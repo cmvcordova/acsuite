@@ -1,0 +1,25 @@
+# @package _global_
+tags: ["ChEMBL", "MLP_256", "regression", "no_pretraining"]
+
+defaults:
+  - override /model: property_prediction/MLP_256
+  - override /data: property_prediction/ECFP_256
+
+model: 
+  task: regression
+  criterion:
+    _target_: src.models.components.losses.RMSELoss
+  scheduler:
+    mode: min
+
+callbacks:
+  model_checkpoint: 'min'
+
+data:
+  task: regression
+
+hydra:
+  mode: MULTIRUN
+  sweeper:
+    params:
+      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki

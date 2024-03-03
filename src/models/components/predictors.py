@@ -9,7 +9,13 @@ from src.models.acamodule import ACAModule
 from src.models.components.encoders import *
 
 class HotSwapEncoderMLP(nn.Module): 
-        def __init__(self, 
+    """
+    MLP that optionally builds upon a pretrained encoder.
+    Adjusts the provided encoder: freezes its weights and if the provided input features 
+    are different from the encoder's, it adds a new input linear map layer that's the same 
+    size as the input to the encoder. Else, returns an MLP. 
+    """
+    def __init__(self, 
             layer_activation: nn.Module = nn.ReLU(),
             in_features: int = 2048,
             hidden_features: int = 100, 
@@ -19,12 +25,7 @@ class HotSwapEncoderMLP(nn.Module):
             encoder: Optional[nn.Module] = None,
             pretrained_encoder_ckpt: Optional[str] = None 
             ):
-            """
-            MLP that optionally builds upon a pretrained encoder.
-            Adjusts the provided encoder: freezes its weights and if the provided input features 
-            are different from the encoder's, it adds a new input linear map layer that's the same 
-            size as the input to the encoder. Else, returns an MLP. 
-            """
+   
             super().__init__()
             self.in_features = in_features
             self.hidden_features = hidden_features
@@ -32,23 +33,28 @@ class HotSwapEncoderMLP(nn.Module):
             self.output_features = output_features
             self.dropout = dropout
             self.pretrained_encoder_ckpt = pretrained_encoder_ckpt
-            # Instantiate the input layer:
-            # Map the input to the encoder's size with a linear layer if there's a mismatch
-            # else, use an identity layer.
-            self.input_layer = nn.Identity()
-            self.encoder = nn.Identity()
+            self.encoder = encoder if encoder is not None else nn.Identity()
 
             mlp_input = self.in_features
-            if self.pretrained_encoder_ckpt is not None:
+                
+            # Instantiate the input layer:
+            # Map the input to the encoder's size with a linear layer 
+            # if there's a mismatch. Else, use an identity layer.
+            
+            self.input_layer = nn.Identity()
+            if hasattr(self.encoder, 'input_features') and in_features != getattr(self.encoder, 'input_features', in_features):
+                self.input_layer = nn.Linear(in_features, getattr(self.encoder, 'input_features', in_features))
+
+            if self.encoder is nn.Identity() and self.pretrained_encoder_ckpt is not None:
                 if os.path.isfile(pretrained_encoder_ckpt):
                     print(f"Loading pretrained encoder from {pretrained_encoder_ckpt}")
-                # Load the pretrained encoder
+                    # Load the pretrained encoder
                     pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path = pretrained_encoder_ckpt, map_location = 'cpu')                
                     self.encoder = pretrained_encoder.net.encoder
-                    # Freeze the weights of the encoder
+                    # Freeze the weights of the pretrained encoder
                     for param in self.encoder.parameters():
                         param.requires_grad = False
-                    # create input layer with out features equal to the in features of the 
+                    # Create input layer with out features equal to the in features of the 
                     # first layer of the pretrained encoder, to ensure compatibility
                     if in_features != self.encoder[0].in_features:
                         self.input_layer = nn.Linear(in_features, pretrained_encoder.net.encoder[0].in_features)
@@ -56,6 +62,7 @@ class HotSwapEncoderMLP(nn.Module):
                     mlp_input = self.encoder[-1].out_features
                 else:
                     print(f"Pretrained encoder checkpoint not found at {pretrained_encoder_ckpt}.")
+            
             # Build the MLP layers
             mlp_layers = []
             for i in range(hidden_layers):
@@ -67,9 +74,9 @@ class HotSwapEncoderMLP(nn.Module):
             self.mlp = nn.Sequential(*mlp_layers)
             self.output_layer = nn.Linear(self.hidden_features, self.output_features)
 
-        def forward(self, x):
-            x = self.input_layer(x)
-            x = self.encoder(x)
-            x = self.mlp(x)
-            x = self.output_layer(x)
-            return x
+    def forward(self, x):
+        x = self.input_layer(x)
+        x = self.encoder(x)
+        x = self.mlp(x)
+        x = self.output_layer(x)
+        return x
