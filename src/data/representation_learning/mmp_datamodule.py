@@ -43,8 +43,7 @@ class MMPDataModule(LightningDataModule):
         molfeat_featurizer,
         input_type: str,
         dataset_fraction: Optional[float] = None, # to reduce dataset size for debugging/throughput purposes
-        target_dict: Optional[Dict[str, Any]] = None,
-        positive_only: Optional[bool] = None # to expand if positive/negative pairs are to be included later
+        filter_type: Optional[bool] = None # to expand if positive/negative pairs are to be included later
     ):
         super().__init__()
         ## this line allows to access init params with 'self.hparams' attribute
@@ -55,8 +54,6 @@ class MMPDataModule(LightningDataModule):
         self.data_train: Optional[Dataset] = None
         self.data_val: Optional[Dataset] = None
         self.data_test: Optional[Dataset] = None
-
-
 
     def prepare_data(self) -> None:
         print('Preprocessing data...')
@@ -82,9 +79,8 @@ class MMPDataModule(LightningDataModule):
         if not self.data_train and not self.data_val and not self.data_test:
             dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
             input_type = self.hparams.input_type,
-            positive_only = self.hparams.positive_only,
-            molfeat_featurizer = self.hparams.molfeat_featurizer,
-            target_dict = self.hparams.target_dict)
+            filter_type = self.hparams.filter_type,
+            molfeat_featurizer = self.hparams.molfeat_featurizer)
 
             self.data_train, self.data_val, self.data_test = random_split(
                 dataset=dataset,
