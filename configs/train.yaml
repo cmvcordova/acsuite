@@ -30,6 +30,8 @@ defaults:
 
 # task name, determines output directory path
 task_name: "train"
+task_type: null #to be overwritten in experiment config
+model_name: null #to be overwritten in experiment config
 
 # tags to help you identify your experiments
 # you can overwrite this in experiment configs

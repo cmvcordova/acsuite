@@ -1,9 +1,13 @@
 # @package _global_
+model_name: MLP_256
+task_type: classification
+
 tags: ["ChEMBL", "MLP_256", "classification", "no_pretraining"]
 
 defaults:
   - override /model: property_prediction/MLP_256
   - override /data: property_prediction/ECFP_256
+  - override /hydra: train_property_prediction_multirun
 
 model: 
   task: classification
