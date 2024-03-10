@@ -4,6 +4,9 @@ task_type: classification
 
 tags: ["ChEMBL", "MLP_256", "classification", "no_pretraining"]
 
+callbacks:
+  model_checkpoint: 'max'
+
 defaults:
   - override /model: property_prediction/MLP_256
   - override /data: property_prediction/ECFP_256
@@ -18,10 +21,7 @@ model:
 
 data:
   task: classification
-
-callbacks:
-  model_checkpoint: 'max'
-
+  
 hydra:
   mode: MULTIRUN
   sweeper:

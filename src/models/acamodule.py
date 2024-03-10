@@ -27,7 +27,6 @@ class ACAModule(LightningModule):
         self.save_hyperparameters(logger=False)
 
         self.net = net
-        print(net)
         self.criterion = criterion
         self.objective = objective
 

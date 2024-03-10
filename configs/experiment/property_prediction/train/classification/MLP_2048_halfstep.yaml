@@ -9,6 +9,9 @@ defaults:
   - override /data: property_prediction/ECFP_2048
   - override /hydra: train_property_prediction_multirun
 
+callbacks:
+  model_checkpoint: 'max'
+
 model: 
   task: classification
   criterion:
@@ -26,10 +29,7 @@ model:
 
 data:
   task: classification
-
-callbacks:
-  model_checkpoint: 'max'
-
+  
 hydra:
   mode: MULTIRUN
   sweeper:

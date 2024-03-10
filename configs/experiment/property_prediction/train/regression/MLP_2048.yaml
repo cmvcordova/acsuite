@@ -9,16 +9,16 @@ defaults:
   - override /data: property_prediction/ECFP_2048
   - override /hydra: train_property_prediction_multirun
 
+callbacks:
+  model_checkpoint: 'min'
+
 model: 
   task: regression
   criterion:
     _target_: src.models.components.losses.RMSELoss
   scheduler:
     mode: min
-
-callbacks:
-  model_checkpoint: 'min'
-
+    
 data:
   task: regression
 
