@@ -1,9 +1,13 @@
 # @package _global_
+model_name: MLP_2048
+task_type: regression
+
 tags: ["ChEMBL", "MLP_2048", "regression", "no_pretraining"]
 
 defaults:
   - override /model: property_prediction/MLP_2048
   - override /data: property_prediction/ECFP_2048
+  - override /hydra: train_property_prediction_multirun
 
 model: 
   task: regression

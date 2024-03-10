@@ -22,4 +22,4 @@ scheduler:
   _partial_: true
   mode: null # must be specified in experiment config
   factor: 0.1
-  patience: 10 
+  patience: 10

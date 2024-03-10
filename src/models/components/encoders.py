@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import torch
 import torch.nn as nn
@@ -10,17 +9,29 @@ class HalfStepEncoder(nn.Module):
     HalfStep encoder is a simple encoder that halves the input features 
     at each layer until the code layer is reached.
     
-    Note: currently only works with canonical ECFP sizes e.g. 512, 1024, 2048, 4096
-    and corresponding hidden layer combinations
+    Currently only works with canonical ECFP sizes e.g. 512, 1024, 2048, 4096
+    and corresponding hidden layer combinations. Includes decoder methods
+    despite being an encoder, as it is intended to be used as a base class for
+    autoencoders as well.
     """
-    def __init__(self):
+    def __init__(
+    self, 
+    in_features: int = 4096, 
+    code_features: int = 256,  
+    layer_activation: nn.Module = nn.ReLU(),
+    output_activation: nn.Module = nn.Sigmoid(),
+    dropout: float = 0.2,
+    ):
         super().__init__()
-    
-    def initialize_weights(self, m):
-        if isinstance(m, nn.Linear):
-            nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
-            if isinstance(m , nn.Linear) and m.bias is not None:
-                nn.init.constant_(m.bias, 0.0)
+        self.in_features = in_features
+        self.code_features = code_features
+        self.layer_features = self.calculate_layer_features(in_features, code_features)
+        self.encoder = self.create_encoder(self.layer_features, layer_activation, dropout)
+        self.apply(self.initialize_weights)
+
+    def forward(self, x):
+        z = self.encoder(x)
+        return z
 
     @staticmethod
     def calculate_layer_features(in_features: int, code_features: int) -> List[int]:
@@ -43,20 +54,22 @@ class HalfStepEncoder(nn.Module):
     
     def create_encoder(self, layer_features: List[int], 
                        layer_activation: nn.Module,
-                       norm_layer: bool, 
-                       dropout: float) -> nn.Sequential:
+                       dropout: float,
+                       norm_layer: Optional[bool] = False) -> nn.Sequential:
         """
-        Creates an encoder from halfstep layers. 
+        Creates an encoder from halfstep layers.
         """
         encoder_layers = []
         for i in range(len(layer_features)-1):
             encoder_layers.append(nn.Linear(layer_features[i], layer_features[i+1]))
-            if i == len(layer_features)-2: ## stop activation, dropout after inserting code layer
-                encoder_layers.append(layer_activation)
+            if i < len(layer_features)-2:
+                encoder_layers.append(layer_activation)            
                 if dropout > 0.0:
                     encoder_layers.append(nn.Dropout(p=dropout))
-                if i == len(layer_features)-2 and norm_layer:
-                    encoder_layers.append(nn.LayerNorm(layer_features[i+1]))
+                    
+        # Add Norm layer only after the last Linear layer if specified
+        if norm_layer:
+            encoder_layers.append(nn.LayerNorm(layer_features[-1]))
         return nn.Sequential(*encoder_layers)
     
     def create_decoder(self, layer_features: List[int], 
@@ -66,6 +79,7 @@ class HalfStepEncoder(nn.Module):
         """
         Creates a decoder from halfstep layers. 
         """
+        
         decoder_layers = []
         for i in range(len(layer_features)-1):
             decoder_layers.append(nn.Linear(layer_features[i], layer_features[i+1]))
@@ -76,6 +90,12 @@ class HalfStepEncoder(nn.Module):
             else:
                 decoder_layers.append(output_activation)
         return nn.Sequential(*decoder_layers)
+    
+    def initialize_weights(self, m):
+        if isinstance(m, nn.Linear):
+            nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0.0)
     
 class JointAutoEncoder(HalfStepEncoder):
     """
@@ -93,7 +113,6 @@ class JointAutoEncoder(HalfStepEncoder):
         super().__init__()
         self.in_features = in_features
         self.code_features = code_features
-
         self.layer_features = self.calculate_layer_features(in_features, code_features)
         self.encoder = self.create_encoder(self.layer_features, layer_activation, dropout)
         # reverse the layer features for the decoder
@@ -125,6 +144,7 @@ class JointEncoder(HalfStepEncoder):
     out_features: int = 1,
     layer_activation: nn.Module = nn.ReLU(),
     dropout: float = 0.2,
+    norm_layer: bool = False,
     ):
 
         

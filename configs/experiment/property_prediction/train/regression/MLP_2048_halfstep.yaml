@@ -1,8 +1,8 @@
 # @package _global_
 model_name: MLP_2048_halfstep
-task_type: classification
+task_type: regression
 
-tags: ["ChEMBL", "MLP_2048_halfstep", "classification", "no_pretraining"]
+tags: ["ChEMBL", "MLP_2048", "regression", "no_pretraining"]
 
 defaults:
   - override /model: property_prediction/MLP_2048
@@ -10,11 +10,11 @@ defaults:
   - override /hydra: train_property_prediction_multirun
 
 model: 
-  task: classification
+  task: regression
   criterion:
-    _target_: torch.nn.BCEWithLogitsLoss
+    _target_: src.models.components.losses.RMSELoss
   scheduler:
-    mode: max
+    mode: min
   net:
     encoder:
       _target_: src.models.components.encoders.HalfStepEncoder
@@ -25,10 +25,10 @@ model:
         _target_: torch.nn.ReLU
 
 data:
-  task: classification
+  task: regression
 
 callbacks:
-  model_checkpoint: 'max'
+  model_checkpoint: 'min'
 
 hydra:
   mode: MULTIRUN

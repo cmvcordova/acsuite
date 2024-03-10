@@ -27,8 +27,7 @@ class ACAModule(LightningModule):
         self.save_hyperparameters(logger=False)
 
         self.net = net
-        # loss function
-        ### if siamese autoencoder.... elif autoencoder...
+        print(net)
         self.criterion = criterion
         self.objective = objective
 
