@@ -91,7 +91,7 @@ class HotSwapEncoderMLP(nn.Module):
         """
         if os.path.isfile(checkpoint_path):
             print(f"Loading pretrained encoder from {checkpoint_path}")
-            pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path=checkpoint_path, map_location='cpu')
+            pretrained_encoder = ACAModule.load_from_checkpoint(checkpoint_path=checkpoint_path)
             encoder = pretrained_encoder.net.encoder
             for param in encoder.parameters():
                 param.requires_grad = False
