@@ -29,7 +29,6 @@ class ACAPPModule(LightningModule):
         ## ignore the 'ignore' tag that will be proposed by the logger
         self.save_hyperparameters(logger=False)
         self.net = net
-        print(net)
         self.task = task
         self.num_classes = num_classes
         #self.compile = compile # add later
