@@ -1,26 +1,15 @@
 # @package _global_
 model_name: MLP_2048
 task_type: regression
+metric_direction: min
+feature_length: 2048
 
 tags: ["ChEMBL", "MLP_2048", "regression", "no_pretraining"]
 
 defaults:
-  - override /model: property_prediction/MLP_2048
-  - override /data: property_prediction/ECFP_2048
+  - override /model: property_prediction/MLP
+  - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
-
-callbacks:
-  model_checkpoint: 'min'
-
-model: 
-  task: regression
-  criterion:
-    _target_: src.models.components.losses.RMSELoss
-  scheduler:
-    mode: min
-    
-data:
-  task: regression
 
 hydra:
   mode: MULTIRUN

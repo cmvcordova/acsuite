@@ -16,7 +16,7 @@ class HalfStepEncoder(nn.Module):
     """
     def __init__(
     self, 
-    in_features: int = 4096, 
+    in_features: int = 2048, 
     code_features: int = 256,  
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),

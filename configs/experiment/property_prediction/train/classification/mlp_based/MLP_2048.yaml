@@ -1,27 +1,16 @@
 # @package _global_
 model_name: MLP_2048
 task_type: classification
+metric_direction: max
+feature_length: 2048
 
 tags: ["ChEMBL", "MLP_2048", "classification", "no_pretraining"]
 
 defaults:
-  - override /model: property_prediction/MLP_2048
-  - override /data: property_prediction/ECFP_2048
+  - override /model: property_prediction/MLP
+  - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
 
-callbacks:
-  model_checkpoint: 'max'
-
-model: 
-  task: classification
-  criterion:
-    _target_: torch.nn.BCEWithLogitsLoss
-  scheduler:
-    mode: max
-    
-data:
-  task: classification
-  
 hydra:
   mode: MULTIRUN
   sweeper:

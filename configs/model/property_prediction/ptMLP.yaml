@@ -1,16 +1,18 @@
 _target_: src.models.acappmodule.ACAPPModule
 
+task: ${task_type}
+
 net:
   _target_: src.models.components.predictors.HotSwapEncoderMLP
   layer_activation: 
     _target_: torch.nn.ReLU
-  in_features: 2048
+  in_features: ${feature_length} # must be specified in experiment config
   hidden_features: 100
   hidden_layers: 2
   output_features: 1
   dropout: 0.2
   pretrained_encoder_ckpt: null # must be specified in experiment config
-
+  
 optimizer:
   _target_: torch.optim.Adam
   _partial_: true
@@ -20,6 +22,6 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
-  mode: null # must be specified in experiment config
+  mode: ${metric_direction} # must be specified in experiment config
   factor: 0.1
   patience: 10

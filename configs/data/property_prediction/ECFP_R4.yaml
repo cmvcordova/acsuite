@@ -1,12 +1,12 @@
 _target_: src.data.property_prediction.moleculeace_datamodule.MoleculeACEDataModule
 dataset_name: null # provide from experiment
-task: null ## provide from experiment
+task: ${task_type}
 molfeat_featurizer: 
   _target_: molfeat.trans.MoleculeTransformer
   featurizer: 
     _target_: molfeat.calc.FPCalculator
     method: "ecfp"
-    length: 2048
+    length: ${feature_length}
     radius: 4
 batch_size: 64
 num_workers: 0

@@ -1,26 +1,15 @@
 # @package _global_
 model_name: MLP_256
 task_type: regression
+metric_direction: min
+feature_length: 256
 
 tags: ["ChEMBL", "MLP_256", "regression", "no_pretraining"]
 
 defaults:
-  - override /model: property_prediction/MLP_256
-  - override /data: property_prediction/ECFP_256
+  - override /model: property_prediction/MLP
+  - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
-
-callbacks:
-  model_checkpoint: 'min'
-  
-model: 
-  task: regression
-  criterion:
-    _target_: src.models.components.losses.RMSELoss
-  scheduler:
-    mode: min
-
-data:
-  task: regression
 
 hydra:
   mode: MULTIRUN
