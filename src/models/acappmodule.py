@@ -10,12 +10,12 @@ from src.models.components.losses import RMSELoss
 class ACAPPModule(LightningModule):
 
     """ Module for training a property predictor on top of a 
-    pretrained encoder"""
+    pretrained encoder """
     
     def __init__(
         self,
         net: torch.nn.Module,
-        task: Literal['classification', 'regression'],
+        task: Literal["classification", "regression"],
         optimizer: torch.optim.Optimizer,
         num_classes: int = 1,
         criterion: Optional[torch.nn.Module] = None,
@@ -31,22 +31,17 @@ class ACAPPModule(LightningModule):
         self.net = net
         self.task = task
         self.num_classes = num_classes
+        self.criterion = criterion
         #self.compile = compile # add later
-
-        if criterion is None:
-            if task == "classification":
-                if num_classes == 1:
-                    self.criterion = torch.nn.BCEWithLogitsLoss()
-                else:
-                    self.criterion = nn.CrossEntropyLoss()
-            elif task == "regression":
+        assert self.task in ["classification", "regression"], f"Unexpected task: {self.task}"
+        
+        if self.criterion is None:
+            if self.task == "classification":
+                self.criterion = torch.nn.BCEWithLogitsLoss() if num_classes == 1 else nn.CrossEntropyLoss()
+            elif self.task == "regression":
                 self.criterion = RMSELoss()
-        else:
-            self.criterion = criterion
-                
-        # metric objects for calculating and averaging accuracy across batches
-            
-        if task == "classification":
+
+        if self.task == "classification":
             if num_classes == 1:
                 self.metric_name = 'AUROC'
                 self.train_metric = AUROC(num_classes=1, task="binary")
@@ -59,21 +54,18 @@ class ACAPPModule(LightningModule):
                 self.val_metric = Accuracy(num_classes=num_classes)
                 self.test_metric = Accuracy(num_classes=num_classes)
 
-        elif task == "regression":
-            if isinstance(criterion, RMSELoss):
+        elif self.task == "regression":
+            if isinstance(self.criterion, RMSELoss):
                 self.metric_name = 'RMSE'
                 self.train_metric = MeanSquaredError(squared=True)
                 self.val_metric = MeanSquaredError(squared=True)
                 self.test_metric = MeanSquaredError(squared=True)
 
-            elif isinstance(criterion, torch.nn.modules.loss.MSELoss):
+            elif isinstance(self.criterion, torch.nn.modules.loss.MSELoss):
                 self.metric_name = 'MSE'
                 self.train_metric = MeanSquaredError(squared=False)
                 self.val_metric = MeanSquaredError(squared=False)
                 self.test_metric = MeanSquaredError(squared=False)
-
-            else:
-                raise ValueError(f"Unsuported loss metric {criterion} for the regression task")
         
         # for averaging loss across batches
         self.train_loss = MeanMetric()

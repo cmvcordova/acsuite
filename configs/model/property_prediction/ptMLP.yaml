@@ -6,7 +6,7 @@ net:
   _target_: src.models.components.predictors.HotSwapEncoderMLP
   layer_activation: 
     _target_: torch.nn.ReLU
-  in_features: ${feature_length} # must be specified in experiment config
+  in_features: ${feature_length}
   hidden_features: 100
   hidden_layers: 2
   output_features: 1
@@ -22,6 +22,6 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
-  mode: ${metric_direction} # must be specified in experiment config
+  mode: ${metric_direction}
   factor: 0.1
   patience: 10
