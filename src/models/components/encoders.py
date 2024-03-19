@@ -97,14 +97,14 @@ class HalfStepEncoder(nn.Module):
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0.0)
     
-class JointAutoEncoder(HalfStepEncoder):
+class HalfStepAutoEncoder(HalfStepEncoder):
     """
-    Joint autoencoder for molecular data. Takes pairs of ECFP-like features as input,
-    and outputs a joint latent code for the pair.
+    Autoencoder for molecular data. Takes pairs of ECFP-like features as input,
+    and outputs a latent code.
     """    
     def __init__(
     self, 
-    in_features: int = 4096, 
+    in_features: int = 2048, 
     code_features: int = 256,  
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
@@ -133,40 +133,8 @@ class JointAutoEncoder(HalfStepEncoder):
         logits = self.forward_decoder(z)
         return logits
 
-class JointEncoder(HalfStepEncoder):
-    """
-    Joint encoder for molecular data pre-trained on a binary classification objective. 
-    """
-    def __init__(
-    self, 
-    in_features: int = 4096, 
-    code_features: int = 256, 
-    out_features: int = 1,
-    layer_activation: nn.Module = nn.ReLU(),
-    dropout: float = 0.2,
-    norm_layer: bool = False,
-    ):
-
-        
-        super().__init__()
-
-        self.in_features = in_features
-        self.code_features = code_features
-
-        self.layer_features = self.calculate_layer_features(in_features, code_features)
-        self.encoder = self.create_encoder(self.layer_features, layer_activation, dropout)
-
-        self.output_layer = nn.Linear(self.layer_features[-1], out_features)
-            
-        self.apply(self.initialize_weights)
-            
-    def forward(self, x):
-        z = self.encoder(x)
-        out = self.output_layer(z)
-        return out
-
 # https://datascience.stackexchange.com/questions/75559/why-does-siamese-neural-networks-use-tied-weights-and-how-do-they-work
-class SiameseEncoder(HalfStepEncoder):
+class HalfStepSiameseEncoder(HalfStepEncoder):
     """
     Siamese encoder
     """
@@ -207,7 +175,7 @@ class SiameseEncoder(HalfStepEncoder):
         out = self.output_layer(z)
         return out
     
-class SiameseAutoEncoder(HalfStepEncoder):
+class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     """
     Siamese autoencoder
     """

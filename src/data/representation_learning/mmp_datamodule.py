@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from lightning import LightningDataModule
-from torch.utils.data import ConcatDataset, DataLoader, Dataset, random_split
+from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision.transforms import transforms
 
 from src.utils.data import read_ACNet_single_line_JSON_file
