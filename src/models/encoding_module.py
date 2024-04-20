@@ -5,7 +5,7 @@ import torch.nn as nn
 from lightning import LightningModule
 from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
-from torchmetrics.regression import MeanSquaredError
+from torchmetrics.regression import MeanSquaredError, MeanAbsoluteError
 from src.models.components.losses import BarlowTwinsLoss, RMSELoss
 
 class ACAModule(LightningModule):
@@ -33,8 +33,11 @@ class ACAModule(LightningModule):
         self.task = task
         self.num_classes = num_classes
         self.criterion = criterion
-        print(criterion)
         assert self.task in ["classification", "regression", "reconstruction"], f"Unexpected task: {self.task}"
+
+        self.train_metric = MeanMetric()
+        self.val_metric = MeanMetric()
+        self.test_metric = MeanMetric()
 
         if self.criterion is None:
             if self.task == "classification":
@@ -43,8 +46,16 @@ class ACAModule(LightningModule):
                 self.criterion = RMSELoss()
             elif self.task == "reconstruction":
                 self.criterion = torch.nn.BCEWithLogitsLoss()
+
+        if self.task == "reconstruction":
+            self.val_metric_best = MinMetric()
+            self.metric_name = 'MAE'
+            self.train_metric = MeanAbsoluteError()
+            self.val_metric = MeanAbsoluteError()
+            self.test_metric = MeanAbsoluteError()
                                 
         if self.task == "classification":
+            self.val_metric_best = MaxMetric()
             if num_classes == 1:
                 self.metric_name = 'AUROC'
                 self.train_metric = AUROC(num_classes=1, task="binary")
@@ -57,6 +68,7 @@ class ACAModule(LightningModule):
                 self.test_metric = Accuracy(num_classes=num_classes)
 
         elif self.task == "regression":
+            self.val_metric_best = MinMetric()
             if isinstance(self.criterion, RMSELoss):
                 self.metric_name = 'RMSE'
                 self.train_metric = MeanSquaredError(squared=True)
@@ -73,11 +85,6 @@ class ACAModule(LightningModule):
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
-
-        if task == "classification":
-            self.val_metric_best = MaxMetric()
-        elif task == "regression":
-            self.val_metric_best = MinMetric()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
@@ -112,19 +119,22 @@ class ACAModule(LightningModule):
         logits = self.forward(x)
  
         if self.task == "reconstruction":
+            if logits.shape != x.shape:
+                logits = logits.view_as(x)
             loss = self.criterion(logits, x)
+            
+            return loss, logits, x
+
         else:
             if logits.dim() > 2:
-                logits = logits.squeeze()        
-            y = y.float()  
-                
+                logits = logits.squeeze()
+            y = y.float()
+
             loss = self.criterion(logits, y)
-            
             if logits.dim() != y.dim():
                 logits = logits.view(-1) if logits.dim() > y.dim() else logits.unsqueeze(-1)
-
-        preds = logits 
-        return loss, preds, y
+                
+            return loss, logits, y
         
     def training_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch) 
