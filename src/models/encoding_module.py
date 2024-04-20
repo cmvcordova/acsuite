@@ -122,8 +122,8 @@ class ACAModule(LightningModule):
             if logits.shape != x.shape:
                 logits = logits.view_as(x)
             loss = self.criterion(logits, x)
-            
-            return loss, logits, x
+            probs = torch.sigmoid(logits) #metric calculation requires probabilities
+            return loss, probs, x
 
         else:
             if logits.dim() > 2:
