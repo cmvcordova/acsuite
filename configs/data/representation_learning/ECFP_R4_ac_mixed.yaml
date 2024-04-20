@@ -3,10 +3,6 @@ file_name: "ACNet/MMP_AC_Mixed_Screened.json"
 data_dir: ${paths.data_dir}
 ## consult dataset size from Zhange et al. 2023 ACNet
 train_val_test_split: [222693, 27837, 27837]
-batch_size: 128
-num_workers: 4
-pin_memory: False
-shuffle: True
 molfeat_featurizer: 
   _target_: molfeat.trans.MoleculeTransformer
   featurizer: 
@@ -14,9 +10,7 @@ molfeat_featurizer:
     method: "ecfp"
     length: 2048
     radius: 4
-
-## options related to mmp_dataset construction start here.
-## input_type should be one of ["concat", "pair", "single"] 
-
-dataset_fraction: 0.25
-input_type: concat
+batch_size: 128
+num_workers: 4
+pin_memory: False
+shuffle: True

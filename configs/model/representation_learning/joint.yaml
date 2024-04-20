@@ -1,4 +1,4 @@
-_target_: src.models.acamodule.ACAModule
+_target_: src.models.encoding_module.ACAModule
 
 net:
   _target_: src.models.components.encoders.JointAutoEncoder

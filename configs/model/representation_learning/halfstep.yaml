@@ -1,23 +1,14 @@
-_target_: src.models.acappmodule.ACAPPModule
+_target_: src.models.encoding_module.ACAModule
 
 task: ${task_type}
 
 net:
-  _target_: src.models.components.predictors.HotSwapEncoderMLP
+  _target_: src.models.components.encoders.HalfStepEncoder
+  in_features: ${feature_length} # must be specified in experiment config
+  code_features: 256
+  dropout: 0.2
   layer_activation: 
     _target_: torch.nn.ReLU
-  in_features: ${feature_length} # must be specified in experiment config
-  hidden_features: 100
-  hidden_layers: 2
-  output_features: 1
-  dropout: 0.2
-  encoder:
-    _target_: src.models.components.encoders.HalfStepEncoder
-    in_features: ${feature_length} # must be specified in experiment config
-    code_features: 256
-    dropout: 0.2
-    layer_activation: 
-      _target_: torch.nn.ReLU
 
 optimizer:
   _target_: torch.optim.Adam

@@ -1,4 +1,4 @@
-_target_: src.models.acappmodule.ACAPPModule
+_target_: src.models.property_prediction_module.ACAPPModule
 
 task: ${task_type}
 

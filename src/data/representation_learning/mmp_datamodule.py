@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Literal
 
 import torch
 import numpy as np
@@ -6,7 +6,6 @@ import pandas as pd
 
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader, Dataset, random_split
-from torchvision.transforms import transforms
 
 from src.utils.data import read_ACNet_single_line_JSON_file
 from src.data.representation_learning.mmp_dataset import MMPDataset
@@ -41,7 +40,8 @@ class MMPDataModule(LightningDataModule):
         shuffle: bool,
         ## dataset options
         molfeat_featurizer,
-        input_type: str,
+        input_type: Literal['single', 'pair', 'concat'] = None,
+        seed: Optional[int] = 42,
         dataset_fraction: Optional[float] = None, # to reduce dataset size for debugging/throughput purposes
         filter_type: Optional[bool] = None # to expand if positive/negative pairs are to be included later
     ):
@@ -70,24 +70,29 @@ class MMPDataModule(LightningDataModule):
         mmp_df = read_ACNet_single_line_JSON_file(self.hparams.data_dir + self.hparams.file_name)
 
         if self.hparams.dataset_fraction is not None:
-            dataset_fraction = self.hparams.dataset_fraction
-            assert dataset_fraction is None or dataset_fraction > 0 and dataset_fraction <= 1, \
-            "dataset_fraction must be a float between 0 and 1"
-            self.hparams.train_val_test_split = [int(set_length * dataset_fraction) for set_length in self.hparams.train_val_test_split]
-            mmp_df = mmp_df.sample(n = np.sum(self.hparams.train_val_test_split), random_state = seed)
+            print(f"Reducing dataset size to {self.hparams.dataset_fraction * 100}% of original size.")
+            total_samples = int(len(mmp_df) * self.hparams.dataset_fraction)
+            mmp_df = mmp_df.sample(n=total_samples, random_state=self.hparams.seed)
+            
+        dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
+                             filter_type = self.hparams.filter_type,
+                             molfeat_featurizer = self.hparams.molfeat_featurizer,
+                             input_type = self.hparams.input_type)
 
+        total_size = len(dataset)
+        train_size = int(total_size * (self.hparams.train_val_test_split[0] / sum(self.hparams.train_val_test_split)))
+        val_size = int(total_size * (self.hparams.train_val_test_split[1] / sum(self.hparams.train_val_test_split)))
+        test_size = total_size - train_size - val_size 
+        
         if not self.data_train and not self.data_val and not self.data_test:
-            dataset = MMPDataset(mmp_df, 'SMILES1', 'SMILES2', 'Value', 'Target',
-            input_type = self.hparams.input_type,
-            filter_type = self.hparams.filter_type,
-            molfeat_featurizer = self.hparams.molfeat_featurizer)
-
             self.data_train, self.data_val, self.data_test = random_split(
                 dataset=dataset,
-                lengths=self.hparams.train_val_test_split,
-                generator=torch.Generator().manual_seed(42),
+                lengths=[train_size, val_size, test_size],
+                generator=torch.Generator().manual_seed(self.hparams.seed),
             )
 
+        print(f"Dataset sizes: Train={len(self.data_train)}, Validation={len(self.data_val)}, Test={len(self.data_test)}")
+        
     def train_dataloader(self):
         return DataLoader(
             dataset=self.data_train,

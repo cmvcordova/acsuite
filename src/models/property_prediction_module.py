@@ -2,7 +2,7 @@ from typing import Any, Literal, Optional, Dict, Tuple
 import torch
 import torch.nn as nn
 from lightning import LightningModule
-from torchmetrics import MaxMetric, MeanMetric, MinMetric
+from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
 from src.models.components.losses import RMSELoss
@@ -158,8 +158,8 @@ class ACAPPModule(LightningModule):
 
     def on_validation_epoch_end(self) -> None:
         "Lightning hook that is called when a validation epoch ends."
-        metric = self.val_metric.compute()  # get current val acc
-        self.val_metric_best(metric)  # update best so far val acc
+        metric = self.val_metric.compute()  # get current val metric
+        self.val_metric_best(metric)  # update best so far val metric
         # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
         # otherwise metric would be reset by lightning after each epoch
         self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)

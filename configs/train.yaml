@@ -5,8 +5,8 @@
 
 defaults:
   - _self_
-  - data: null ## must be specified in experiment config
   - model: null ## see above
+  - data: null ## must be specified in experiment config
   - callbacks: default
   - logger: wandb # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default ## must be set to either pretrain or train (property predictor)

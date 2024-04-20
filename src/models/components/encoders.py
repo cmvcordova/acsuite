@@ -19,18 +19,33 @@ class HalfStepEncoder(nn.Module):
     in_features: int = 2048, 
     code_features: int = 256,  
     layer_activation: nn.Module = nn.ReLU(),
-    output_activation: nn.Module = nn.Sigmoid(),
+    out_features: Optional[int] = None,
+    output_activation: Optional[nn.Module] = None,
     dropout: float = 0.2,
     ):
         super().__init__()
         self.in_features = in_features
         self.code_features = code_features
+        self.out_features = out_features
         self.layer_features = self.calculate_layer_features(in_features, code_features)
         self.encoder = self.create_encoder(self.layer_features, layer_activation, dropout)
+        self.output_layer = nn.Identity()
+
+        # Optionally add a final output layer for regression or classification tasks
+        if self.out_features is not None:
+                output_layer = nn.Linear(self.layer_features[-1], self.out_features)
+                if output_activation:
+                    output_layer = nn.Sequential(
+                        output_layer,
+                        output_activation
+                    )
+                self.output_layer = output_layer
+
         self.apply(self.initialize_weights)
 
     def forward(self, x):
         z = self.encoder(x)
+        z = self.output_layer(z)
         return z
 
     @staticmethod
@@ -67,7 +82,6 @@ class HalfStepEncoder(nn.Module):
                 if dropout > 0.0:
                     encoder_layers.append(nn.Dropout(p=dropout))
                     
-        # Add Norm layer only after the last Linear layer if specified
         if norm_layer:
             encoder_layers.append(nn.LayerNorm(layer_features[-1]))
         return nn.Sequential(*encoder_layers)
@@ -87,8 +101,9 @@ class HalfStepEncoder(nn.Module):
                 decoder_layers.append(layer_activation)
                 if dropout > 0.0:
                     decoder_layers.append(nn.Dropout(p=dropout))
-            else:
-                decoder_layers.append(output_activation)
+                    
+        if output_activation is not None:
+            decoder_layers.append(output_activation)
         return nn.Sequential(*decoder_layers)
     
     def initialize_weights(self, m):
@@ -107,7 +122,7 @@ class HalfStepAutoEncoder(HalfStepEncoder):
     in_features: int = 2048, 
     code_features: int = 256,  
     layer_activation: nn.Module = nn.ReLU(),
-    output_activation: nn.Module = nn.Sigmoid(),
+    output_activation: Optional[nn.Module] = None,
     dropout: float = 0.2,
     ):
         super().__init__()

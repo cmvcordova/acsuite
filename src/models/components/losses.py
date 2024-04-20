@@ -26,5 +26,5 @@ class BarlowTwinsLoss(nn.Module):
         c_diff = (c - torch.eye(D, device=z_a.device)).pow(2)
         # Only scale off-diagonal elements by lambda
         off_diagonal_indices = torch.ones_like(c) - torch.eye(D, device=z_a.device)
-        loss = c_diff.sum() + self.lambd * (c_diff * off_diagonal_indices).sum() - c_diff.trace()
+        loss = c_diff.sum() + self.lambd * (c_diff * off_diagonal_indices).sum()
         return loss

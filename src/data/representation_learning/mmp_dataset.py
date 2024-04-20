@@ -2,6 +2,7 @@
 # standard python/pytorch imports
 import pandas as pd
 import torch
+import numpy as np
 from torch.utils.data import Dataset
 from typing import Literal, Optional
 
@@ -55,14 +56,17 @@ class MMPDataset(Dataset):
         elif filter_type == 'negative':
             mmp_df = mmp_df[mmp_df[label] == 0]
          
-        self.featurized_smiles_one = molfeat_featurizer(mmp_df[smiles_one].values)
-        self.featurized_smiles_two = molfeat_featurizer(mmp_df[smiles_two].values)
+        featurized_smiles_one_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_one].values]
+        featurized_smiles_two_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_two].values]
+
+        self.featurized_smiles_one = torch.tensor(np.stack(featurized_smiles_one_arrays), dtype=torch.float32)
+        self.featurized_smiles_two = torch.tensor(np.stack(featurized_smiles_two_arrays), dtype=torch.float32)
         
-        self.labels = torch.tensor([int(lbl) for lbl in mmp_df[label].values], dtype=torch.long)
+        self.labels = torch.tensor(mmp_df[label].astype(int).values, dtype=torch.long)
         self.target = mmp_df[target].values
- 
+
         if input_type == 'single':
-        # Combine SMILES from pairs, then featurize each individually.
+            # Combine SMILES from pairs, then featurize each individually.
             self.featurized_smiles = torch.cat((self.featurized_smiles_one, self.featurized_smiles_two), dim=0)
             self.labels = torch.cat((self.labels, self.labels), dim=0)
 

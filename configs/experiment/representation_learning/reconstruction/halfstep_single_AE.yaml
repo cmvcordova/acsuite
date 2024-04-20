@@ -1,10 +1,10 @@
 # @package _global_
-model_name: halfstep_single
-task_type: regression
+model_name: halfstep_single_AE
+task_type: reconstruction
 metric_direction: min
 feature_length: 2048
 
-tags: ["ACNet", "halfstep_single", "regression", "pretraining"]
+tags: ["ACNet", "halfstep_single_AE", "reconstruction", "pretraining"]
 
 defaults:
   - override /model: representation_learning/halfstep
@@ -13,7 +13,7 @@ defaults:
 
 model:
   net:
-    out_features: 1
-    
+    _target_: src.models.components.encoders.HalfStepAutoEncoder
+
 data:
   input_type: single
