@@ -1,10 +1,10 @@
 # @package _global_
-model_name: MLP_2048
+model_name: pt_MLP_1024
 task_type: classification
 metric_direction: max
-feature_length: 2048
+feature_length: 1024
 
-tags: ["ChEMBL", "MLP_2048", "classification", "no_pretraining"]
+tags: ["ChEMBL", "MLP_1024", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
