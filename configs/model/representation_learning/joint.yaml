@@ -1,13 +1,11 @@
 _target_: src.models.encoding_module.ACAModule
 
 net:
-  _target_: src.models.components.encoders.JointAutoEncoder
-  in_features: 4096
+  _target_: src.models.components.encoders.HalfStepAutoEncoder
+  in_features: 2048
   code_features: 256
   layer_activation: 
     _target_: torch.nn.ReLU
-  output_activation: 
-    _target_: torch.nn.Sigmoid
   dropout: 0.2
 
 objective: reconstruction

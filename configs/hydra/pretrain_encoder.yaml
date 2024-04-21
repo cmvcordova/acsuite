@@ -8,6 +8,3 @@ defaults:
 # output directory, generated dynamically on each run
 run:
   dir: ${paths.pretrained_encoder_dir}/${task_type}/${model_name}
-sweep:
-  dir: ${paths.pretrained_encoder_dir}/${task_type}/${model_name}
-  subdir: ${data.dataset_name}
