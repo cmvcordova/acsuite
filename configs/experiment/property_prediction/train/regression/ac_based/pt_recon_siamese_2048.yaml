@@ -1,0 +1,3 @@
+## Siamese network pretrained on a reconstruction objective
+## Both pairs are fed, the reconstruction is measured
+## Against the positive/negative pair

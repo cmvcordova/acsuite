@@ -1,0 +1,19 @@
+# @package _global_
+model_name: halfstep_single
+task_type: classification
+metric_direction: max
+feature_length: 2048
+
+tags: ["ACNet", "halfstep_single", "classification", "pretraining"]
+
+defaults:
+  - override /model: representation_learning/halfstep
+  - override /data: representation_learning/ECFP_R4_ac_mixed
+  - override /hydra: pretrain_encoder
+
+model:
+  net:
+    out_features: 1
+
+data:
+  input_type: single

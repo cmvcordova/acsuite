@@ -7,7 +7,7 @@ feature_length: 1024
 tags: ["ChEMBL", "halfstepJoint_1024", "classification", "no_pretraining"]
 
 defaults:
-  - override /model: property_prediction/halfstepMLP
+  - override /model: property_prediction/halfstepJoint
   - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
   
