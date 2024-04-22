@@ -22,8 +22,9 @@ class HotSwapEncoderMLP(nn.Module):
             hidden_layers: int = 2,
             output_features: int = 1, 
             dropout: float = 0.2,
+            norm_layer: bool = False,
             encoder: Optional[nn.Module] = None,
-            pretrained_encoder_ckpt: Optional[str] = None 
+            pretrained_encoder_ckpt: Optional[str] = None,
             ):
    
             super().__init__()
@@ -48,7 +49,10 @@ class HotSwapEncoderMLP(nn.Module):
                 if in_features != first_layer_in_features:
                     encoder = nn.Sequential(nn.Linear(in_features, first_layer_in_features), encoder)
                 mlp_input_features = self._get_last_layer_out_features(encoder)
-                self.head = encoder
+                if norm_layer:
+                    self.head = nn.Sequential(encoder, nn.LayerNorm(mlp_input_features))
+                else:
+                    self.head = encoder
 
             # Construct the MLP
             mlp_layers = []
