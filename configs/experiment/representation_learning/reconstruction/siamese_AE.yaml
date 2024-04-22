@@ -1,6 +1,7 @@
 # @package _global_
 model_name: halfstepAEsiamese
 task_type: reconstruction
+metric_direction: min
 feature_length: 2048
 
 tags: ["ACNet", "halfstepAEsingle", "reconstruction", "pretraining"]
