@@ -61,14 +61,15 @@ class MMPDataset(Dataset):
 
         self.featurized_smiles_one = torch.tensor(np.stack(featurized_smiles_one_arrays), dtype=torch.float32)
         self.featurized_smiles_two = torch.tensor(np.stack(featurized_smiles_two_arrays), dtype=torch.float32)
-        
         self.labels = torch.tensor(mmp_df[label].astype(int).values, dtype=torch.long)
         self.target = mmp_df[target].values
-
         if input_type == 'single':
             # Combine SMILES from pairs, then featurize each individually.
             self.featurized_smiles = torch.cat((self.featurized_smiles_one, self.featurized_smiles_two), dim=0)
             self.labels = torch.cat((self.labels, self.labels), dim=0)
+        
+        if input_type == 'concat':
+            self.featurized_pairs = torch.cat((self.featurized_smiles_one, self.featurized_smiles_two), dim=-1)
 
     def __len__(self):
         return len(self.labels)
@@ -76,12 +77,9 @@ class MMPDataset(Dataset):
     def __getitem__(self, idx):
         if self.input_type == 'single':
             return self.featurized_smiles[idx], self.labels[idx]
-        else:
-            molecule_one = self.featurized_smiles_one[idx]
-            molecule_two = self.featurized_smiles_two[idx]
-            label = self.labels[idx]
-            if self.input_type == 'pair':
-                return molecule_one, molecule_two, label
-            elif self.input_type == 'concat':
-                return torch.cat((molecule_one, molecule_two), dim = -1), label
+        elif self.input_type == 'pair':
+            return self.featurized_smiles_one[idx], self.featurized_smiles_two[idx], self.labels[idx]
+        elif self.input_type == 'concat':
+            return self.featurized_pairs[idx], self.labels[idx]
+
         #target = torch.from_numpy(self.target[idx]) protein target, add support later since "All" needs to be encoded

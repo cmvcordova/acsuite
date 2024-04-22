@@ -2,12 +2,12 @@
 model_name: halfstep_joint
 task_type: classification 
 metric_direction: max
-feature_length: 1024
+feature_length: 2048
 
 tags: ["ACNet", "halfstep_joint", "classification", "pretraining"]
 
 defaults:
-  - override /model: representation_learning/joint_hse
+  - override /model: representation_learning/siamese
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
 
@@ -16,4 +16,4 @@ model:
     out_features: 1
 
 data:
-  input_type: concat
+  input_type: pair

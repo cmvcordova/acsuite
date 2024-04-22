@@ -1,14 +1,14 @@
 _target_: src.models.encoding_module.ACAModule
 
+task: ${task_type}
+
 net:
-  _target_: src.models.components.encoders.HalfStepAutoEncoder
-  in_features: 2048
+  _target_: src.models.components.encoders.HalfStepEncoder
+  in_features: ${eval:'${feature_length}*2'} # must be specified in experiment config
   code_features: 256
+  dropout: 0.2
   layer_activation: 
     _target_: torch.nn.ReLU
-  dropout: 0.2
-
-objective: reconstruction
 
 optimizer:
   _target_: torch.optim.Adam
@@ -19,10 +19,6 @@ optimizer:
 scheduler:
   _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
   _partial_: true
-  mode: min
+  mode: ${metric_direction}
   factor: 0.1
   patience: 10
-
-criterion:
-  _target_: torch.nn.BCEWithLogitsLoss
-

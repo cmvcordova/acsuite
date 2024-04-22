@@ -1,13 +1,13 @@
 # @package _global_
-model_name: halfstep_single
-task_type: classification
-metric_direction: max
-feature_length: 2048
+model_name: halfstep_joint
+task_type: regression
+metric_direction: min
+feature_length: 1024
 
-tags: ["ACNet", "halfstep_single", "classification", "pretraining"]
+tags: ["ACNet", "halfstep_joint", "regression", "pretraining"]
 
 defaults:
-  - override /model: representation_learning/halfstep
+  - override /model: representation_learning/joint_hse
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
 
@@ -16,4 +16,4 @@ model:
     out_features: 1
 
 data:
-  input_type: single
+  input_type: concat

@@ -6,6 +6,7 @@ import torch.nn.functional as F
 
 from typing import Optional
 from src.models.components.encoders import *
+from src.models.encoding_module import ACAModule
 
 class HotSwapEncoderMLP(nn.Module): 
     """

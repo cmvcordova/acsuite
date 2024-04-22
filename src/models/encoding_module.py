@@ -38,7 +38,7 @@ class ACAModule(LightningModule):
         self.train_metric = MeanMetric()
         self.val_metric = MeanMetric()
         self.test_metric = MeanMetric()
-
+        
         if self.criterion is None:
             if self.task == "classification":
                 self.criterion = torch.nn.BCEWithLogitsLoss() if num_classes == 1 else nn.CrossEntropyLoss()

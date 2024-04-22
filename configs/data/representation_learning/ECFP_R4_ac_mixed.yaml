@@ -8,7 +8,7 @@ molfeat_featurizer:
   featurizer: 
     _target_: molfeat.calc.FPCalculator
     method: "ecfp"
-    length: 2048
+    length: ${feature_length}
     radius: 4
 batch_size: 128
 num_workers: 4
