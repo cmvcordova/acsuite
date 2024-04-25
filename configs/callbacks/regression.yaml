@@ -7,14 +7,14 @@ defaults:
 
 model_checkpoint:
   dirpath: ${paths.output_dir}/checkpoints
-  monitor: "val/rmse"
+  monitor: "val/RMSE"
   mode: "min"
   save_top_k: 1
   verbose: True
   save_last: True
 
 early_stopping:
-  monitor: "val/rmse"
+  monitor: "val/RMSE"
   patience: 10
   verbose: True
   mode: "min"
