@@ -6,6 +6,7 @@ defaults:
   - _self_
 
 model_checkpoint:
+  dirpath: ${paths.output_dir}/checkpoints
   monitor: "val/rmse"
   mode: "min"
   save_top_k: 1
