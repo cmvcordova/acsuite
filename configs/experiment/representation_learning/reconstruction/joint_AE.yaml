@@ -1,15 +1,15 @@
 # @package _global_
-model_name: halfstep_joint_AE
-task_type: reconstruction
-metric_direction: min
-feature_length: 1024
-
 tags: ["ACNet", "halfstep_joint_AE", "reconstruction", "pretraining"]
 
 defaults:
   - override /model: representation_learning/joint_hse
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
+
+model_name: halfstep_joint_AE
+task_type: reconstruction
+metric_direction: min
+feature_length: 1024
 
 model:
   net:

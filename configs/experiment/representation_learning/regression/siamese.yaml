@@ -1,25 +1,20 @@
 # @package _global_
-# to execute this experiment run:
-# python train.py experiment=representation_learning/siamese
+tags: ["ACNet", "halfstep_joint", "classification", "pretraining"]
 
 defaults:
-  - override /data: representation_learning/siamese
   - override /model: representation_learning/siamese
-  - override /callbacks: default
-  - override /trainer: default
+  - override /data: representation_learning/ECFP_R4_ac_mixed
+  - override /hydra: pretrain_encoder
+  - override /callbacks: classification
 
-# all parameters below will be merged with parameters from default configurations set above
-# this allows you to overwrite only specified parameters
+model_name: siamese_regression
+task_type: classification 
+metric_direction: max
+feature_length: 2048
 
-debug: default
+model:
+  net:
+    out_features: 1
 
-tags: ["tlacamr_siameseencoder"]
-
-logger:
-  wandb:
-    name: "tlacamr_siameseencoder"
-    tags: ${tags}
-    mode: online
-    entity: cmvcordova
-  aim:
-    experiment: "tlacamr_siameseencoder"
+data:
+  input_type: pair

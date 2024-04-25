@@ -6,16 +6,16 @@ defaults:
   - _self_
 
 model_checkpoint:
-  dirpath: ${paths.output_dir}/checkpoints
-  filename: "epoch_{epoch:03d}"
-  monitor: "val/loss"
+  monitor: "val/rmse"
   mode: "min"
+  save_top_k: 1
+  verbose: True
   save_last: True
-  auto_insert_metric_name: False
 
 early_stopping:
-  monitor: "val/loss"
+  monitor: "val/rmse"
   patience: 10
+  verbose: True
   mode: "min"
 
 model_summary:

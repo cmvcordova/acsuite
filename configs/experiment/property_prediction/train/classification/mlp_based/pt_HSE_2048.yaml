@@ -1,18 +1,13 @@
 # @package _global_
-model_name: pt_MLP_2048
-task_type: classification
-metric_direction: max
-feature_length: 2048
-
 tags: ["ChEMBL", "MLP_2048", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
   - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
-
-hydra:
-  mode: MULTIRUN
-  sweeper:
-    params:
-      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki
+  - override /callbacks: classification
+  
+model_name: pt_MLP_2048
+task_type: classification
+metric_direction: max
+feature_length: 2048
