@@ -6,7 +6,6 @@ from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError
 from src.models.components.losses import RMSELoss
-
 class ACAPPModule(LightningModule):
 
     """ Module for training a property predictor on top of a 

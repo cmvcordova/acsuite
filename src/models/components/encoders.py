@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from typing import List, Literal, Optional
+
 class HalfStepEncoder(nn.Module):
     """
     Encoder for molecular data. Takes ECFP-like features as input and
@@ -230,3 +231,65 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
         z1, z2 = self.forward_encoder(x1, x2)
         recon_x1, recon_x2 = self.forward_decoder(z1, z2)
         return recon_x1, recon_x2, z1, z2
+    
+class HalfStepBarlowTwins(HalfStepEncoder):
+    """
+    Barlow Twins encoder
+    """
+    def __init__(
+    self, 
+    in_features: int = 2048, 
+    code_features: int = 256, 
+    out_features: int = 1,
+    projector_layers: int = 3,
+    projector_features: int = 4096,
+    layer_activation: nn.Module = nn.ReLU(),
+    norm_layer: bool = True,
+    similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
+    dropout: float = 0.0,
+    batch_norm: bool = True,
+    masking: Optional[Literal['mmp', 'random']] = None,
+    ):
+        super().__init__()
+
+        self.in_features = in_features
+        self.code_features = code_features
+        self.out_features = out_features
+
+        self.layer_features = self.calculate_layer_features(in_features, code_features)
+        
+        if similarity_function == "dot_product":
+            self.similarity_function = lambda z1, z2: torch.sum(z1 * z2, dim=1)
+        else:
+            self.similarity_function = nn.CosineSimilarity(dim=1)
+
+        self.encoder = self.create_encoder(self.layer_features, 
+                                           layer_activation, norm_layer, dropout)
+        self.projector = self.create_projector(code_features, 
+                                               projector_features, projector_layers, 
+                                               self.layer_features)
+        self.output_layer = nn.Linear(self.code_features, self.out_features)
+
+        self.apply(self.initialize_weights)
+    
+    def create_projector(self,
+                         in_features: int = 256,
+                         projection_features: int = 4096,
+                         projection_layers: int = 3,):
+        
+        _projector = []
+        for i in range(len(projection_layers)-1):
+            _projector.append(nn.Linear(
+                in_features if i ==0 else projection_features, projection_features),
+                              bias = True)
+            if i < len(projection_layers)-2:
+                _projector.append(nn.BatchNorm1d(projection_features))
+                _projector.append(nn.ReLU())
+        return nn.Sequential(*_projector)
+
+    def forward(self, x1, x2):
+        z1 = self.projector(self.encoder(x1))
+        z2 = self.projector(self.encoder(x2))
+        return z1,z2
+    
+    

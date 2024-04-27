@@ -1,21 +1,16 @@
 # @package _global_
-model_name: halfstepJoint_1024
+tags: ["ChEMBL", "pt_joint_1024", "classification", "random_pretraining"]
+
+defaults:
+  - override /model: property_prediction/halfstep
+  - override /data: property_prediction/ECFP_R4
+  - override /hydra: train_property_prediction_multirun
+  - override /callbacks: classification
+
+model_name: pt_joint_1024
 task_type: classification
 metric_direction: max
 feature_length: 1024
 
-tags: ["ChEMBL", "halfstepJoint_1024", "classification", "no_pretraining"]
-
-defaults:
-  - override /model: property_prediction/halfstepJoint
-  - override /data: property_prediction/ECFP_R4
-  - override /hydra: train_property_prediction_multirun
-  
 data:
   input_type: concat
-
-hydra:
-  mode: MULTIRUN
-  sweeper:
-    params:
-      +data.dataset_name: CHEMBL234_Ki,CHEMBL264_Ki,CHEMBL2047_EC50,CHEMBL2835_Ki,CHEMBL4203_Ki,CHEMBL4616_EC50,CHEMBL4792_Ki
