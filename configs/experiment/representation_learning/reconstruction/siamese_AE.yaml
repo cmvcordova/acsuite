@@ -7,7 +7,7 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: reconstruction
 
-model_name: siamese_AE
+model_name: halfstep_siamese_AE
 task_type: reconstruction
 metric_direction: min
 feature_length: 2048

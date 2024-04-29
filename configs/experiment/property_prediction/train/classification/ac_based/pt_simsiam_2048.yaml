@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ChEMBL", "pt_joint_1024", "classification", "random_pretraining"]
+tags: ["ChEMBL", "pt_simsiam_2048", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
@@ -7,7 +7,7 @@ defaults:
   - override /hydra: train_property_prediction_multirun
   - override /callbacks: classification
 
-model_name: pt_joint_1024
+model_name: pt_simsiam_2048
 task_type: classification
 metric_direction: max
-feature_length: 1024
+feature_length: 2048

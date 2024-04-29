@@ -1,13 +1,13 @@
 # @package _global_
-tags: ["ChEMBL", "pt_joint_1024", "classification", "random_pretraining"]
+tags: ["ChEMBL", "pt_joint_recon_1024", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
   - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
   - override /callbacks: classification
-
-model_name: pt_joint_1024
+  
+model_name: pt_joint_recon_1024
 task_type: classification
 metric_direction: max
 feature_length: 1024

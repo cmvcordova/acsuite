@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ChEMBL", "pt_joint_1024", "regression", "random_pretraining"]
+tags: ["ChEMBL", "pt_joint_recon_1024", "regression", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
@@ -7,7 +7,7 @@ defaults:
   - override /hydra: train_property_prediction_multirun
   - override /callbacks: regression
 
-model_name: pt_joint_1024
+model_name: pt_joint_recon_1024
 task_type: regression
 metric_direction: min
 feature_length: 1024
