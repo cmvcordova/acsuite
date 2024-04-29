@@ -202,6 +202,7 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = nn.Sigmoid(),
     norm_layer: bool = True,
+    similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
     dropout: float = 0.0,
     masking: Optional[Literal['mmp', 'random']] = None,
     ):

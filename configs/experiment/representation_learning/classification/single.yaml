@@ -7,7 +7,7 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: classification
 
-model_name: halfstep_single
+model_name: siamese_nss
 task_type: classification
 metric_direction: max
 feature_length: 2048

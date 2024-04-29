@@ -11,6 +11,3 @@ model_name: pt_joint_1024
 task_type: classification
 metric_direction: max
 feature_length: 1024
-
-data:
-  input_type: concat

@@ -34,7 +34,8 @@ task_name: "train"
 task_type: null 
 model_name: null 
 metric_direction: null
-feature_length: null 
+feature_length: null
+#input_type: null
 
 # tags to help you identify your experiments
 # you can overwrite this in experiment configs

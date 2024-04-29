@@ -2,14 +2,21 @@
 tags: ["ACNet", "halfstepAEsingle", "reconstruction", "pretraining"]
 
 defaults:
-  - override /model: representation_learning/halfstep
+  - override /model: representation_learning/siamese
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
+  - override /callbacks: reconstruction
 
-model_name: halfstepAEsiamese
+model_name: siamese_AE
 task_type: reconstruction
 metric_direction: min
 feature_length: 2048
+
+model:
+  net:
+    _target_: src.models.components.encoders.HalfStepSiameseAutoEncoder
+    norm_layer: false
+  input_type: pair
 
 data:
   input_type: pair

@@ -19,6 +19,7 @@ class ACAModule(LightningModule):
         optimizer: torch.optim.Optimizer,
         num_classes: Optional[int] = 1,
         criterion: Optional[torch.nn.Module] = None,
+        input_type: Literal['single', 'pair'] = 'single',
         compile: Optional[bool] = False,
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None,
     ) -> None:
@@ -33,12 +34,13 @@ class ACAModule(LightningModule):
         self.task = task
         self.num_classes = num_classes
         self.criterion = criterion
+        self.input_type = input_type
         assert self.task in ["classification", "regression", "reconstruction"], f"Unexpected task: {self.task}"
 
         self.train_metric = MeanMetric()
         self.val_metric = MeanMetric()
         self.test_metric = MeanMetric()
-        print(self.net) 
+        
         if self.criterion is None:
             if self.task == "classification":
                 self.criterion = torch.nn.BCEWithLogitsLoss() if num_classes == 1 else nn.CrossEntropyLoss()
@@ -92,7 +94,13 @@ class ACAModule(LightningModule):
         :param x: A tensor of images.
         :return: A tensor of logits.
         """
-        return self.net(x)
+        if self.input_type == "pair":
+            return self.net(x[0], x[1])
+        else:
+            logits = self.net(x)
+        
+        logits = logits.squeeze(-1)
+        return logits
     
     def on_train_start(self) -> None:
         """Lightning hook that is called when training begins."""
@@ -101,7 +109,6 @@ class ACAModule(LightningModule):
         self.val_loss.reset()
         self.val_metric.reset()
         self.val_metric_best.reset()
-
 
     def model_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor]
@@ -114,26 +121,23 @@ class ACAModule(LightningModule):
             - A tensor of losses.
             - A tensor of predictions.
             - A tensor of target labels.
-        """     
-        x, y = batch
-        logits = self.forward(x)
- 
-        if self.task == "reconstruction":
-            if logits.shape != x.shape:
-                logits = logits.view_as(x)
-            loss = self.criterion(logits, x)
-            probs = torch.sigmoid(logits) #metric calculation requires probabilities
-            return loss, probs, x
-
+        """
+        if self.input_type == "pair":
+            x1, x2, y = batch
+            output = self.forward((x1, x2))
         else:
-            if logits.dim() > 2:
-                logits = logits.squeeze()
+            x, y = batch
+            output = self.forward(x)
+        
+        if isinstance(output, tuple): 
+            logits, z1, z2 = output  
+            loss = self.criterion(z1, z2) 
+        else:
+            logits = output
+            if logits.dim() > y.dim():
+                y = y.unsqueeze(1)
             y = y.float()
-
-            loss = self.criterion(logits, y)
-            if logits.dim() != y.dim():
-                logits = logits.view(-1) if logits.dim() > y.dim() else logits.unsqueeze(-1)
-                
+            loss = self.criterion(logits, y)            
             return loss, logits, y
         
     def training_step(self, batch: Any, batch_idx: int):
@@ -153,7 +157,6 @@ class ACAModule(LightningModule):
         #loss, preds, targets = self.model_step(batch)
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
-        self.val_loss(loss)
         self.val_loss(loss)
         self.val_metric(preds, targets)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)

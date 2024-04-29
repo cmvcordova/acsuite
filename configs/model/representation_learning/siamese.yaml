@@ -3,11 +3,11 @@ _target_: src.models.encoding_module.ACAModule
 task: ${task_type}
 
 net:
-  _target_: src.models.components.encoders.HalfstepSiameseEncoder
+  _target_: src.models.components.encoders.HalfStepSiameseEncoder
   in_features: ${feature_length}
   code_features: 256
   dropout: 0.2
-  layer_norm: true
+  norm_layer: true
   similarity_function: dot_product
   layer_activation: 
     _target_: torch.nn.ReLU
