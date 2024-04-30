@@ -1,8 +1,8 @@
 # @package _global_
-tags: ["ACNet", "halfstep_joint_AE", "reconstruction", "pretraining"]
+tags: ["ACNet", "halfstep_joint_AE", "self_supervision", "pretraining"]
 
 defaults:
-  - override /model: representation_learning/joint_hse
+  - override /model: representation_learning/barlowtwins
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
   - override /callbacks: self_supervision
@@ -10,11 +10,8 @@ defaults:
 model_name: hse_btwins
 task_type: self_supervision
 metric_direction: min
-feature_length: 1024
-
-model:
-  net:
-    _target_: src.models.components.encoders.HalfStepBarlowTwins
+feature_length: 2048
 
 data:
   input_type: pair
+  batch_size: 256

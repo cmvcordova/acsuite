@@ -3,10 +3,9 @@ _target_: src.models.encoding_module.ACAModule
 task: ${task_type}
 
 net:
-  _target_: src.models.components.encoders.HalfStepSiameseEncoder
+  _target_: src.models.components.encoders.HalfStepBarlowTwins
   in_features: ${feature_length}
   code_features: 256
-  dropout: 0.2
   norm_layer: true
   similarity_function: dot_product
   layer_activation: 
@@ -24,5 +23,8 @@ scheduler:
   mode: ${metric_direction}
   factor: 0.1
   patience: 10
+
+criterion:
+  _target_: src.models.components.losses.BarlowTwinsLoss
 
 input_type: pair

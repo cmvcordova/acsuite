@@ -1,4 +1,5 @@
 import torch
+import torch.nn.functional as F
 from torch import nn
 
 class RMSELoss(nn.Module):
@@ -28,3 +29,16 @@ class BarlowTwinsLoss(nn.Module):
         off_diagonal_indices = torch.ones_like(c) - torch.eye(D, device=z_a.device)
         loss = c_diff.sum() + self.lambd * (c_diff * off_diagonal_indices).sum()
         return loss
+class SimSiamLoss(torch.nn.Module):
+    def __init__(self):
+        super(SimSiamLoss, self).__init__()
+
+    def forward(self, p1, p2, z1, z2):
+        # Use stop-gradient on z
+        z1 = z1.detach()
+        z2 = z2.detach()
+        
+        # Calculate the loss as mean of two symmetric losses
+        loss1 = F.mse_loss(p1, z2)
+        loss2 = F.mse_loss(p2, z1)
+        return (loss1 + loss2) / 2

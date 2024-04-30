@@ -1,0 +1,16 @@
+# @package _global_
+tags: ["ACNet", "halfstep_joint_AE", "self_supervision", "pretraining"]
+
+defaults:
+  - override /model: representation_learning/simsiam
+  - override /data: representation_learning/ECFP_R4_ac_mixed
+  - override /hydra: pretrain_encoder
+  - override /callbacks: self_supervision
+
+model_name: hse_simsiam
+task_type: self_supervision
+metric_direction: min
+feature_length: 2048
+
+data:
+  input_type: pair

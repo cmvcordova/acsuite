@@ -16,7 +16,6 @@ model:
   net:
     _target_: src.models.components.encoders.HalfStepSiameseAutoEncoder
     norm_layer: false
-  input_type: pair
 
 data:
   input_type: pair

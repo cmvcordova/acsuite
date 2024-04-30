@@ -6,7 +6,7 @@ from lightning import LightningModule
 from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError, MeanAbsoluteError
-from src.models.components.losses import BarlowTwinsLoss, RMSELoss
+from src.models.components.losses import BarlowTwinsLoss, RMSELoss, SimSiamLoss
 
 class ACAModule(LightningModule):
     """ 
@@ -28,87 +28,47 @@ class ACAModule(LightningModule):
         # this line allows to access init params with 'self.hparams' attribute
         # also ensures init params will be stored in ckpt
         ## ignore the 'ignore' tag that will be proposed by the logger
-        
+        print(net)
         self.save_hyperparameters(logger=False)
         self.net = net
         self.task = task
         self.num_classes = num_classes
-        self.criterion = criterion
+        self.criterion = criterion or self.default_criterion()
         self.input_type = input_type
-        assert self.task in ["classification", "regression", "reconstruction"], f"Unexpected task: {self.task}"
-
-        self.train_metric = MeanMetric()
-        self.val_metric = MeanMetric()
-        self.test_metric = MeanMetric()
         
-        if self.criterion is None:
-            if self.task == "classification":
-                self.criterion = torch.nn.BCEWithLogitsLoss() if num_classes == 1 else nn.CrossEntropyLoss()
-            elif self.task == "regression":
-                self.criterion = RMSELoss()
-            elif self.task == "reconstruction":
-                self.criterion = torch.nn.BCEWithLogitsLoss()
-
-        if self.task == "reconstruction":
-            self.val_metric_best = MinMetric()
-            self.metric_name = 'MAE'
-            self.train_metric = MeanAbsoluteError()
-            self.val_metric = MeanAbsoluteError()
-            self.test_metric = MeanAbsoluteError()
-                                
-        if self.task == "classification":
-            self.val_metric_best = MaxMetric()
-            if num_classes == 1:
-                self.metric_name = 'AUROC'
-                self.train_metric = AUROC(num_classes=1, task="binary")
-                self.val_metric = AUROC(num_classes=1, task="binary")
-                self.test_metric = AUROC(num_classes=1, task="binary")
-            else:
-                self.metric_name = 'Accuracy'
-                self.train_metric = Accuracy(num_classes=num_classes)
-                self.val_metric = Accuracy(num_classes=num_classes)
-                self.test_metric = Accuracy(num_classes=num_classes)
-
-        elif self.task == "regression":
-            self.val_metric_best = MinMetric()
-            if isinstance(self.criterion, RMSELoss):
-                self.metric_name = 'RMSE'
-                self.train_metric = MeanSquaredError(squared=True)
-                self.val_metric = MeanSquaredError(squared=True)
-                self.test_metric = MeanSquaredError(squared=True)
-
-            elif isinstance(self.criterion, torch.nn.modules.loss.MSELoss):
-                self.metric_name = 'MSE'
-                self.train_metric = MeanSquaredError(squared=False)
-                self.val_metric = MeanSquaredError(squared=False)
-                self.test_metric = MeanSquaredError(squared=False)
-            
+        if task != "self_supervision":
+            self.initialize_metrics(task, num_classes)
+        else:
+            if self.criterion is None:
+                raise ValueError("Specific criterion must be provided for self-supervised learning.")
+            self.train_metric = self.val_metric = self.test_metric = None
+            self.metric_name = None
+                        
         # for averaging loss across batches
         self.train_loss = MeanMetric()
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x1: torch.Tensor, x2=None ) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
 
         :param x: A tensor of images.
         :return: A tensor of logits.
         """
-        if self.input_type == "pair":
-            return self.net(x[0], x[1])
-        else:
-            logits = self.net(x)
-        
-        logits = logits.squeeze(-1)
-        return logits
+        if self.task == "self_supervision" and x2 is not None:
+            return self.net(x1, x2)
+        return self.net(x1).squeeze(-1)
     
     def on_train_start(self) -> None:
         """Lightning hook that is called when training begins."""
         # by default lightning executes validation step sanity checks before training starts,
         # so it's worth to make sure validation metrics don't store results from these checks
-        self.val_loss.reset()
-        self.val_metric.reset()
-        self.val_metric_best.reset()
+        if getattr(self, 'val_loss', None):
+            self.val_loss.reset()
+        if getattr(self, 'val_metric', None):
+            self.val_metric.reset()
+        if getattr(self, 'val_metric_best', None):
+            self.val_metric_best.reset()
 
     def model_step(
         self, batch: Tuple[torch.Tensor, torch.Tensor]
@@ -122,31 +82,31 @@ class ACAModule(LightningModule):
             - A tensor of predictions.
             - A tensor of target labels.
         """
-        if self.input_type == "pair":
-            x1, x2, y = batch
-            output = self.forward((x1, x2))
+        if self.task == "self_supervision":
+            x1, x2, _ = batch
+            x1 = x1.squeeze(1)
+            x2 = x2.squeeze(1)
+            z1, z2 = self.forward(x1, x2)
+            loss = self.criterion(z1, z2)
+            return loss, None, None
         else:
             x, y = batch
-            output = self.forward(x)
-        
-        if isinstance(output, tuple): 
-            logits, z1, z2 = output  
-            loss = self.criterion(z1, z2) 
-        else:
-            logits = output
+            x = x.squeeze(1)
+            logits = self.forward(x)
             if logits.dim() > y.dim():
                 y = y.unsqueeze(1)
             y = y.float()
-            loss = self.criterion(logits, y)            
+            loss = self.criterion(logits, y)   
             return loss, logits, y
         
     def training_step(self, batch: Any, batch_idx: int):
-        loss, preds, targets = self.model_step(batch) 
+        loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.train_loss(loss)
-        self.train_metric(preds, targets)
+        if preds is not None:
+            self.train_metric(preds, targets)
+            self.log(f"train/{self.metric_name}", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)        
         self.log("train/loss", self.train_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"train/{self.metric_name}", self.train_metric, on_step=False, on_epoch=True, prog_bar=True)        
         # return loss or backpropagation will fail
         return loss
     
@@ -158,25 +118,32 @@ class ACAModule(LightningModule):
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.val_loss(loss)
-        self.val_metric(preds, targets)
+        if preds is not None:
+            self.val_metric(preds, targets)
+            self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val/loss", self.val_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"val/{self.metric_name}", self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
-
+        #return loss
+    
     def on_validation_epoch_end(self) -> None:
         "Lightning hook that is called when a validation epoch ends."
-        metric = self.val_metric.compute()  # get current val metric
-        self.val_metric_best(metric)  # update best so far val metric
-        # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
-        # otherwise metric would be reset by lightning after each epoch
-        self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
+        if getattr(self, 'val_metric', None):
+            metric = self.val_metric.compute()  # get current val metric
+            if self.val_metric_best:
+                self.val_metric_best(metric)  # update best so far val metric
+            # log `val_metric_best` as a value through `.compute()` method, instead of as a metric object
+            # otherwise metric would be reset by lightning after each epoch
+            if self.metric_name:
+                self.log(f"val/{self.metric_name}_best", self.val_metric_best.compute(), sync_dist=True, prog_bar=True)
 
     def test_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
         # update and log metrics
         self.test_loss(loss)
-        self.test_metric(preds, targets)
+        if preds is not None:
+            self.test_metric(preds, targets)
+            self.log(f"test/{self.metric_name}", self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
         self.log("test/loss", self.test_loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"test/{self.metric_name}", self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
+        #return loss
     
     def on_test_epoch_end(self):
         pass
@@ -219,6 +186,49 @@ class ACAModule(LightningModule):
                 },
             }
         return {"optimizer": optimizer}
-    
+
+    def initialize_metrics(self, task: str, num_classes: int):
+        """Dynamically initializes metrics based on the task type."""
+        if task == "reconstruction":
+            self.val_metric_best = MinMetric()
+            self.metric_name = 'MAE'
+            metric = MeanAbsoluteError()
+            self.train_metric = self.val_metric = self.test_metric = metric
+
+        elif task == "classification":
+            self.val_metric_best = MaxMetric()
+            if num_classes == 1:
+                self.metric_name = 'AUROC'
+                metric = AUROC(num_classes=1, task="binary")
+                self.train_metric = self.val_metric = self.test_metric = AUROC(num_classes=1, task="binary")
+            else:
+                self.metric_name = 'Accuracy'
+                metric = Accuracy(num_classes=num_classes)
+                self.train_metric = self.val_metric = self.test_metric = Accuracy(num_classes=num_classes)
+
+        elif task == "regression":
+            self.val_metric_best = MinMetric()
+            if isinstance(self.criterion, RMSELoss):
+                self.metric_name = 'RMSE'
+                metric = MeanSquaredError(squared=True)
+                self.train_metric = self.val_metric = self.test_metric = MeanSquaredError(squared=True)
+            else:
+                self.metric_name = 'MSE'
+                metric = MeanSquaredError(squared=False)
+                self.train_metric = self.val_metric = self.test_metric = MeanSquaredError(squared=False)
+        else:
+            self.metric = None  # For self-supervised learning, we only track the loss
+            
+    def default_criterion(self):
+        """Define default criterion based on the task."""
+        if self.task == "classification":
+            return nn.BCEWithLogitsLoss() if self.num_classes == 1 else nn.CrossEntropyLoss()
+        elif self.task == "regression":
+            return RMSELoss()
+        elif self.task == "reconstruction":
+            return nn.BCEWithLogitsLoss()
+        raise ValueError("No default criterion for the given task.")
+
+
 if __name__ == "__main__":
     _ = ACAModule(None, None, None, None, None)

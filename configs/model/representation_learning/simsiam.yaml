@@ -3,7 +3,7 @@ _target_: src.models.encoding_module.ACAModule
 task: ${task_type}
 
 net:
-  _target_: src.models.components.encoders.HalfStepSiameseEncoder
+  _target_: src.models.components.encoders.HalfStepSimSiam
   in_features: ${feature_length}
   code_features: 256
   dropout: 0.2
@@ -24,5 +24,8 @@ scheduler:
   mode: ${metric_direction}
   factor: 0.1
   patience: 10
+
+criterion:
+  _target_: src.models.components.losses.SimSiamLoss
 
 input_type: pair
