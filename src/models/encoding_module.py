@@ -6,7 +6,10 @@ from lightning import LightningModule
 from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError, MeanAbsoluteError
-from src.models.components.losses import BarlowTwinsLoss, RMSELoss, SimSiamLoss
+from src.models.components.losses import (
+    BarlowTwinsLoss, 
+    RMSELoss, 
+    NegativeCosineSimilarityLoss)
 
 class ACAModule(LightningModule):
     """ 
@@ -87,7 +90,22 @@ class ACAModule(LightningModule):
             x1 = x1.squeeze(1)
             x2 = x2.squeeze(1)
             z1, z2 = self.forward(x1, x2)
-            loss = self.criterion(z1, z2)
+            if isinstance(self.criterion, NegativeCosineSimilarityLoss):
+                loss1 = self.criterion(z1.detach(), z2)
+                loss2 = self.criterion(z2.detach(), z1)
+                loss = (loss1 + loss2)/2
+            elif isinstance(self.criterion, BarlowTwinsLoss):
+                loss = self.criterion(z1, z2)
+            else:
+                raise ValueError("Unsupported criterion for self-supervised learning.")
+
+            if loss.isnan() or loss.isinf():
+                print("Input:", x)
+                print("Targets:", y)
+                print("Predictions:", logits)
+                
+            print("Loss:", loss)
+  
             return loss, None, None
         else:
             x, y = batch

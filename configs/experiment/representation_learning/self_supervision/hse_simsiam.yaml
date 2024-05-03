@@ -9,7 +9,7 @@ defaults:
 
 model_name: hse_simsiam
 task_type: self_supervision
-metric_direction: min
+metric_direction: max
 feature_length: 2048
 
 data:

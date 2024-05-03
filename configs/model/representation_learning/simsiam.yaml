@@ -6,9 +6,6 @@ net:
   _target_: src.models.components.encoders.HalfStepSimSiam
   in_features: ${feature_length}
   code_features: 256
-  dropout: 0.2
-  norm_layer: true
-  similarity_function: dot_product
   layer_activation: 
     _target_: torch.nn.ReLU
 
@@ -26,6 +23,6 @@ scheduler:
   patience: 10
 
 criterion:
-  _target_: src.models.components.losses.SimSiamLoss
+  _target_: src.models.components.losses.NegativeCosineSimilarityLoss
 
 input_type: pair

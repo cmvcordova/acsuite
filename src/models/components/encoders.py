@@ -70,7 +70,7 @@ class HalfStepEncoder(nn.Module):
     
     def create_encoder(self, layer_features: List[int], 
                        layer_activation: nn.Module,
-                       dropout: float,
+                       dropout: float = 0.0,
                        norm_layer: Optional[bool] = False) -> nn.Sequential:
         """
         Creates an encoder from halfstep layers.
@@ -267,7 +267,7 @@ class HalfStepBarlowTwins(HalfStepEncoder):
         self.encoder = self.create_encoder(self.layer_features, 
                                            layer_activation, norm_layer, dropout)
         self.projector = self.create_projector(code_features, 
-                                               projector_features, projector_layers,)
+                                               projector_features, projector_layers)
 
         self.apply(self.initialize_weights)
     
@@ -293,16 +293,22 @@ class HalfStepBarlowTwins(HalfStepEncoder):
         return z1,z2
     
 class HalfStepSimSiam(HalfStepEncoder):
+    """
+    SimSiam encoder
+    """
     def __init__(
     self, 
-    in_features=2048, 
-    code_features=256, 
-    hidden_features=512, 
-    dropout=0.2,):
+    in_features: int = 2048, 
+    code_features: int = 256, 
+    hidden_features:int = 512,
+    layer_activation: nn.Module = nn.ReLU(),
+    out_features: int = 2048
+    ):
         super().__init__()
-        
-        self.encoder = self.create_encoder(code_features, hidden_features, code_features)
-        self.predictor = self.create_predictor(code_features, hidden_features, code_features)
+        #self.layer_features = self.calculate_layer_features(in_features, code_features)
+        ## In case halfstep convention is to be used
+        self.encoder = self.create_simsiam_encoder(in_features, hidden_features, out_features)
+        self.predictor = self.create_predictor(in_features, hidden_features, out_features)
 
     def forward(self, x1, x2):
         z1 = self.encoder(x1)
@@ -311,13 +317,18 @@ class HalfStepSimSiam(HalfStepEncoder):
         p1 = self.predictor(z1)
         p2 = self.predictor(z2)
 
-        # Symmetric loss computation with stop-gradient
-        with torch.no_grad():
-            sg_z1 = z1.detach()
-            sg_z2 = z2.detach()
-
-        return p1, p2, sg_z1, sg_z2
+        return p1, p2
     
+    def create_simsiam_encoder(self, input_dim, hidden_dim, output_dim):
+        return nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, output_dim),
+            nn.BatchNorm1d(output_dim),
+            nn.ReLU()
+        )
+
     def create_predictor(self, in_features, hidden_features, out_features):
         return nn.Sequential(
             nn.Linear(in_features, hidden_features),

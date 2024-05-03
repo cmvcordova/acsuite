@@ -15,30 +15,31 @@ class RMSELoss(nn.Module):
 # https://discuss.pytorch.org/t/rmse-loss-function/16540/4
     
 class BarlowTwinsLoss(nn.Module):
-    def __init__(self, lambd=5e-3):
+    def __init__(self, lambd=5e-3, epsilon=1e-6): 
         super().__init__()
         self.lambd = lambd
+        self.epsilon = epsilon
         
     def forward(self, z_a, z_b):
         N, D = z_a.size(0), z_a.size(1)
-        z_a_norm = (z_a - z_a.mean(0)) / z_a.std(0)
-        z_b_norm = (z_b - z_b.mean(0)) / z_b.std(0)
+        z_a_norm = (z_a - z_a.mean(0)) / (z_a.std(0) + self.epsilon) 
+        z_b_norm = (z_b - z_b.mean(0)) / (z_b.std(0) + self.epsilon)
         c = torch.matmul(z_a_norm.T, z_b_norm) / N
         c_diff = (c - torch.eye(D, device=z_a.device)).pow(2)
         # Only scale off-diagonal elements by lambda
         off_diagonal_indices = torch.ones_like(c) - torch.eye(D, device=z_a.device)
         loss = c_diff.sum() + self.lambd * (c_diff * off_diagonal_indices).sum()
         return loss
-class SimSiamLoss(torch.nn.Module):
+    
+class NegativeCosineSimilarityLoss(nn.Module):
     def __init__(self):
-        super(SimSiamLoss, self).__init__()
+        super().__init__()
 
-    def forward(self, p1, p2, z1, z2):
-        # Use stop-gradient on z
-        z1 = z1.detach()
-        z2 = z2.detach()
-        
-        # Calculate the loss as mean of two symmetric losses
-        loss1 = F.mse_loss(p1, z2)
-        loss2 = F.mse_loss(p2, z1)
-        return (loss1 + loss2) / 2
+    def forward(self, x1, x2):
+        x1 = F.normalize(x1, p=2, dim=1)  # L2 normalization 
+        x2 = F.normalize(x2, p=2, dim=1)
+        cos_sim = -1 * F.cosine_similarity(x1, x2) 
+        ##negative cosine similarity  equivalent normalized MSE loss (Grill et al., 2020)
+        return cos_sim.mean()
+
+
