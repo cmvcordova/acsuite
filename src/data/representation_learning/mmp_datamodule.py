@@ -107,7 +107,8 @@ class MMPDataModule(LightningDataModule):
             dataset=self.data_val,
             batch_size=self.hparams.batch_size,
             num_workers=self.hparams.num_workers,
-            pin_memory=self.hparams.pin_memory
+            pin_memory=self.hparams.pin_memory,
+            shuffle=self.hparams.shuffle
         )
 
     def test_dataloader(self):

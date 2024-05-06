@@ -103,6 +103,3 @@ class HotSwapEncoderMLP(nn.Module):
         else:
             print(f"Pretrained encoder checkpoint not found at {checkpoint_path}.")
             return nn.Identity()
-
-
-

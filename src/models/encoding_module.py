@@ -6,10 +6,12 @@ from lightning import LightningModule
 from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import AUROC, Accuracy
 from torchmetrics.regression import MeanSquaredError, MeanAbsoluteError
+from src.models.components.metrics import CollapseLevel
 from src.models.components.losses import (
     BarlowTwinsLoss, 
     RMSELoss, 
-    NegativeCosineSimilarityLoss)
+    NegativeCosineSimilarityLoss,
+    SiamACLoss)
 
 class ACAModule(LightningModule):
     """ 
@@ -52,15 +54,16 @@ class ACAModule(LightningModule):
         self.val_loss = MeanMetric()
         self.test_loss = MeanMetric()
 
-    def forward(self, x1: torch.Tensor, x2=None ) -> torch.Tensor:
+    def forward(self, x1: torch.Tensor, x2: torch.Tensor = None ) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`.
 
         :param x: A tensor of images.
         :return: A tensor of logits.
         """
-        if self.task == "self_supervision" and x2 is not None:
+        if x2 is not None:
             return self.net(x1, x2)
         return self.net(x1).squeeze(-1)
+
     
     def on_train_start(self) -> None:
         """Lightning hook that is called when training begins."""
@@ -85,27 +88,29 @@ class ACAModule(LightningModule):
             - A tensor of predictions.
             - A tensor of target labels.
         """
-        if self.task == "self_supervision":
+        if self.input_type == "pair":
             x1, x2, _ = batch
             x1 = x1.squeeze(1)
             x2 = x2.squeeze(1)
-            z1, z2 = self.forward(x1, x2)
+            
+            if isinstance(self.criterion, SiamACLoss):
+                out_1 = self.forward(x1)
+                out_2 = self.forward(x2)
+                loss = self.criterion(x1, out_1, x2, out_2)
             if isinstance(self.criterion, NegativeCosineSimilarityLoss):
-                loss1 = self.criterion(z1.detach(), z2)
-                loss2 = self.criterion(z2.detach(), z1)
-                loss = (loss1 + loss2)/2
+                if self.task == "self_supervision": # simsiam
+                    p1, z2 = self.forward(x1, x2)
+                    p2, z1 = self.forward(x2, x1)
+                    loss = 0.5 * (self.criterion(p2, z1) + self.criterion(p1, z2))
+                    ## minimum possible value should be -1
+                elif self.task == "reconstruction": # siamese autoencoder
+                    recon_x1, recon_x2 = self.forward(x1, x2)
+                    loss = self.criterion(recon_x1, recon_x2)
             elif isinstance(self.criterion, BarlowTwinsLoss):
+                ## Check, hasn't been extensively tested
                 loss = self.criterion(z1, z2)
             else:
-                raise ValueError("Unsupported criterion for self-supervised learning.")
-
-            if loss.isnan() or loss.isinf():
-                print("Input:", x)
-                print("Targets:", y)
-                print("Predictions:", logits)
-                
-            print("Loss:", loss)
-  
+                raise ValueError("Unsupported criterion for self-supervised learning.")  
             return loss, None, None
         else:
             x, y = batch
@@ -205,7 +210,7 @@ class ACAModule(LightningModule):
             }
         return {"optimizer": optimizer}
 
-    def initialize_metrics(self, task: str, num_classes: int):
+    def initialize_metrics(self, task: str, num_classes: int, out_dim: int = 2048):
         """Dynamically initializes metrics based on the task type."""
         if task == "reconstruction":
             self.val_metric_best = MinMetric()
@@ -234,8 +239,11 @@ class ACAModule(LightningModule):
                 self.metric_name = 'MSE'
                 metric = MeanSquaredError(squared=False)
                 self.train_metric = self.val_metric = self.test_metric = MeanSquaredError(squared=False)
+        elif task == "self_supervision":
+            self.val_metric_best = MinMetric()
+            self.collapse_metric = CollapseLevel(out_dim=out_dim, w=0.9)
         else:
-            self.metric = None  # For self-supervised learning, we only track the loss
+            self.metric = None  # unsupported loss
             
     def default_criterion(self):
         """Define default criterion based on the task."""

@@ -203,6 +203,7 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     output_activation: nn.Module = None,
     norm_layer: bool = True,
     similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
+    tied_weights: bool = True,
     dropout: float = 0.0,
     masking: Optional[Literal['mmp', 'random']] = None,
     ):
@@ -231,8 +232,51 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     def forward(self, x1, x2):
         z1, z2 = self.forward_encoder(x1, x2)
         recon_x1, recon_x2 = self.forward_decoder(z1, z2)
-        return recon_x1, recon_x2
+        return recon_x1, recon_x2    
+class SimSiam(nn.Module):
+    """
+    SimSiam 
+    """
+    def __init__(
+    self, 
+    in_features: int = 2048, 
+    code_features: int = 256, 
+    hidden_features:int = 512,
+    encoder: nn.Module = None,
+    layer_activation: nn.Module = nn.ReLU(),
+    out_features: int = 2048
+    ):
+        super().__init__()
+        self.encoder = encoder or self.create_simsiam_encoder(in_features, hidden_features, out_features)
+        self.predictor = self.create_predictor(in_features, hidden_features, out_features)
+
+    def forward(self, x1, x2):
+        ## head 1: encoding through predictor head
+        z1 = self.encoder(x1)
+        p1 = self.predictor(z1)
+        ## head 2: stopgrad on encoding
+        z2 = self.encoder(x2).detach()
+
+        return p1, z2
     
+    def create_simsiam_encoder(self, input_dim, hidden_dim, output_dim):
+        return nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.BatchNorm1d(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, output_dim),
+            nn.BatchNorm1d(output_dim),
+            nn.ReLU()
+        )
+
+    def create_predictor(self, in_features, hidden_features, out_features):
+        return nn.Sequential(
+            nn.Linear(in_features, hidden_features),
+            nn.BatchNorm1d(hidden_features),
+            nn.ReLU(),
+            nn.Linear(hidden_features, out_features)
+        )
+        
 class HalfStepBarlowTwins(HalfStepEncoder):
     """
     Barlow Twins encoder
@@ -291,48 +335,3 @@ class HalfStepBarlowTwins(HalfStepEncoder):
         z1 = self.projector(self.encoder(x1))
         z2 = self.projector(self.encoder(x2))
         return z1,z2
-    
-class HalfStepSimSiam(HalfStepEncoder):
-    """
-    SimSiam encoder
-    """
-    def __init__(
-    self, 
-    in_features: int = 2048, 
-    code_features: int = 256, 
-    hidden_features:int = 512,
-    layer_activation: nn.Module = nn.ReLU(),
-    out_features: int = 2048
-    ):
-        super().__init__()
-        #self.layer_features = self.calculate_layer_features(in_features, code_features)
-        ## In case halfstep convention is to be used
-        self.encoder = self.create_simsiam_encoder(in_features, hidden_features, out_features)
-        self.predictor = self.create_predictor(in_features, hidden_features, out_features)
-
-    def forward(self, x1, x2):
-        z1 = self.encoder(x1)
-        z2 = self.encoder(x2)
-
-        p1 = self.predictor(z1)
-        p2 = self.predictor(z2)
-
-        return p1, p2
-    
-    def create_simsiam_encoder(self, input_dim, hidden_dim, output_dim):
-        return nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
-            nn.BatchNorm1d(hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, output_dim),
-            nn.BatchNorm1d(output_dim),
-            nn.ReLU()
-        )
-
-    def create_predictor(self, in_features, hidden_features, out_features):
-        return nn.Sequential(
-            nn.Linear(in_features, hidden_features),
-            nn.BatchNorm1d(hidden_features),
-            nn.ReLU(),
-            nn.Linear(hidden_features, out_features)
-        )

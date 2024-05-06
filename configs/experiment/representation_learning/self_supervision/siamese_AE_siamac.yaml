@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ACNet", "halfstepAEsingle", "reconstruction", "pretraining"]
+tags: ["ACNet", "siamese_AE", "self-supervision", "pretraining"]
 
 defaults:
   - override /model: representation_learning/siamese
@@ -15,7 +15,6 @@ feature_length: 2048
 model:
   net:
     _target_: src.models.components.encoders.HalfStepSiameseAutoEncoder
-    norm_layer: false
 
 data:
   input_type: pair

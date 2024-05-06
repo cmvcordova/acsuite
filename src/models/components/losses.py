@@ -41,5 +41,21 @@ class NegativeCosineSimilarityLoss(nn.Module):
         cos_sim = -1 * F.cosine_similarity(x1, x2) 
         ##negative cosine similarity  equivalent normalized MSE loss (Grill et al., 2020)
         return cos_sim.mean()
+    
+class SiamACLoss(nn.Module):
+    def __init__(self, difference_weight=0.5):
+        super().__init__()
+        self.bce = nn.BCEWithLogitsLoss()
+        self.difference_weight = difference_weight
+
+    def forward(self, x1, recon_1, x2, recon_2):
+        rec_loss1 = self.bce(x1, recon_1)
+        rec_loss2 = self.bce(x2, recon_2)
+
+        difference_loss = nn.functional.l1_loss(recon_1, recon_2)
+
+        return rec_loss1 + rec_loss2 + self.difference_weight * difference_loss
+
+
 
 

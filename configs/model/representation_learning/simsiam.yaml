@@ -3,7 +3,7 @@ _target_: src.models.encoding_module.ACAModule
 task: ${task_type}
 
 net:
-  _target_: src.models.components.encoders.HalfStepSimSiam
+  _target_: src.models.components.encoders.SimSiam
   in_features: ${feature_length}
   code_features: 256
   layer_activation: 

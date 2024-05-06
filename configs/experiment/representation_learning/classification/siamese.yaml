@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ACNet", "siamese_nss", "classification", "pretraining"]
+tags: ["ACNet", "siamese", "classification", "pretraining"]
 
 defaults:
   - override /model: representation_learning/siamese
@@ -7,7 +7,7 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: classification
 
-model_name: siamese_nss
+model_name: siamese_classifier
 task_type: classification 
 metric_direction: max
 feature_length: 2048
