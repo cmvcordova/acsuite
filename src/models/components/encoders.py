@@ -158,39 +158,49 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
     self, 
     in_features: int = 2048, 
     code_features: int = 256, 
-    out_features: int = 1,
     layer_activation: nn.Module = nn.ReLU(),
     norm_layer: bool = True,
-    similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
+    metric: Literal['cosine', 'naive', 'euclidean', 'dot_product'] = 'cosine',
     dropout: float = 0.0,
+    out_features: int = 1,
     masking: Optional[Literal['mmp', 'random']] = None,
     ):
         super().__init__()
 
         self.in_features = in_features
         self.code_features = code_features
-        self.out_features = out_features
-
         self.layer_features = self.calculate_layer_features(in_features, code_features)
         
-        if similarity_function == "dot_product":
-            self.similarity_function = lambda z1, z2: torch.sum(z1 * z2, dim=1)
+        self.encoder = self.create_encoder(self.layer_features, 
+                                           layer_activation, 
+                                           norm_layer, dropout)
+        self.set_metric(metric)
+        if metric in ["naive", "euclidean"]:
+            self.output_layer = nn.Linear(code_features, out_features)
         else:
-            self.similarity_function = nn.CosineSimilarity(dim=1)
-
-        self.encoder = self.create_encoder(self.layer_features, layer_activation, norm_layer, dropout)
-        
-        self.output_layer = nn.Linear(self.code_features, self.out_features)
+            self.output_layer = nn.Identity()
 
         self.apply(self.initialize_weights)
 
     def forward(self, x1, x2):
         z1 = self.encoder(x1)
         z2 = self.encoder(x2)
-        z = self.similarity_function(z1, z2)
+        z = self.metric(z1, z2)
         out = self.output_layer(z)
         return out
     
+    def set_metric(self, metric: Literal['cosine', 'dot_product', 'euclidean', 'naive']):
+        if metric == "dot_product":
+            self.metric = lambda z1, z2: torch.sum(z1 * z2, dim=1)
+        elif metric == "euclidean":
+            self.metric = lambda z1, z2: torch.sqrt(torch.sum((z1 - z2)**2, dim=1))
+        elif metric == "naive":
+            self.metric = lambda z1, z2: torch.abs(z1 - z2)
+        elif metric == "cosine": 
+            self.metric = nn.CosineSimilarity(dim=1)
+        else:
+            raise ValueError(f"Unsupported metric: {metric}")
+
 class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     """
     Siamese autoencoder
@@ -201,7 +211,7 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     code_features: int = 256, 
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = None,
-    norm_layer: bool = True,
+    norm_layer: bool = False,
     similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
     tied_weights: bool = True,
     dropout: float = 0.0,
@@ -248,7 +258,7 @@ class SimSiam(nn.Module):
     ):
         super().__init__()
         self.encoder = encoder or self.create_simsiam_encoder(in_features, hidden_features, out_features)
-        self.predictor = self.create_predictor(in_features, hidden_features, out_features)
+        self.predictor = self.create_predictor(out_features, hidden_features, out_features)
 
     def forward(self, x1, x2):
         ## head 1: encoding through predictor head

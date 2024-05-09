@@ -11,6 +11,6 @@ molfeat_featurizer:
     length: ${feature_length}
     radius: 4
 batch_size: 128
-num_workers: 4
+num_workers: 2
 pin_memory: False
 shuffle: True

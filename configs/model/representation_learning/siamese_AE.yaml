@@ -3,12 +3,11 @@ _target_: src.models.encoding_module.ACAModule
 task: ${task_type}
 
 net:
-  _target_: src.models.components.encoders.HalfStepSiameseEncoder
+  _target_: src.models.components.encoders.HalfStepSiameseAutoEncoder
   in_features: ${feature_length}
   code_features: 256
   dropout: 0.2
-  norm_layer: true
-  metric: null # provide in experiment
+  norm_layer: False
   layer_activation: 
     _target_: torch.nn.ReLU
 

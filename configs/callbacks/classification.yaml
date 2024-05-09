@@ -7,14 +7,14 @@ defaults:
 
 model_checkpoint:
   dirpath: ${paths.output_dir}/checkpoints
-  monitor: "val/AUROC"
+  monitor: "val/MCC"
   mode: "max"
   save_top_k: 1
   verbose: True
   save_last: True
 
 early_stopping:
-  monitor: "val/AUROC"
+  monitor: "val/MCC"
   patience: 10
   verbose: True
   mode: "max"

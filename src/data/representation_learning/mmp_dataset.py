@@ -50,24 +50,36 @@ class MMPDataset(Dataset):
 
         self.molfeat_featurizer = molfeat_featurizer
         self.input_type = input_type
-
+        
+        print("Total MMPs: ", len(mmp_df))
+        num_positive = len(mmp_df[mmp_df[label] == '1'])
+        num_negative = len(mmp_df[mmp_df[label] == '0'])
+        print(f"Number of AC pairs: {num_positive} ({num_positive / len(mmp_df) * 100:.2f}%)")
+        print(f"Number of Non AC pairs: {num_negative} ({num_negative / len(mmp_df) * 100:.2f}%)")
+        
         if filter_type == 'positive':
-            mmp_df = mmp_df[mmp_df[label] == 1]
+            print("Filtering for AC pairs...")
+            mmp_df = mmp_df[mmp_df[label] == '1']
         elif filter_type == 'negative':
-            mmp_df = mmp_df[mmp_df[label] == 0]
-         
+            print("Filtering for Non AC pairs...")
+            mmp_df = mmp_df[mmp_df[label] == '0']
+        print(mmp_df.columns) 
         featurized_smiles_one_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_one].values]
         featurized_smiles_two_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_two].values]
 
+        if not featurized_smiles_one_arrays:
+            raise ValueError(f"No data after filtering for {filter_type} pairs.")
+        
         self.featurized_smiles_one = torch.tensor(np.stack(featurized_smiles_one_arrays), dtype=torch.float32)
         self.featurized_smiles_two = torch.tensor(np.stack(featurized_smiles_two_arrays), dtype=torch.float32)
         self.labels = torch.tensor(mmp_df[label].astype(int).values, dtype=torch.long)
         self.target = mmp_df[target].values
+                
         if input_type == 'single':
             # Combine SMILES from pairs, then featurize each individually.
             self.featurized_smiles = torch.cat((self.featurized_smiles_one, self.featurized_smiles_two), dim=0)
             self.labels = torch.cat((self.labels, self.labels), dim=0)
-        
+            
         if input_type == 'concat':
             self.featurized_pairs = torch.cat((self.featurized_smiles_one, self.featurized_smiles_two), dim=-1)
 
