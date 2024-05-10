@@ -7,14 +7,14 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: classification
 
-model_name: siamese_naive
+model_name: siamese_hadamard
 task_type: classification 
 metric_direction: max
 feature_length: 2048
 
 model:
   net:
-    metric: naive
+    metric: hadamard
     out_features: 1
   input_type: pair
 

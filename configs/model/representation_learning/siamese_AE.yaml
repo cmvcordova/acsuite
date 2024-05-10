@@ -7,7 +7,6 @@ net:
   in_features: ${feature_length}
   code_features: 256
   dropout: 0.2
-  norm_layer: False
   layer_activation: 
     _target_: torch.nn.ReLU
 

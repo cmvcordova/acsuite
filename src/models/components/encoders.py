@@ -174,11 +174,11 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
         self.encoder = self.create_encoder(self.layer_features, 
                                            layer_activation, 
                                            norm_layer, dropout)
-        self.set_metric(metric)
-        if metric in ["naive", "euclidean"]:
-            self.output_layer = nn.Linear(code_features, out_features)
-        else:
+        
+        if metric == "cosine" or metric == "dot_product":
             self.output_layer = nn.Identity()
+        else:
+            self.output_layer = nn.Linear(code_features, out_features)
 
         self.apply(self.initialize_weights)
 
@@ -189,18 +189,19 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
         out = self.output_layer(z)
         return out
     
-    def set_metric(self, metric: Literal['cosine', 'dot_product', 'euclidean', 'naive']):
-        if metric == "dot_product":
-            self.metric = lambda z1, z2: torch.sum(z1 * z2, dim=1)
+    def set_metric(self, metric: Literal['cosine', 'euclidean', 'manhattan', "hadamard"]):
+        if metric == "hadamard":
+            self.metric = lambda z1, z2: z1 * z2
         elif metric == "euclidean":
-            self.metric = lambda z1, z2: torch.sqrt(torch.sum((z1 - z2)**2, dim=1))
-        elif metric == "naive":
+            self.metric = lambda z1, z2: (z1 - z2).pow(2).sqrt()
+        elif metric == "manhattan":
             self.metric = lambda z1, z2: torch.abs(z1 - z2)
         elif metric == "cosine": 
             self.metric = nn.CosineSimilarity(dim=1)
+        elif metric == "dot_product":
+            self.metric = lambda z1, z2: torch.sum(z1 * z2, dim=1)
         else:
             raise ValueError(f"Unsupported metric: {metric}")
-
 class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     """
     Siamese autoencoder
@@ -212,8 +213,6 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     layer_activation: nn.Module = nn.ReLU(),
     output_activation: nn.Module = None,
     norm_layer: bool = False,
-    similarity_function: Literal['cosine', 'dot_product'] = 'dot_product',
-    tied_weights: bool = True,
     dropout: float = 0.0,
     masking: Optional[Literal['mmp', 'random']] = None,
     ):
@@ -224,7 +223,7 @@ class HalfStepSiameseAutoEncoder(HalfStepEncoder):
 
         self.layer_features = self.calculate_layer_features(in_features, code_features)
         
-        self.encoder = self.create_encoder(self.layer_features, layer_activation, norm_layer, dropout)
+        self.encoder = self.create_encoder(self.layer_features, layer_activation, dropout)
         self.decoder = self.create_decoder(self.layer_features[::-1], layer_activation, output_activation, dropout)
 
         self.apply(self.initialize_weights)
@@ -260,6 +259,8 @@ class SimSiam(nn.Module):
         self.encoder = encoder or self.create_simsiam_encoder(in_features, hidden_features, out_features)
         self.predictor = self.create_predictor(out_features, hidden_features, out_features)
 
+        self.apply(self.initialize_weights)
+
     def forward(self, x1, x2):
         ## head 1: encoding through predictor head
         z1 = self.encoder(x1)
@@ -287,6 +288,16 @@ class SimSiam(nn.Module):
             nn.Linear(hidden_features, out_features)
         )
         
+    def initialize_weights(self, m):
+        if isinstance(m, (nn.Linear, nn.BatchNorm1d)):
+            if hasattr(m, 'weight'):
+                if isinstance(m, nn.Linear):
+                    nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
+                elif isinstance(m, nn.BatchNorm1d):
+                    nn.init.normal_(m.weight, 1.0, 0.02)
+                if hasattr(m, 'bias') and m.bias is not None:
+                    nn.init.constant_(m.bias, 0.0)
+
 class HalfStepBarlowTwins(HalfStepEncoder):
     """
     Barlow Twins encoder

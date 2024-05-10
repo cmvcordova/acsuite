@@ -14,8 +14,9 @@ feature_length: 2048
 
 model:
   criterion:
-    _target_: src.models.components.losses.NegativeCosineSimilarityLoss
+    _target_: src.models.components.losses.SiamACLoss
 
 data:
   input_type: pair
   batch_size: 256
+  filter_type: positive

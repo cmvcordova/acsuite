@@ -52,6 +52,6 @@ class CollapseLevel(Metric):
             collapse_level_p1 (float): Collapse level for the first projection vector.
             collapse_level_p2 (float): Collapse level for the second projection vector.
         """
-        collapse_level_p1 = max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p1)
-        collapse_level_p2 = max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p2)
+        collapse_level_p1 = tensor(max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p1))
+        collapse_level_p2 = tensor(max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p2))
         return collapse_level_p1#, collapse_level_p2

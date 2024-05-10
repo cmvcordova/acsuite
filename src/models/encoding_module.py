@@ -39,7 +39,7 @@ class ACAModule(LightningModule):
         self.num_classes = num_classes
         self.criterion = criterion or self.default_criterion()
         self.input_type = input_type
-        
+        print(self.criterion)
         self.initialize_metrics(task, num_classes)
                         
         # for averaging loss across batches
@@ -94,8 +94,7 @@ class ACAModule(LightningModule):
 
             if self.task == "self_supervision":
                 if isinstance(self.criterion, SiamACLoss):
-                    out_1 = self.forward(x1)
-                    out_2 = self.forward(x2)
+                    out_1, out_2 = self.forward(x1, x2)
                     loss = self.criterion(x1, out_1, x2, out_2)
                 if isinstance(self.criterion, NegativeCosineSimilarityLoss):
                     if hasattr(self.net, 'decoder'): # weak check for siamese autoencoder, needs updating
