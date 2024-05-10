@@ -169,6 +169,8 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
 
         self.in_features = in_features
         self.code_features = code_features
+        self.set_metric(metric)
+        
         self.layer_features = self.calculate_layer_features(in_features, code_features)
         
         self.encoder = self.create_encoder(self.layer_features, 
@@ -249,10 +251,9 @@ class SimSiam(nn.Module):
     def __init__(
     self, 
     in_features: int = 2048, 
-    code_features: int = 256, 
-    hidden_features:int = 512,
+    hidden_features:int = 256,
     encoder: nn.Module = None,
-    layer_activation: nn.Module = nn.ReLU(),
+    layer_activation: nn.Module = nn.ReLU(), ##todo: pass to encoder
     out_features: int = 2048
     ):
         super().__init__()
