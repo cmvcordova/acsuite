@@ -1,13 +1,13 @@
 # @package _global_
-tags: ["ChEMBL", "pt_siamese_recon_2048", "regression", "random_pretraining"]
+tags: ["ChEMBL", "pt_siamese_ae_naive", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
   - override /data: property_prediction/ECFP_R4
   - override /hydra: train_property_prediction_multirun
-  - override /callbacks: regression
+  - override /callbacks: classification
 
-model_name: pt_siamese_recon_2048
-task_type: regression
-metric_direction: min
+model_name: pt_siamese_ae_naive
+task_type: classification
+metric_direction: max
 feature_length: 2048

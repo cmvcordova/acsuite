@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ACNet", "siamese_AE", "self-supervision", "pretraining"]
+tags: ["ACNet", "siamese_AE", "semi-supervision", "pretraining"]
 
 defaults:
   - override /model: representation_learning/siamese_AE
@@ -7,14 +7,14 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: reconstruction
 
-model_name: siamese_AE_ncs
-task_type: self_supervision
+model_name: siamese_AE_siamac
+task_type: semi_supervision
 metric_direction: min
 feature_length: 2048
 
 model:
   criterion:
-    _target_: src.models.components.losses.NegativeCosineSimilarityLoss
+    _target_: src.models.components.losses.SiamACLoss
 
 data:
   input_type: pair

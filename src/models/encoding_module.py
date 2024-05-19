@@ -6,9 +6,8 @@ from lightning import LightningModule
 from torchmetrics import MinMetric, MeanMetric, MaxMetric
 from torchmetrics.classification import MatthewsCorrCoef, Accuracy
 from torchmetrics.regression import MeanSquaredError, MeanAbsoluteError
-from src.models.components.metrics import CollapseLevel
+from src.models.components.metrics import CollapseLevel, EuclideanDistance
 from src.models.components.losses import (
-    BarlowTwinsLoss, 
     RMSELoss, 
     NegativeCosineSimilarityLoss,
     SiamACLoss)
@@ -20,7 +19,7 @@ class ACAModule(LightningModule):
     def __init__(
         self,
         net: torch.nn.Module,
-        task: Literal['classification', 'regression', 'reconstruction','self_supervision'],
+        task: Literal['classification', 'regression', 'reconstruction','self_supervision', 'semi_supervision'],
         optimizer: torch.optim.Optimizer,
         num_classes: Optional[int] = 1,
         criterion: Optional[torch.nn.Module] = None,
@@ -101,12 +100,15 @@ class ACAModule(LightningModule):
                 loss_2 = self.criterion(out_2, x2)
                 loss = 0.5 * (loss_1 + loss_2)
 
-                return loss, out_1, out_2   
-
-            if self.task == "self_supervision":
+                return loss, out_1, out_2
+            
+            if self.task == "semi_supervision":
                 if isinstance(self.criterion, SiamACLoss):
                     out_1, out_2 = self.forward(x1, x2)
-                    loss = self.criterion(x1, out_1, x2, out_2)
+                    loss = self.criterion(x1, out_1, x2, out_2, y)
+                return loss, out_1, out_2  
+
+            if self.task == "self_supervision":
                 if isinstance(self.criterion, NegativeCosineSimilarityLoss):
                     if hasattr(self.net, 'decoder'): # weak check for siamese autoencoder, needs updating
                         out_1, out_2 = self.forward(x1, x2)
@@ -116,9 +118,6 @@ class ACAModule(LightningModule):
                         out_2, z1 = self.forward(x2, x1)
                         loss = 0.5 * (self.criterion(out_2, z1) + self.criterion(out_1, z2))
                         ## minimum possible value should be -1
-                elif isinstance(self.criterion, BarlowTwinsLoss):
-                    ## Check, hasn't been extensively tested
-                    loss = self.criterion(z1, z2)
             else:
                 raise ValueError("Unsupported criterion for self-supervised learning.") 
             return loss, out_1, out_2
@@ -257,6 +256,11 @@ class ACAModule(LightningModule):
             self.metric_name = 'CollapseLevel'
             self.metric = CollapseLevel(w=0.9)
             
+        elif task == "semi_supervision":
+            self.val_metric_best = MinMetric()
+            self.metric_name = 'EuclideanDistance'
+            self.metric = EuclideanDistance()
+            
         self.train_metric = self.val_metric = self.test_metric = self.metric
             
     def default_criterion(self):
@@ -269,6 +273,8 @@ class ACAModule(LightningModule):
             return nn.BCEWithLogitsLoss()
         elif self.task == "self_supervision":
             return NegativeCosineSimilarityLoss()
+        elif self.task == "semi_supervision":
+            return SiamACLoss()
         raise ValueError("No default criterion for the given task. Please provide a custom criterion.")
 
 if __name__ == "__main__":

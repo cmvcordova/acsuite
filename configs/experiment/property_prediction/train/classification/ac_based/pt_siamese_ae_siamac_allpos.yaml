@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ChEMBL", "pt_siamese_nss_2048", "classification", "random_pretraining"]
+tags: ["ChEMBL", "pt_siamese_ae_siamac_allpos", "classification", "random_pretraining"]
 
 defaults:
   - override /model: property_prediction/ptMLP
@@ -7,7 +7,7 @@ defaults:
   - override /hydra: train_property_prediction_multirun
   - override /callbacks: classification
 
-model_name: pt_siamese_nss_2048
+model_name: pt_siamese_ae_siamac_allpos
 task_type: classification
 metric_direction: max
 feature_length: 2048

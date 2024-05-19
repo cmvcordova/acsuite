@@ -1,5 +1,5 @@
 # @package _global_
-tags: ["ACNet", "siamese_AE", "self-supervision", "pretraining"]
+tags: ["ACNet", "siamese_AE", "semi_supervision", "pretraining"]
 
 defaults:
   - override /model: representation_learning/siamese_AE
@@ -7,8 +7,8 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: reconstruction
 
-model_name: halfstep_siamese_AE
-task_type: self_supervision
+model_name: siamese_AE_siamac_positives 
+task_type: semi_supervision
 metric_direction: min
 feature_length: 2048
 

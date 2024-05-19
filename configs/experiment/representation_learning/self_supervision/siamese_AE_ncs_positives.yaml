@@ -7,15 +7,16 @@ defaults:
   - override /hydra: pretrain_encoder
   - override /callbacks: reconstruction
 
-model_name: halfstep_siamese_AE
+model_name: siamese_AE_ncs_positives
 task_type: self_supervision
 metric_direction: min
 feature_length: 2048
 
 model:
   criterion:
-    _target_: src.models.components.losses.SiamACLoss
+    _target_: src.models.components.losses.NegativeCosineSimilarityLoss
 
 data:
   input_type: pair
   batch_size: 256
+  filter_type: positives

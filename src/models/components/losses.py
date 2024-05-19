@@ -14,22 +14,41 @@ class RMSELoss(nn.Module):
     
 # https://discuss.pytorch.org/t/rmse-loss-function/16540/4
     
-class BarlowTwinsLoss(nn.Module):
-    def __init__(self, lambd=5e-3, epsilon=1e-6): 
+class ContrastiveLoss(nn.Module):
+    def __init__(self, margin=1.0):
+        super(ContrastiveLoss, self).__init__()
+        self.margin = margin
+
+    def forward(self, output1, output2, label):
+        # Compute the Euclidean distance between the two outputs
+        distance = F.pairwise_distance(output1, output2)
+
+        # Compute the contrastive loss
+        loss = (1 - label) * 0.5 * torch.pow(distance, 2) + \
+               label * 0.5 * torch.pow(F.relu(self.margin - distance), 2)
+
+        return torch.mean(loss)
+
+class SiamACLoss(nn.Module):
+    def __init__(self, margin=1.0, difference_weight=0.5):
         super().__init__()
-        self.lambd = lambd
-        self.epsilon = epsilon
-        
-    def forward(self, z_a, z_b):
-        N, D = z_a.size(0), z_a.size(1)
-        z_a_norm = (z_a - z_a.mean(0)) / (z_a.std(0) + self.epsilon) 
-        z_b_norm = (z_b - z_b.mean(0)) / (z_b.std(0) + self.epsilon)
-        c = torch.matmul(z_a_norm.T, z_b_norm) / N
-        c_diff = (c - torch.eye(D, device=z_a.device)).pow(2)
-        # Only scale off-diagonal elements by lambda
-        off_diagonal_indices = torch.ones_like(c) - torch.eye(D, device=z_a.device)
-        loss = c_diff.sum() + self.lambd * (c_diff * off_diagonal_indices).sum()
-        return loss
+        self.bce = nn.BCEWithLogitsLoss()
+        self.contrastive_loss = ContrastiveLoss(margin)
+        self.difference_weight = difference_weight
+
+    def forward(self, x1, recon_1, x2, recon_2, label):
+        # Reconstruction Loss
+        rec_loss1 = self.bce(recon_1, x1)
+        rec_loss2 = self.bce(recon_2, x2)
+
+        # Normalize the reconstructed vectors
+        recon_1_norm = F.normalize(recon_1, p=2, dim=1)
+        recon_2_norm = F.normalize(recon_2, p=2, dim=1)
+
+        # Contrastive Loss
+        contrastive_loss = self.contrastive_loss(recon_1_norm, recon_2_norm, label)
+
+        return rec_loss1 + rec_loss2 + self.difference_weight * contrastive_loss
     
 class NegativeCosineSimilarityLoss(nn.Module):
     def __init__(self):
@@ -41,20 +60,7 @@ class NegativeCosineSimilarityLoss(nn.Module):
         cos_sim = -1 * F.cosine_similarity(x1, x2) 
         ##negative cosine similarity  equivalent normalized MSE loss (Grill et al., 2020)
         return cos_sim.mean()
-    
-class SiamACLoss(nn.Module):
-    def __init__(self, difference_weight=0.5):
-        super().__init__()
-        self.bce = nn.BCEWithLogitsLoss()
-        self.difference_weight = difference_weight
 
-    def forward(self, x1, recon_1, x2, recon_2):
-        rec_loss1 = self.bce(x1, recon_1)
-        rec_loss2 = self.bce(x2, recon_2)
-
-        difference_loss = nn.functional.l1_loss(recon_1, recon_2)
-
-        return rec_loss1 + rec_loss2 + self.difference_weight * difference_loss
 
 
 

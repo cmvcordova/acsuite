@@ -55,3 +55,37 @@ class CollapseLevel(Metric):
         collapse_level_p1 = tensor(max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p1))
         collapse_level_p2 = tensor(max(0.0, 1 - math.sqrt(self.out_dim) * self.avg_output_std_p2))
         return collapse_level_p1#, collapse_level_p2
+
+class EuclideanDistance(Metric):
+    """
+    Metric to compute the Euclidean distance between two vectors.
+    
+    Args:
+        w (Optional[float]): Weight for the moving average. Default is 0.9.
+        kwargs (Any): Additional keyword arguments for the Metric class.
+    """
+    def __init__(self, w: Optional[float] = 0.9, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        
+        self.add_state('avg_distance', default=tensor(0.0), dist_reduce_fx='mean')
+        self.w = w
+
+    def update(self, vec1: Tensor, vec2: Tensor) -> None:
+        """
+        Update state with the Euclidean distance between two vectors.
+        
+        Args:
+            vec1 (Tensor): First vector.
+            vec2 (Tensor): Second vector.
+        """
+        distance = torch.norm(vec1 - vec2, dim=1, p=2)
+        self.avg_distance = self.w * self.avg_distance + (1 - self.w) * torch.mean(distance)
+    
+    def compute(self) -> float:
+        """
+        Compute the mean Euclidean distance.
+        
+        Returns:
+            mean_distance (float): Mean Euclidean distance between the vectors.
+        """
+        return tensor(self.avg_distance.item())

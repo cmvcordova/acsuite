@@ -8,7 +8,7 @@ defaults:
   - override /callbacks: classification
 
 model_name: siamese_manhattan
-task_type: classification 
+task_type: classification
 metric_direction: max
 feature_length: 2048
 
