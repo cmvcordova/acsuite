@@ -1,13 +1,13 @@
 # @package _global_
-tags: ["ACNet", "halfstep_single_AE", "reconstruction", "pretraining"]
+tags: ["ACNet", "halfstep_siamese_AE", "reconstruction", "pretraining"]
 
 defaults:
-  - override /model: representation_learning/halfstep
+  - override /model: representation_learning/siamese_AE
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
   - override /callbacks: reconstruction
 
-model_name: halfstep_single_AE
+model_name: halfstep_siamese_AE
 task_type: reconstruction
 metric_direction: min
 feature_length: 2048
@@ -15,7 +15,7 @@ feature_length: 2048
 model:
   net:
     _target_: src.models.components.encoders.HalfStepAutoEncoder
-
+    
 data:
-  input_type: single
+  input_type: pair
   batch_size: 256

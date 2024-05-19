@@ -90,7 +90,18 @@ class ACAModule(LightningModule):
                     y = y.unsqueeze(1)
                 y = y.float()
                 loss = self.criterion(logits, y)
-                return loss, logits, y   
+                return loss, logits, y
+            
+            if self.task == "reconstruction": 
+                ## naive siamese, two pass autoencoder
+                ## symmetric loss
+                out_1 = self.forward(x1)
+                out_2 = self.forward(x2)
+                loss_1 = self.criterion(out_1, x1)
+                loss_2 = self.criterion(out_2, x2)
+                loss = 0.5 * (loss_1 + loss_2)
+
+                return loss, out_1, out_2   
 
             if self.task == "self_supervision":
                 if isinstance(self.criterion, SiamACLoss):

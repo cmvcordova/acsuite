@@ -63,7 +63,7 @@ class MMPDataset(Dataset):
         elif filter_type == 'negative':
             print("Filtering for Non AC pairs...")
             mmp_df = mmp_df[mmp_df[label] == '0']
-        print(mmp_df.columns) 
+            
         featurized_smiles_one_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_one].values]
         featurized_smiles_two_arrays = [self.molfeat_featurizer(smile) for smile in mmp_df[smiles_two].values]
 

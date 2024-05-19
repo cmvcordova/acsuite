@@ -18,3 +18,4 @@ model:
 
 data:
   input_type: concat
+  batch_size: 256
