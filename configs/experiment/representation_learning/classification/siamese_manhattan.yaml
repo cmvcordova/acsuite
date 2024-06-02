@@ -5,7 +5,7 @@ defaults:
   - override /model: representation_learning/siamese
   - override /data: representation_learning/ECFP_R4_ac_mixed
   - override /hydra: pretrain_encoder
-  - override /callbacks: classification
+  - override /callbacks: default
 
 model_name: siamese_manhattan
 task_type: classification
