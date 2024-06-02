@@ -11,6 +11,7 @@ net:
   hidden_layers: 2
   output_features: 1
   dropout: 0.2
+  norm_layer: True
   pretrained_encoder_ckpt: null # must be specified in experiment config
   
 optimizer:

@@ -38,7 +38,6 @@ class ACAModule(LightningModule):
         self.num_classes = num_classes
         self.criterion = criterion or self.default_criterion()
         self.input_type = input_type
-        print(self.criterion)
         self.initialize_metrics(task, num_classes)
                         
         # for averaging loss across batches

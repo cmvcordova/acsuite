@@ -163,7 +163,7 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
     metric: Literal['cosine', 'naive', 'euclidean', 'dot_product'] = 'cosine',
     dropout: float = 0.0,
     out_features: int = 1,
-    masking: Optional[Literal['mmp', 'random']] = None,
+    #masking: Optional[Literal['mmp', 'random']] = None,
     ):
         super().__init__()
 

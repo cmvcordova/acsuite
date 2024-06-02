@@ -19,4 +19,4 @@ model:
 data:
   input_type: pair
   batch_size: 256
-  filter_type: positives
+  filter_type: positive
