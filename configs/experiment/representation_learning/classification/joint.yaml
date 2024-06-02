@@ -9,7 +9,7 @@ defaults:
 
 model_name: halfstep_joint
 task_type: classification 
-metric_direction: max
+metric_direction: min
 feature_length: 1024
 
 model:

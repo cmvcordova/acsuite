@@ -9,7 +9,7 @@ defaults:
 
 model_name: siamese_hadamard
 task_type: classification 
-metric_direction: max
+metric_direction: min
 feature_length: 2048
 
 model:
