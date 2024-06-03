@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+from .distances import hadamard, euclidean, manhattan, dot_product
 from typing import List, Literal, Optional
 
 class HalfStepEncoder(nn.Module):
@@ -160,7 +161,7 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
     code_features: int = 256, 
     layer_activation: nn.Module = nn.ReLU(),
     norm_layer: bool = True,
-    metric: Literal['cosine', 'naive', 'euclidean', 'dot_product'] = 'cosine',
+    metric: Literal['cosine', 'euclidean', 'manhattan', "hadamard"] = 'manhattan',
     dropout: float = 0.0,
     out_features: int = 1,
     #masking: Optional[Literal['mmp', 'random']] = None,
@@ -193,15 +194,15 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
     
     def set_metric(self, metric: Literal['cosine', 'euclidean', 'manhattan', "hadamard"]):
         if metric == "hadamard":
-            self.metric = lambda z1, z2: z1 * z2
+            self.metric = hadamard
         elif metric == "euclidean":
-            self.metric = lambda z1, z2: (z1 - z2).pow(2).sqrt()
+            self.metric = euclidean
         elif metric == "manhattan":
-            self.metric = lambda z1, z2: torch.abs(z1 - z2)
+            self.metric = manhattan
         elif metric == "cosine": 
             self.metric = nn.CosineSimilarity(dim=1)
         elif metric == "dot_product":
-            self.metric = lambda z1, z2: torch.sum(z1 * z2, dim=1)
+            self.metric = dot_product
         else:
             raise ValueError(f"Unsupported metric: {metric}")
 class HalfStepSiameseAutoEncoder(HalfStepEncoder):
