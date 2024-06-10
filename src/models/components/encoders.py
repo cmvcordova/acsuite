@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from .distances import hadamard, euclidean, manhattan, dot_product
 from typing import List, Literal, Optional
 
 class HalfStepEncoder(nn.Module):
@@ -192,19 +191,35 @@ class HalfStepSiameseEncoder(HalfStepEncoder):
         out = self.output_layer(z)
         return out
     
-    def set_metric(self, metric: Literal['cosine', 'euclidean', 'manhattan', "hadamard"]):
+    def set_metric(self, metric: Literal['cosine', 'euclidean', 'manhattan', "hadamard", "dot_product"]):
         if metric == "hadamard":
-            self.metric = hadamard
+            self.metric = self.hadamard
         elif metric == "euclidean":
-            self.metric = euclidean
+            self.metric = self.euclidean
         elif metric == "manhattan":
-            self.metric = manhattan
+            self.metric = self.manhattan
         elif metric == "cosine": 
             self.metric = nn.CosineSimilarity(dim=1)
         elif metric == "dot_product":
-            self.metric = dot_product
+            self.metric = self.dot_product
         else:
             raise ValueError(f"Unsupported metric: {metric}")
+        
+    @staticmethod
+    def hadamard(z1, z2):
+        return z1 * z2
+
+    @staticmethod
+    def euclidean(z1, z2):
+        return torch.sqrt(torch.sum((z1 - z2).pow(2), dim=1))
+
+    @staticmethod
+    def manhattan(z1, z2):
+        return torch.sum(torch.abs(z1 - z2), dim=1)
+
+    @staticmethod
+    def dot_product(z1, z2):
+        return torch.sum(z1 * z2, dim=1)
 class HalfStepSiameseAutoEncoder(HalfStepEncoder):
     """
     Siamese autoencoder
