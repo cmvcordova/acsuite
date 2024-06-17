@@ -60,7 +60,7 @@ Data accesible through the AC Suite dataset wrapper. Installation a pre-requisit
 
 ## Known Issues
 
-- Hadamard, Euclidean distance Siamese classifiers not thoroughly tested, training instabilities observed. There is likely a mismatch with how they're handled within the HalfStep
+- Hadamard, Euclidean distance Siamese classifiers not thoroughly tested, training instabilities observed. There is likely a mismatch with how they're handled within the HalfStepSiameseEncoder model.
 - Evaluation multiruns not compatible with current script, done manually. See [Hydra issue #1258](https://github.com/facebookresearch/hydra/issues/1258).
 - Pre-training data downloading method not implemented, must be dealt with manually. See ACNet section
 - README could be more informative. Do not hesitate to open issues!
