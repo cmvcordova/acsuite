@@ -66,18 +66,32 @@ Data accesible through the AC Suite dataset wrapper. Installation a pre-requisit
 - README could be more informative. Do not hesitate to open issues!
 
 ## Associated publication(s)
-"Towards Learning Activity Cliff-Aware Molecular Representations".  
-Associated thesis publication and full paper coming soon.  
-Full paper/Poster accepted at [LXAI @ ICML 2024!](https://www.latinxinai.org/icml-2024)  
+Master's thesis publication: ["Towards Learning Activity Cliff-Aware Molecular Representations"](https://epub.jku.at/obvulihs/content/titleinfo/10400851/full.pdf)  
+Full paper/Poster accepted at [LXAI @ ICML 2024!](https://research.latinxinai.org/papers/icml/2024/pdf/Cesar_Valdez.pdf)   
 Poster accepted at [MoML 2024!](https://portal.ml4dd.com/moml-2024)
 
 ## How to cite
 
-Coming soon.
+If you found this useful, please use the following citation:
+```
+@inproceedings{ValdezCrdova2024,
+  series = {LXAI at ICML 2024},
+  title = {Towards Learning Activity Cliff-Aware Molecular Representations},
+  url = {http://dx.doi.org/10.52591/lxai202407274},
+  DOI = {10.52591/lxai202407274},
+  booktitle = {LatinX in AI at International Conference on Machine Learning 2024},
+  publisher = {Journal of LatinX in AI Research},
+  author = {Valdez Córdova,  César Miguel},
+  year = {2024},
+  month = jul,
+  collection = {LXAI at ICML 2024}
+}
+```
+
 
 ## Contributing
 
-Nothing formal here just yet, just open an issue or [drop me a line](mailto:cesar.valdezcordova@mail.mcgill.ca)
+Open an issue or [drop me a line](mailto:cesar.valdezcordova@mail.mcgill.ca)
 
 ## Known Contributors
 
